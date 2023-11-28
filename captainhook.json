@@ -74,14 +74,6 @@
             {
                 "action": "composer dev:lint:fix",
                 "conditions": []
-            },
-            {
-                "action": "composer dev:analyze",
-                "conditions": [
-                    {
-                        "exec": "\\Moxio\\CaptainHook\\Psalm\\Condition\\PsalmInstalled"
-                    }
-                ]
             }
         ]
     },

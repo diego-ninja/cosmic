@@ -16,7 +16,7 @@ use Symfony\Component\Console\Command\CompleteCommand;
 
 #[Icon("🐚")]
 #[Name("completion")]
-#[Description("Dump the shell completion script")]
+#[Description("Dump the shell (<info>{env.shell}</info>) completion script")]
 #[Signature("completion [shell]")]
 #[Option("shell", 'The shell type (e.g. "bash"), the value of the "$SHELL" env var will be used if this is not given')] //phpcs:ignore
 #[Decorated(false)]

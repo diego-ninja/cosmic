@@ -15,6 +15,7 @@ use Ninja\Cosmic\Parser\MarkdownParser;
 use Ninja\Cosmic\Terminal\Descriptor\TextDescriptor;
 use Ninja\Cosmic\Terminal\Renderer\CommandHelpRenderer;
 use Ninja\Cosmic\Terminal\Terminal;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Helper\DescriptorHelper;
 
 #[Icon("🔮")]
@@ -27,7 +28,7 @@ use Symfony\Component\Console\Helper\DescriptorHelper;
 #[Decorated(false)]
 final class HelpCommand extends CosmicCommand
 {
-    private ?Command $command = null;
+    private Command | SymfonyCommand $command;
 
     public function __invoke(bool $raw, string $format, string $command_name): int
     {

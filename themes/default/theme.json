@@ -31,8 +31,8 @@
   },
   "icons": {
     "application": "\uD83D\uDE80",
-    "bullet": "⬡",
-    "success": "⬢",
+    "bullet": "⬢",
+    "success": "⬡",
     "failure": "⬡"
   },
   "styles": {

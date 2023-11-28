@@ -43,13 +43,13 @@ class Env
         return static::$repository;
     }
 
-    public static function basePath(?string $dir = null): string
+    public static function basePath(?string $dir = null): ?string
     {
         $base_path = is_phar() ? Phar::running() : self::get("BASE_PATH", getcwd());
         return $dir ? sprintf("%s/%s", $base_path, $dir) : $base_path;
     }
 
-    public static function helpPath(?string $dir = null): string
+    public static function helpPath(?string $dir = null): ?string
     {
         $default = self::basePath("docs/commands");
         $help_path = is_phar() ? $default : self::get("COMMAND_HELP_PATH", $default);
@@ -64,7 +64,7 @@ class Env
 
     public static function getVersion(): string
     {
-        return self::get("APP_VERSION") ?? git_version(self::basePath()) ?? "unreleased";
+        return git_version(self::basePath()) ?? self::get("APP_VERSION", "unreleased");
     }
 
     public static function get(string $key, mixed $default = null): mixed

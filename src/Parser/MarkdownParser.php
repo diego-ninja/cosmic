@@ -1415,13 +1415,13 @@ class MarkdownParser
         return stripos($string, strtolower($needle)) === 0;
     }
 
-    public static function instance($name = 'default')
+    public static function instance($name = 'default'): self
     {
         if (isset(self::$instances[$name])) {
             return self::$instances[$name];
         }
 
-        $instance = new static();
+        $instance = new self();
 
         self::$instances[$name] = $instance;
 
