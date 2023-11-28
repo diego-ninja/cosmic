@@ -1,0 +1,29 @@
+{
+  "symbol-whitelist" : [
+    "null", "true", "false",
+    "static", "self", "parent",
+    "array", "string", "int", "float", "bool", "iterable", "callable", "void", "object", "mixed", "never", "app", "env","go", "SWOOLE_HOOK_ALL", "is_docker", "is_phar", "GLOB_BRACE",
+    "Swoole\\Coroutine",
+    "Swoole\\Runtime",
+    "Swoole\\Coroutine\\run",
+    "Swoole\\Coroutine\\WaitGroup",
+    "Swoole\\Database\\PDOConfig",
+    "Swoole\\Database\\PDOPool",
+    "Swoole\\Database\\PDOProxy",
+    "value",
+    "PhpOption\\Option",
+    "Psr\\Container\\ContainerInterface",
+    "Silly\\Application"
+
+  ],
+  "php-core-extensions" : [
+    "Core",
+    "date",
+    "pcre",
+    "Phar",
+    "Reflection",
+    "SPL",
+    "standard"
+  ],
+  "scan-files" : ["helper/*.php"]
+}

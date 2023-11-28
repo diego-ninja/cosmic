@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "66b43ce66e3a857afdb3a9f4dbefcae3",
+    "content-hash": "c913ce00e57434f569d4df97de330633",
     "packages": [
         {
             "name": "brick/math",
@@ -5949,12 +5949,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "5cfed3056826da5ee547ebb4b58e39bc4ca14d6e"
+                "reference": "89f6e236e9317263c8ffa1d7d32cb6828b12aea0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/5cfed3056826da5ee547ebb4b58e39bc4ca14d6e",
-                "reference": "5cfed3056826da5ee547ebb4b58e39bc4ca14d6e",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/89f6e236e9317263c8ffa1d7d32cb6828b12aea0",
+                "reference": "89f6e236e9317263c8ffa1d7d32cb6828b12aea0",
                 "shasum": ""
             },
             "conflict": {
@@ -6648,7 +6648,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-11-28T00:14:42+00:00"
+            "time": "2023-11-28T18:04:40+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -9364,6 +9364,7 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2",
+        "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pcntl": "*",
         "ext-posix": "*"
