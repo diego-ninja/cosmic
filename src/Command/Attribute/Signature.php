@@ -11,6 +11,5 @@ class Signature
 {
     public function __construct(
         public string $signature,
-    ) {
-    }
+    ) {}
 }

@@ -11,6 +11,5 @@ class Alias
 {
     public function __construct(
         public string $alias,
-    ) {
-    }
+    ) {}
 }

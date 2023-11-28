@@ -44,10 +44,10 @@ use Throwable;
 
 final class Application extends \Symfony\Component\Console\Application
 {
-    public const LIFECYCLE_APP_BOOT = 'app.boot';
+    public const LIFECYCLE_APP_BOOT     = 'app.boot';
     public const LIFECYCLE_APP_SHUTDOWN = 'app.shutdown';
-    public const LIFECYCLE_APP_BUILD = 'app.build';
-    public const LIFECYCLE_APP_INSTALL = 'app.install';
+    public const LIFECYCLE_APP_BUILD    = 'app.build';
+    public const LIFECYCLE_APP_INSTALL  = 'app.install';
 
     private ExpressionParser $parser;
 
@@ -64,7 +64,7 @@ final class Application extends \Symfony\Component\Console\Application
      */
     public function __construct(string $name = 'UNKNOWN', string $version = 'UNKNOWN', ?Container $container = null)
     {
-        $this->parser = self::createParser();
+        $this->parser  = self::createParser();
         $this->invoker = self::createInvoker();
 
         $error_handler = new Provider(
@@ -77,7 +77,7 @@ final class Application extends \Symfony\Component\Console\Application
         $commands = CommandFinder::find([__DIR__ . "/../Command"]);
         foreach ($commands as $command_file) {
             $class_name = get_class_from_file($command_file);
-            $command = $this->container->get($class_name);
+            $command    = $this->container->get($class_name);
             $command->setApplication($this);
             $this->registerCommand($command);
         }
@@ -209,20 +209,20 @@ final class Application extends \Symfony\Component\Console\Application
      * @throws InvocationException
      * @throws ReflectionException
      */
-    public function command($expression, $callable, array $aliases = []): Command
+    public function command(string $expression, $callable, array $aliases = []): Command
     {
         $this->assertCallableIsValid($callable);
 
-        $command_function = function (InputInterface $input, OutputInterface $output) use ($callable) {
+        $command_function = function (InputInterface $input, OutputInterface $output) use ($callable): mixed {
             $parameters = array_merge(
                 [
-                    'input' => $input,
-                    'output' => $output,
-                    InputInterface::class => $input,
+                    'input'                => $input,
+                    'output'               => $output,
+                    InputInterface::class  => $input,
                     OutputInterface::class => $output,
-                    Input::class => $input,
-                    Output::class => $output,
-                    SymfonyStyle::class => new SymfonyStyle($input, $output),
+                    Input::class           => $input,
+                    Output::class          => $output,
+                    SymfonyStyle::class    => new SymfonyStyle($input, $output),
                 ],
                 $input->getArguments(),
                 $input->getOptions()
@@ -238,7 +238,7 @@ final class Application extends \Symfony\Component\Console\Application
                 throw new RuntimeException(
                     sprintf(
                         "Impossible to call the '%s' command: %s",
-                        $input->getFirstArgument(),
+                        $input->getFirstArgument() ?? 'UNKNOWN',
                         $e->getMessage()
                     ),
                     0,
@@ -257,7 +257,7 @@ final class Application extends \Symfony\Component\Console\Application
         return $command;
     }
 
-    private function createCommand($expression, callable $callable): Command
+    private function createCommand(string $expression, callable $callable): Command
     {
         $result = $this->parser->parse($expression);
 
@@ -270,8 +270,6 @@ final class Application extends \Symfony\Component\Console\Application
 
         return $command;
     }
-
-
 
     private static function createInvoker(): InvokerInterface
     {
@@ -296,9 +294,9 @@ final class Application extends \Symfony\Component\Console\Application
      * @throws NotCallableException
      * @throws ReflectionException
      */
-    private function defaultsViaReflection($command, $callable): array
+    private function defaultsViaReflection(Command $command, mixed $callable): array
     {
-        if (! is_callable($callable)) {
+        if (!is_callable($callable)) {
             return [];
         }
 
@@ -309,18 +307,18 @@ final class Application extends \Symfony\Component\Console\Application
         $defaults = [];
 
         foreach ($function->getParameters() as $parameter) {
-            if (! $parameter->isDefaultValueAvailable()) {
+            if (!$parameter->isDefaultValueAvailable()) {
                 continue;
             }
 
-            $parameter_name = $parameter->name;
+            $parameter_name       = $parameter->name;
             $hyphenated_case_name = $this->fromCamelCase($parameter_name);
 
             if ($definition->hasArgument($hyphenated_case_name) || $definition->hasOption($hyphenated_case_name)) {
                 $parameter_name = $hyphenated_case_name;
             }
 
-            if (! $definition->hasArgument($parameter_name) && ! $definition->hasOption($parameter_name)) {
+            if (!$definition->hasArgument($parameter_name) && !$definition->hasOption($parameter_name)) {
                 continue;
             }
 
@@ -330,11 +328,10 @@ final class Application extends \Symfony\Component\Console\Application
         return $defaults;
     }
 
-
     /**
      * @throws ReflectionException
      */
-    private function assertCallableIsValid($callable): void
+    private function assertCallableIsValid(mixed $callable): void
     {
         if ($this->container) {
             return;
@@ -353,19 +350,19 @@ final class Application extends \Symfony\Component\Console\Application
     /**
      * @throws ReflectionException
      */
-    private function isStaticCallToNonStaticMethod($callable): bool
+    private function isStaticCallToNonStaticMethod(mixed $callable): bool
     {
         if (is_array($callable) && is_string($callable[0])) {
             [$class, $method] = $callable;
-            $reflection = new ReflectionMethod($class, $method);
+            $reflection       = new ReflectionMethod($class, $method);
 
-            return ! $reflection->isStatic();
+            return !$reflection->isStatic();
         }
 
         return false;
     }
 
-    private function fromCamelCase($input): string
+    private function fromCamelCase(string $input): string
     {
         preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
         $ret = $matches[0];

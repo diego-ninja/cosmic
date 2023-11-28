@@ -11,6 +11,5 @@ class Environment
 {
     public function __construct(
         public string $environment,
-    ) {
-    }
+    ) {}
 }

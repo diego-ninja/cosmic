@@ -18,9 +18,7 @@ use function strlen;
 
 class TextDescriptor extends AbstractDescriptor
 {
-    public function __construct(private readonly CommandHelpRenderer $help_renderer)
-    {
-    }
+    public function __construct(private readonly CommandHelpRenderer $help_renderer) {}
 
     protected function describeInputArgument(InputArgument $argument, array $options = []): void
     {
@@ -30,7 +28,7 @@ class TextDescriptor extends AbstractDescriptor
             $default = '';
         }
 
-        $total_width = $options['total_width'] ?? Helper::width($argument->getName());
+        $total_width   = $options['total_width'] ?? Helper::width($argument->getName());
         $spacing_width = $total_width - strlen($argument->getName());
 
         $this->writeText(sprintf(
@@ -61,7 +59,7 @@ class TextDescriptor extends AbstractDescriptor
         }
 
         $total_width = $options['total_width'] ?? $this->calculateTotalWidthForOptions([$option]);
-        $synopsis = sprintf(
+        $synopsis    = sprintf(
             '%s%s',
             $option->getShortcut() ? sprintf('-%s, ', $option->getShortcut()) : '    ',
             sprintf($option->isNegatable() ? '--%1$s|--no-%1$s' : '--%1$s%2$s', $option->getName(), $value)
@@ -150,7 +148,7 @@ class TextDescriptor extends AbstractDescriptor
     protected function describeApplication(Application $application, array $options = []): void
     {
         $described_namespace = $options['namespace'] ?? null;
-        $description = new ApplicationDescription($application, $described_namespace);
+        $description         = new ApplicationDescription($application, $described_namespace);
 
         if (isset($options['raw_text']) && $options['raw_text']) {
             $width = $this->getColumnWidth($description->getCommands());
@@ -172,7 +170,7 @@ class TextDescriptor extends AbstractDescriptor
             $this->writeText("\n");
             $this->writeText("\n");
 
-            $commands = $description->getCommands();
+            $commands   = $description->getCommands();
             $namespaces = $description->getNamespaces();
             if ($described_namespace && $namespaces) {
                 // make sure all alias commands are included when describing a specific namespace
@@ -183,7 +181,7 @@ class TextDescriptor extends AbstractDescriptor
             }
 
             /** @psalm-suppress RedundantFunctionCall*/
-            $width = $this->getColumnWidth(array_merge(...array_values(array_map(fn ($namespace) => array_intersect($namespace['commands'], array_keys($commands)), array_values($namespaces))))); //phpcs:ignore
+            $width = $this->getColumnWidth(array_merge(...array_values(array_map(fn($namespace) => array_intersect($namespace['commands'], array_keys($commands)), array_values($namespaces))))); //phpcs:ignore
 
             if ($described_namespace) {
                 $this->writeText(sprintf('<comment>Available commands for the "%s" namespace:</comment>', $described_namespace), $options); //phpcs:ignore
@@ -192,7 +190,7 @@ class TextDescriptor extends AbstractDescriptor
             }
 
             foreach ($namespaces as $namespace) {
-                $namespace['commands'] = array_filter($namespace['commands'], static fn ($name) => isset($commands[$name])); //phpcs:ignore
+                $namespace['commands'] = array_filter($namespace['commands'], static fn($name) => isset($commands[$name])); //phpcs:ignore
 
                 if (!$namespace['commands']) {
                     continue;
@@ -205,9 +203,9 @@ class TextDescriptor extends AbstractDescriptor
 
                 foreach ($namespace['commands'] as $name) {
                     $this->writeText("\n");
-                    $spacing_width = $width - Helper::width($name);
-                    $command = $commands[$name];
-                    $command_icon = method_exists($command, 'getIcon') ? $command->getIcon() : '';
+                    $spacing_width   = $width - Helper::width($name);
+                    $command         = $commands[$name];
+                    $command_icon    = method_exists($command, 'getIcon') ? $command->getIcon() : '';
                     $command_aliases = $name === $command->getName() ? $this->getCommandAliasesText($command) : '';
                     $this->writeText(sprintf('  %s <info>%s</info>%s%s', $command_icon, $name, str_repeat(' ', $spacing_width), $command->getDescription() . " " . $command_aliases), $options); //phpcs:ignore
                 }
@@ -230,7 +228,7 @@ class TextDescriptor extends AbstractDescriptor
      */
     private function getCommandAliasesText(Command $command): string
     {
-        $text = '';
+        $text    = '';
         $aliases = $command->getAliases();
 
         if ($aliases) {

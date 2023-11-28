@@ -33,10 +33,10 @@ final class ListCommand extends CosmicCommand
         $helper = new DescriptorHelper();
         $helper->register('txt', new TextDescriptor($this->getCommandHelperRenderer()));
         $helper->describe(Terminal::output(), $this->application, [
-            'format' => $format,
-            'raw_text' => $raw,
+            'format'    => $format,
+            'raw_text'  => $raw,
             'namespace' => $namespace,
-            'short' => $short,
+            'short'     => $short,
         ]);
 
         return $this->success();

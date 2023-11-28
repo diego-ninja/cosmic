@@ -8,11 +8,11 @@ class MarkdownParser
 {
     private static array $instances = [];
 
-    protected bool $breaks_enabled = true;
-    protected bool $markup_escaped = false;
-    protected bool $urls_linked = true;
-    protected bool $safe_mode = false;
-    protected string $inline_marker_list = '!"*_&[:<>`~\\';
+    protected bool $breaks_enabled         = true;
+    protected bool $markup_escaped         = false;
+    protected bool $urls_linked            = true;
+    protected bool $safe_mode              = false;
+    protected string $inline_marker_list   = '!"*_&[:<>`~\\';
     protected string $regex_html_attribute = '[a-zA-Z_:][\w:.-]*(?:\s*=\s*(?:[^"\'=<>`\s]+|"[^"]*"|\'[^\']*\'))?';
     protected array $definition_data;
 
@@ -64,17 +64,17 @@ class MarkdownParser
     ];
 
     protected array $inline_types = [
-        '"' => ['SpecialCharacter'],
-        '!' => ['Image'],
-        '&' => ['SpecialCharacter'],
-        '*' => ['Emphasis'],
-        ':' => ['Url'],
-        '<' => ['UrlTag', 'EmailTag', 'Markup', 'SpecialCharacter'],
-        '>' => ['SpecialCharacter'],
-        '[' => ['Link'],
-        '_' => ['Emphasis'],
-        '`' => ['Code'],
-        '~' => ['Strikethrough'],
+        '"'  => ['SpecialCharacter'],
+        '!'  => ['Image'],
+        '&'  => ['SpecialCharacter'],
+        '*'  => ['Emphasis'],
+        ':'  => ['Url'],
+        '<'  => ['UrlTag', 'EmailTag', 'Markup', 'SpecialCharacter'],
+        '>'  => ['SpecialCharacter'],
+        '['  => ['Link'],
+        '_'  => ['Emphasis'],
+        '`'  => ['Code'],
+        '~'  => ['Strikethrough'],
         '\\' => ['EscapeSequence'],
     ];
 
@@ -108,14 +108,13 @@ class MarkdownParser
         'wbr', 'time',
     ];
 
-
     public function text(string $text): string
     {
         $this->definition_data = [];
-        $text = str_replace(["\r\n", "\r"], "\n", $text);
-        $text = trim($text, "\n");
-        $lines = explode("\n", $text);
-        $markup = $this->lines($lines);
+        $text                  = str_replace(["\r\n", "\r"], "\n", $text);
+        $text                  = trim($text, "\n");
+        $lines                 = explode("\n", $text);
+        $markup                = $this->lines($lines);
 
         return trim($markup, "\n");
     }
@@ -124,7 +123,7 @@ class MarkdownParser
     {
         $markup = '';
 
-        # $excerpt is based on the first occurrence of a marker
+        // $excerpt is based on the first occurrence of a marker
 
         while ($excerpt = strpbrk($text, $this->inline_marker_list)) {
             $marker = $excerpt[0];
@@ -134,52 +133,52 @@ class MarkdownParser
             $new_excerpt = ['text' => $excerpt, 'context' => $text];
 
             foreach ($this->inline_types[$marker] as $inline_type) {
-                # check to see if the current inline type is nestable in the current context
+                // check to see if the current inline type is nestable in the current context
 
-                if (! empty($non_nestables) && in_array($inline_type, $non_nestables, true)) {
+                if (!empty($non_nestables) && in_array($inline_type, $non_nestables, true)) {
                     continue;
                 }
 
                 $new_inline = $this->{'inline' . $inline_type}($new_excerpt);
 
-                if (! isset($new_inline)) {
+                if (!isset($new_inline)) {
                     continue;
                 }
 
-                # makes sure that the inline belongs to "our" marker
+                // makes sure that the inline belongs to "our" marker
 
                 if (isset($new_inline['position']) && $new_inline['position'] > $marker_position) {
                     continue;
                 }
 
-                # sets a default inline position
+                // sets a default inline position
 
-                if (! isset($new_inline['position'])) {
+                if (!isset($new_inline['position'])) {
                     $new_inline['position'] = $marker_position;
                 }
 
-                # cause the new element to 'inherit' our non nestables
+                // cause the new element to 'inherit' our non nestables
 
                 foreach ($non_nestables as $non_nestable) {
                     $new_inline['element']['non_nestables'][] = $non_nestable;
                 }
 
-                # the text that comes before the inline
+                // the text that comes before the inline
                 $unmarked_text = substr($text, 0, $new_inline['position']);
 
-                # compile the unmarked text
+                // compile the unmarked text
                 $markup .= $this->unmarkedText($unmarked_text);
 
-                # compile the inline
+                // compile the inline
                 $markup .= $new_inline['markup'] ?? $this->element($new_inline['element']);
 
-                # remove the examined text
+                // remove the examined text
                 $text = substr($text, $new_inline['position'] + $new_inline['extent']);
 
                 continue 2;
             }
 
-            # the marker does not belong to an inline
+            // the marker does not belong to an inline
 
             $unmarked_text = substr($text, 0, $marker_position + 1);
 
@@ -274,7 +273,7 @@ class MarkdownParser
 
             if (isset($this->block_types[$marker])) {
                 foreach ($this->block_types[$marker] as $block_type) {
-                    $block_types [] = $block_type;
+                    $block_types[] = $block_type;
                 }
             }
 
@@ -284,8 +283,8 @@ class MarkdownParser
                 if (isset($block)) {
                     $block['type'] = $block_type;
 
-                    if (! isset($block['identified'])) {
-                        $blocks [] = $current_block;
+                    if (!isset($block['identified'])) {
+                        $blocks[] = $current_block;
 
                         $block['identified'] = true;
                     }
@@ -300,10 +299,10 @@ class MarkdownParser
                 }
             }
 
-            if (isset($current_block) && ! isset($current_block['type']) && ! isset($current_block['interrupted'])) {
+            if (isset($current_block) && !isset($current_block['type']) && !isset($current_block['interrupted'])) {
                 $current_block['element']['text'] .= "\n" . $text;
             } else {
-                $blocks [] = $current_block;
+                $blocks[] = $current_block;
 
                 $current_block = $this->paragraph($new_line);
 
@@ -315,7 +314,7 @@ class MarkdownParser
             $current_block = $this->{'block' . $current_block['type'] . 'Complete'}($current_block);
         }
 
-        $blocks [] = $current_block;
+        $blocks[] = $current_block;
 
         unset($blocks[0]);
 
@@ -332,7 +331,7 @@ class MarkdownParser
 
         $markup .= "\n";
 
-        # ~
+        // ~
 
         return $markup;
     }
@@ -349,7 +348,7 @@ class MarkdownParser
 
     protected function blockCode(array $line, ?array $block = null): ?array
     {
-        if (isset($block) && ! isset($block['type']) && ! isset($block['interrupted'])) {
+        if (isset($block) && !isset($block['type']) && !isset($block['interrupted'])) {
             return null;
         }
 
@@ -358,9 +357,9 @@ class MarkdownParser
 
             return [
                 'element' => [
-                    'name' => 'pre',
+                    'name'    => 'pre',
                     'handler' => 'element',
-                    'text' => [
+                    'text'    => [
                         'name' => 'code',
                         'text' => $text,
                     ],
@@ -392,7 +391,7 @@ class MarkdownParser
 
     protected function blockCodeComplete(array $block): array
     {
-        $text = $block['element']['text']['text'];
+        $text                             = $block['element']['text']['text'];
         $block['element']['text']['text'] = $text;
 
         return $block;
@@ -438,8 +437,8 @@ class MarkdownParser
     {
         if (preg_match('/^[' . $line['text'][0] . ']{3,} *([^`]+)? *$/', $line['text'], $matches)) {
             $element = [
-                'name' => 'pre',
-                'text' => '',
+                'name'     => 'pre',
+                'text'     => '',
                 'disabled' => true,
             ];
 
@@ -454,10 +453,10 @@ class MarkdownParser
             }
 
             return [
-                'char' => $line['text'][0],
+                'char'    => $line['text'][0],
                 'element' => [
-                    'name' => 'code',
-                    'handler' => 'element',
+                    'name'       => 'code',
+                    'handler'    => 'element',
                     'attributes' => [
                         'class' => $class ?? "language",
                     ],
@@ -496,7 +495,7 @@ class MarkdownParser
 
     protected function blockFencedCodeComplete(array $block): array
     {
-        $text = $block['element']['text']['text'];
+        $text                             = $block['element']['text']['text'];
         $block['element']['text']['text'] = $text;
 
         return $block;
@@ -519,12 +518,12 @@ class MarkdownParser
 
             return [
                 'element' => [
-                    'name' => 'h' . min(6, $level),
+                    'name'       => 'h' . min(6, $level),
                     'attributes' => [
                         'class' => $level === 1 ? 'h1' : 'heading',
                     ],
-                    'text' => $text,
-                    'handler' => 'line'
+                    'text'    => $text,
+                    'handler' => 'line',
                 ],
             ];
         }
@@ -538,10 +537,10 @@ class MarkdownParser
 
         if (preg_match('/^(' . $pattern . '[ ]+)(.*)/', $line['text'], $matches)) {
             $block = [
-                'indent' => $line['indent'],
+                'indent'  => $line['indent'],
                 'pattern' => $pattern,
                 'element' => [
-                    'name' => $name,
+                    'name'    => $name,
                     'handler' => 'elements',
                 ],
             ];
@@ -555,14 +554,14 @@ class MarkdownParser
             }
 
             $block['li'] = [
-                'name' => 'li',
+                'name'    => 'li',
                 'handler' => 'li',
-                'text' => [
+                'text'    => [
                     $matches[2],
                 ],
             ];
 
-            $block['element']['text'] [] = & $block['li'];
+            $block['element']['text'][] = &$block['li'];
 
             return $block;
         }
@@ -572,9 +571,9 @@ class MarkdownParser
 
     protected function blockListContinue(array $line, array $block): ?array
     {
-        if ($block['indent'] === $line['indent'] && preg_match('/^'.$block['pattern'].'(?:[ ]+(.*)|$)/', $line['text'], $matches)) { //phpcs:ignore
+        if ($block['indent'] === $line['indent'] && preg_match('/^' . $block['pattern'] . '(?:[ ]+(.*)|$)/', $line['text'], $matches)) { //phpcs:ignore
             if (isset($block['interrupted'])) {
-                $block['li']['text'] [] = '';
+                $block['li']['text'][] = '';
 
                 $block['loose'] = true;
 
@@ -586,14 +585,14 @@ class MarkdownParser
             $text = $matches[1] ?? '';
 
             $block['li'] = [
-                'name' => 'li',
+                'name'    => 'li',
                 'handler' => 'li',
-                'text' => [
+                'text'    => [
                     $text,
                 ],
             ];
 
-            $block['element']['text'] [] = & $block['li'];
+            $block['element']['text'][] = &$block['li'];
 
             return $block;
         }
@@ -602,20 +601,20 @@ class MarkdownParser
             return $block;
         }
 
-        if (! isset($block['interrupted'])) {
+        if (!isset($block['interrupted'])) {
             $text = preg_replace('/^[ ]{0,4}/', '', $line['body']);
 
-            $block['li']['text'] [] = $text;
+            $block['li']['text'][] = $text;
 
             return $block;
         }
 
         if ($line['indent'] > 0) {
-            $block['li']['text'] [] = '';
+            $block['li']['text'][] = '';
 
             $text = preg_replace('/^[ ]{0,4}/', '', $line['body']);
 
-            $block['li']['text'] [] = $text;
+            $block['li']['text'][] = $text;
 
             unset($block['interrupted']);
 
@@ -630,7 +629,7 @@ class MarkdownParser
         if (isset($block['loose'])) {
             foreach ($block['element']['text'] as &$li) {
                 if (end($li['text']) !== '') {
-                    $li['text'] [] = '';
+                    $li['text'][] = '';
                 }
             }
         }
@@ -643,9 +642,9 @@ class MarkdownParser
         if (preg_match('/^>[ ]?(.*)/', $line['text'], $matches)) {
             return [
                 'element' => [
-                    'name' => 'blockquote',
+                    'name'    => 'blockquote',
                     'handler' => 'lines',
-                    'text' => (array) $matches[1],
+                    'text'    => (array)$matches[1],
                 ],
             ];
         }
@@ -657,18 +656,18 @@ class MarkdownParser
     {
         if ($line['text'][0] === '>' && preg_match('/^>[ ]?(.*)/', $line['text'], $matches)) {
             if (isset($block['interrupted'])) {
-                $block['element']['text'] [] = '';
+                $block['element']['text'][] = '';
 
                 unset($block['interrupted']);
             }
 
-            $block['element']['text'] [] = $matches[1];
+            $block['element']['text'][] = $matches[1];
 
             return $block;
         }
 
-        if (! isset($block['interrupted'])) {
-            $block['element']['text'] [] = $line['text'];
+        if (!isset($block['interrupted'])) {
+            $block['element']['text'][] = $line['text'];
 
             return $block;
         }
@@ -681,7 +680,7 @@ class MarkdownParser
         if (preg_match('/^([' . $line['text'][0] . '])([ ]*\1){2,}[ ]*$/', $line['text'])) {
             return [
                 'element' => [
-                    'name' => 'hr',
+                    'name'       => 'hr',
                     'attributes' => [
                         'class' => 'hr',
                     ],
@@ -694,7 +693,7 @@ class MarkdownParser
 
     protected function blockSetextHeader(array $line, array $block = null): ?array
     {
-        if (! isset($block) || isset($block['type']) || isset($block['interrupted'])) {
+        if (!isset($block) || isset($block['type']) || isset($block['interrupted'])) {
             return null;
         }
 
@@ -721,8 +720,8 @@ class MarkdownParser
             }
 
             $block = [
-                'name' => $matches[1],
-                'depth' => 0,
+                'name'   => $matches[1],
+                'depth'  => 0,
                 'markup' => $line['text'],
             ];
 
@@ -759,12 +758,12 @@ class MarkdownParser
         }
 
         if (preg_match('/^<' . $block['name'] . '(?:[ ]*' . $this->regex_html_attribute . ')*[ ]*>/i', $line['text'])) { //phpcs:ignore
-            $block['depth'] ++;
+            $block['depth']++;
         }
 
-        if (preg_match('/(.*?)<\/' . $block['name'] . '>[ ]*$/i', $line['text'], $matches)) { # close
+        if (preg_match('/(.*?)<\/' . $block['name'] . '>[ ]*$/i', $line['text'], $matches)) { // close
             if ($block['depth'] > 0) {
-                $block['depth'] --;
+                $block['depth']--;
             } else {
                 $block['closed'] = true;
             }
@@ -787,7 +786,7 @@ class MarkdownParser
             $id = strtolower($matches[1]);
 
             $data = [
-                'url' => $matches[2],
+                'url'   => $matches[2],
                 'title' => null,
             ];
 
@@ -807,7 +806,7 @@ class MarkdownParser
 
     protected function blockTable(array $line, ?array $block = null): ?array
     {
-        if (! isset($block) || isset($block['type']) || isset($block['interrupted'])) {
+        if (!isset($block) || isset($block['type']) || isset($block['interrupted'])) {
             return null;
         }
 
@@ -838,7 +837,7 @@ class MarkdownParser
                     $alignment = $alignment === 'left' ? 'center' : 'right';
                 }
 
-                $alignments [] = $alignment;
+                $alignments[] = $alignment;
             }
 
             $header_elements = [];
@@ -854,8 +853,8 @@ class MarkdownParser
                 $header_cell = trim($header_cell);
 
                 $header_element = [
-                    'name' => 'th',
-                    'text' => $header_cell,
+                    'name'    => 'th',
+                    'text'    => $header_cell,
                     'handler' => 'line',
                 ];
 
@@ -867,35 +866,35 @@ class MarkdownParser
                     ];
                 }
 
-                $header_elements [] = $header_element;
+                $header_elements[] = $header_element;
             }
 
-            # ~
+            // ~
 
             $block = [
                 'alignments' => $alignments,
                 'identified' => true,
-                'element' => [
-                    'name' => 'table',
+                'element'    => [
+                    'name'    => 'table',
                     'handler' => 'elements',
                 ],
             ];
 
-            $block['element']['text'] [] = [
-                'name' => 'thead',
+            $block['element']['text'][] = [
+                'name'    => 'thead',
                 'handler' => 'elements',
             ];
 
-            $block['element']['text'] [] = [
-                'name' => 'tbody',
+            $block['element']['text'][] = [
+                'name'    => 'tbody',
                 'handler' => 'elements',
-                'text' => [],
+                'text'    => [],
             ];
 
-            $block['element']['text'][0]['text'] [] = [
-                'name' => 'tr',
+            $block['element']['text'][0]['text'][] = [
+                'name'    => 'tr',
                 'handler' => 'elements',
-                'text' => $header_elements,
+                'text'    => $header_elements,
             ];
 
             return $block;
@@ -924,9 +923,9 @@ class MarkdownParser
                 $cell = trim($cell);
 
                 $element = [
-                    'name' => 'td',
+                    'name'    => 'td',
                     'handler' => 'line',
-                    'text' => $cell,
+                    'text'    => $cell,
                 ];
 
                 if (isset($block['alignments'][$index])) {
@@ -935,16 +934,16 @@ class MarkdownParser
                     ];
                 }
 
-                $elements [] = $element;
+                $elements[] = $element;
             }
 
             $element = [
-                'name' => 'tr',
+                'name'    => 'tr',
                 'handler' => 'elements',
-                'text' => $elements,
+                'text'    => $elements,
             ];
 
-            $block['element']['text'][1]['text'] [] = $element;
+            $block['element']['text'][1]['text'][] = $element;
 
             return $block;
         }
@@ -956,8 +955,8 @@ class MarkdownParser
     {
         return [
             'element' => [
-                'name' => 'p',
-                'text' => $line['text'],
+                'name'    => 'p',
+                'text'    => $line['text'],
                 'handler' => 'line',
             ],
         ];
@@ -967,12 +966,12 @@ class MarkdownParser
     {
         $marker = $excerpt['text'][0];
 
-        if (preg_match('/^('.$marker.'+)[ ]*(.+?)[ ]*(?<!'.$marker.')\1(?!'.$marker.')/s', $excerpt['text'], $matches)) { //phpcs:ignore
+        if (preg_match('/^(' . $marker . '+)[ ]*(.+?)[ ]*(?<!' . $marker . ')\1(?!' . $marker . ')/s', $excerpt['text'], $matches)) { //phpcs:ignore
             $text = $matches[2];
             $text = preg_replace("/[ ]*\n/", ' ', $text);
 
             return [
-                'extent' => strlen($matches[0]),
+                'extent'  => strlen($matches[0]),
                 'element' => [
                     'name' => 'code',
                     'text' => $text,
@@ -988,15 +987,15 @@ class MarkdownParser
         if (str_contains($excerpt['text'], '>') && preg_match('/^<((mailto:)?\S+?@\S+?)>/i', $excerpt['text'], $matches)) { //phpcs:ignore
             $url = $matches[1];
 
-            if (! isset($matches[2])) {
+            if (!isset($matches[2])) {
                 $url = 'mailto:' . $url;
             }
 
             return [
-                'extent' => strlen($matches[0]),
+                'extent'  => strlen($matches[0]),
                 'element' => [
-                    'name' => 'a',
-                    'text' => $matches[1],
+                    'name'       => 'a',
+                    'text'       => $matches[1],
                     'attributes' => [
                         'href' => $url,
                     ],
@@ -1009,7 +1008,7 @@ class MarkdownParser
 
     protected function inlineEmphasis(array $excerpt): ?array
     {
-        if (! isset($excerpt['text'][1])) {
+        if (!isset($excerpt['text'][1])) {
             return null;
         }
 
@@ -1024,10 +1023,10 @@ class MarkdownParser
         }
 
         return [
-            'extent' => strlen($matches[0]),
+            'extent'  => strlen($matches[0]),
             'element' => [
-                'name' => $emphasis,
-                'handler' => 'line',
+                'name'       => $emphasis,
+                'handler'    => 'line',
                 'attributes' => [
                     'class' => $emphasis === 'strong' ? 'strong' : 'emphasis',
                 ],
@@ -1050,7 +1049,7 @@ class MarkdownParser
 
     protected function inlineImage(array $excerpt): ?array
     {
-        if (! isset($excerpt['text'][1]) || $excerpt['text'][1] !== '[') {
+        if (!isset($excerpt['text'][1]) || $excerpt['text'][1] !== '[') {
             return null;
         }
 
@@ -1063,9 +1062,9 @@ class MarkdownParser
         }
 
         $inline = [
-            'extent' => $link['extent'] + 1,
+            'extent'  => $link['extent'] + 1,
             'element' => [
-                'name' => 'img',
+                'name'       => 'img',
                 'attributes' => [
                     'src' => $link['element']['attributes']['href'],
                     'alt' => $link['element']['text'],
@@ -1083,14 +1082,14 @@ class MarkdownParser
     protected function inlineLink(array $excerpt): ?array
     {
         $element = [
-            'name' => 'a',
-            'handler' => 'line',
+            'name'          => 'a',
+            'handler'       => 'line',
             'non_nestables' => ['Url', 'Link'],
-            'text' => null,
-            'attributes' => [
-                'href' => null,
+            'text'          => null,
+            'attributes'    => [
+                'href'  => null,
                 'title' => null,
-                'class' => 'link'
+                'class' => 'link',
             ],
         ];
 
@@ -1112,7 +1111,7 @@ class MarkdownParser
             $element['attributes']['href'] = $matches[1];
 
             if (isset($matches[2])) {
-                $element['attributes']['title'] = substr($matches[2], 1, - 1);
+                $element['attributes']['title'] = substr($matches[2], 1, -1);
             }
 
             $extent += strlen($matches[0]);
@@ -1126,18 +1125,18 @@ class MarkdownParser
                 $definition = strtolower($element['text']);
             }
 
-            if (! isset($this->definition_data['Reference'][$definition])) {
+            if (!isset($this->definition_data['Reference'][$definition])) {
                 return null;
             }
 
             $definition = $this->definition_data['Reference'][$definition];
 
-            $element['attributes']['href'] = $definition['url'];
+            $element['attributes']['href']  = $definition['url'];
             $element['attributes']['title'] = $definition['title'];
         }
 
         return [
-            'extent' => $extent,
+            'extent'  => $extent,
             'element' => $element,
         ];
     }
@@ -1162,7 +1161,7 @@ class MarkdownParser
             ];
         }
 
-        if ($excerpt['text'][1] !== ' ' && preg_match('/^<\w[\w-]*(?:[ ]*'.$this->regex_html_attribute.')*[ ]*\/?>/s', $excerpt['text'], $matches)) { //phpcs:ignore
+        if ($excerpt['text'][1] !== ' ' && preg_match('/^<\w[\w-]*(?:[ ]*' . $this->regex_html_attribute . ')*[ ]*\/?>/s', $excerpt['text'], $matches)) { //phpcs:ignore
             return [
                 'markup' => $matches[0],
                 'extent' => strlen($matches[0]),
@@ -1174,7 +1173,7 @@ class MarkdownParser
 
     protected function inlineSpecialCharacter(array $excerpt): ?array
     {
-        if ($excerpt['text'][0] === '&' && ! preg_match('/^&#?\w+;/', $excerpt['text'])) {
+        if ($excerpt['text'][0] === '&' && !preg_match('/^&#?\w+;/', $excerpt['text'])) {
             return [
                 'markup' => '&amp;',
                 'extent' => 1,
@@ -1195,17 +1194,17 @@ class MarkdownParser
 
     protected function inlineStrikethrough(array $excerpt): ?array
     {
-        if (! isset($excerpt['text'][1])) {
+        if (!isset($excerpt['text'][1])) {
             return null;
         }
 
         if ($excerpt['text'][1] === '~' && preg_match('/^~~(?=\S)(.+?)(?<=\S)~~/', $excerpt['text'], $matches)) {
             return [
-                'extent' => strlen($matches[0]),
+                'extent'  => strlen($matches[0]),
                 'element' => [
-                    'name' => 's',
-                    'text' => $matches[1],
-                    'handler' => 'line',
+                    'name'       => 's',
+                    'text'       => $matches[1],
+                    'handler'    => 'line',
                     'attributes' => [
                         'class' => 'strike',
                     ],
@@ -1218,7 +1217,7 @@ class MarkdownParser
 
     protected function inlineUrl(array $excerpt): ?array
     {
-        if ($this->urls_linked !== true || ! isset($excerpt['text'][2]) || $excerpt['text'][2] !== '/') {
+        if ($this->urls_linked !== true || !isset($excerpt['text'][2]) || $excerpt['text'][2] !== '/') {
             return null;
         }
 
@@ -1226,14 +1225,14 @@ class MarkdownParser
             $url = $matches[0][0];
 
             return [
-                'extent' => strlen($matches[0][0]),
+                'extent'   => strlen($matches[0][0]),
                 'position' => $matches[0][1],
-                'element' => [
-                    'name' => 'a',
-                    'text' => $url,
+                'element'  => [
+                    'name'       => 'a',
+                    'text'       => $url,
                     'attributes' => [
-                        'href' => $url,
-                        'class' => 'link'
+                        'href'  => $url,
+                        'class' => 'link',
                     ],
                 ],
             ];
@@ -1248,13 +1247,13 @@ class MarkdownParser
             $url = $matches[1];
 
             return [
-                'extent' => strlen($matches[0]),
+                'extent'  => strlen($matches[0]),
                 'element' => [
-                    'name' => 'a',
-                    'text' => $url,
+                    'name'       => 'a',
+                    'text'       => $url,
                     'attributes' => [
-                        'href' => $url,
-                        'class' => 'link'
+                        'href'  => $url,
+                        'class' => 'link',
                     ],
                 ],
             ];
@@ -1302,9 +1301,9 @@ class MarkdownParser
         if (isset($element['text'])) {
             $text = $element['text'];
         } elseif (isset($element['rawHtml'])) {
-            $text = $element['rawHtml'];
+            $text                        = $element['rawHtml'];
             $allow_raw_html_in_safe_mode = isset($element['allow_raw_html_in_safe_mode']) && $element['allow_raw_html_in_safe_mode']; //phpcs:ignore
-            $permit_raw_html = !$this->safe_mode || $allow_raw_html_in_safe_mode;
+            $permit_raw_html             = !$this->safe_mode || $allow_raw_html_in_safe_mode;
         }
 
         if (isset($text)) {
@@ -1363,8 +1362,8 @@ class MarkdownParser
 
     protected function sanitiseElement(array $element): array
     {
-        static $good_attribute = '/^[a-zA-Z0-9][a-zA-Z0-9-_]*+$/';
-        static $safe_url_name_to_attribute  = [
+        static $good_attribute             = '/^[a-zA-Z0-9][a-zA-Z0-9-_]*+$/';
+        static $safe_url_name_to_attribute = [
             'a'   => 'href',
             'img' => 'src',
         ];
@@ -1373,9 +1372,9 @@ class MarkdownParser
             $element = $this->filterUnsafeUrlInAttribute($element, $safe_url_name_to_attribute[$element['name']]);
         }
 
-        if (! empty($element['attributes'])) {
+        if (!empty($element['attributes'])) {
             foreach ($element['attributes'] as $att => $val) {
-                if (! preg_match($good_attribute, $att)) {
+                if (!preg_match($good_attribute, $att)) {
                     unset($element['attributes'][$att]);
                 } elseif (self::striAtStart($att, 'on')) {
                     unset($element['attributes'][$att]);

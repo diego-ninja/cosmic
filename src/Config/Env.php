@@ -18,13 +18,13 @@ class Env
 
     public static function enablePutenv(): void
     {
-        static::$putenv = true;
+        static::$putenv     = true;
         static::$repository = null;
     }
 
     public static function disablePutenv(): void
     {
-        static::$putenv = false;
+        static::$putenv     = false;
         static::$repository = null;
     }
 
@@ -51,11 +51,10 @@ class Env
 
     public static function helpPath(?string $dir = null): ?string
     {
-        $default = self::basePath("docs/commands");
+        $default   = self::basePath("docs/commands");
         $help_path = is_phar() ? $default : self::get("COMMAND_HELP_PATH", $default);
         return $dir ? sprintf("%s/%s", $help_path, $dir) : $help_path;
     }
-
 
     public static function isDebug(): bool
     {
@@ -93,6 +92,6 @@ class Env
 
                 return $value;
             })
-            ->getOrCall(fn () => value($default));
+            ->getOrCall(fn() => value($default));
     }
 }

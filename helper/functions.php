@@ -27,8 +27,8 @@ if (!function_exists('camelize')) {
     }
 }
 
-if (! function_exists('value')) {
-    function value(mixed $value, ...$args): mixed
+if (!function_exists('value')) {
+    function value(mixed $value, mixed ...$args): mixed
     {
         return $value instanceof Closure ? $value(...$args) : $value;
     }
@@ -62,15 +62,15 @@ if (!function_exists('find_binary')) {
 }
 
 if (!function_exists("get_namespace_from_file")) {
-    function get_namespace_from_file($file): ?string
+    function get_namespace_from_file(string $file): ?string
     {
-        $ns = null;
+        $ns     = null;
         $handle = fopen($file, 'rb');
         if ($handle) {
             while (($line = fgets($handle)) !== false) {
                 if (str_starts_with($line, 'namespace')) {
                     $parts = explode(' ', $line);
-                    $ns = rtrim(trim($parts[1]), ';');
+                    $ns    = rtrim(trim($parts[1]), ';');
                     break;
                 }
             }
@@ -84,19 +84,22 @@ if (!function_exists("get_class_from_file")) {
     function get_class_from_file(string $file): string
     {
         $class_name = basename($file, ".php");
-        $namespace = get_namespace_from_file($file);
+        $namespace  = get_namespace_from_file($file);
 
         return $namespace . "\\" . $class_name;
     }
 }
 
-
 if (!function_exists("git_version")) {
-    function git_version(string $path): string
+    function git_version(string $path): ?string
     {
         $command = sprintf("cd %s && %s describe --tags --abbrev=0", $path, find_binary("git"));
         $process = Process::fromShellCommandline($command);
         $process->run();
+
+        if (!$process->isSuccessful()) {
+            return null;
+        }
 
         return trim($process->getOutput());
     }

@@ -11,6 +11,5 @@ class Hidden
 {
     public function __construct(
         public bool $hidden = true,
-    ) {
-    }
+    ) {}
 }

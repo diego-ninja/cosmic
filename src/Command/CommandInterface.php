@@ -8,10 +8,10 @@ use Ninja\Cosmic\Application\Application;
 
 interface CommandInterface
 {
-    public const LIFECYCLE_COMMAND_RUN = 'command.run';
+    public const LIFECYCLE_COMMAND_RUN     = 'command.run';
     public const LIFECYCLE_COMMAND_SUCCESS = 'command.success';
     public const LIFECYCLE_COMMAND_FAILURE = 'command.failure';
-    public const LIFECYCLE_COMMAND_ERROR = 'command.error';
+    public const LIFECYCLE_COMMAND_ERROR   = 'command.error';
 
     public function getCommandName(): string;
     public function getSignature(): string;

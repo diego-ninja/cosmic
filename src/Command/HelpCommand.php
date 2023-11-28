@@ -15,7 +15,7 @@ use Ninja\Cosmic\Parser\MarkdownParser;
 use Ninja\Cosmic\Terminal\Descriptor\TextDescriptor;
 use Ninja\Cosmic\Terminal\Renderer\CommandHelpRenderer;
 use Ninja\Cosmic\Terminal\Terminal;
-use Symfony\Component\Console\Command\Command as SymfonyCommand;
+use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Helper\DescriptorHelper;
 
 #[Icon("🔮")]
@@ -28,27 +28,30 @@ use Symfony\Component\Console\Helper\DescriptorHelper;
 #[Decorated(false)]
 final class HelpCommand extends CosmicCommand
 {
-    private Command | SymfonyCommand $command;
-
     public function __invoke(bool $raw, string $format, string $command_name): int
     {
-        $this->command ??= $this->getApplication()->find($command_name);
+        try {
+            $command = $this->getApplication()->find($command_name);
 
-        $helper = new DescriptorHelper();
-        $helper->register('txt', new TextDescriptor($this->getCommandHelperRenderer()));
-        $helper->describe(Terminal::output(), $this->command, [
-            'format' => $format,
-            'raw_text' => $raw,
-        ]);
+            $helper = new DescriptorHelper();
+            $helper->register('txt', new TextDescriptor($this->getCommandHelperRenderer()));
+            $helper->describe(Terminal::output(), $command, [
+                'format'   => $format,
+                'raw_text' => $raw,
+            ]);
 
-        unset($this->command);
+            unset($command);
 
-        return $this->success();
+            return $this->success();
+        } catch (CommandNotFoundException $e) {
+            Terminal::output()->writeln(sprintf('<warn>%s</warn>', $e->getMessage()));
+            return $this->failure();
+        }
     }
 
     private function getCommandHelperRenderer(): CommandHelpRenderer
     {
-        $renderer = new CommandHelpRenderer([Env::helpPath(),__DIR__ . "/../../resources/help"], new MarkdownParser());
+        $renderer = new CommandHelpRenderer([Env::helpPath(), __DIR__ . "/../../resources/help"], new MarkdownParser());
         $renderer->loadStyles(Terminal::getTheme()->getStyles());
 
         return $renderer;

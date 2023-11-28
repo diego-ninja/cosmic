@@ -6,6 +6,4 @@ namespace Ninja\Cosmic\Command\Exception;
 
 use InvalidArgumentException;
 
-class InvalidCommandExpressionException extends InvalidArgumentException
-{
-}
+class InvalidCommandExpressionException extends InvalidArgumentException {}

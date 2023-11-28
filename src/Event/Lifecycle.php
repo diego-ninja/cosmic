@@ -16,9 +16,7 @@ class Lifecycle implements LifecycleAwareInterface
 
     protected static ?self $instance = null;
 
-    public function __construct(protected readonly ?UuidInterface $lifecycle_id = null)
-    {
-    }
+    public function __construct(protected readonly ?UuidInterface $lifecycle_id = null) {}
 
     public function getLifecycleId(): ?UuidInterface
     {

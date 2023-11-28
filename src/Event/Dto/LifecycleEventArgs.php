@@ -12,8 +12,7 @@ final class LifecycleEventArgs
         private readonly string $lifecycle_event,
         private array $args,
         private readonly ?UuidInterface $lifecycle_id,
-    ) {
-    }
+    ) {}
 
     public function getLifecycleId(): ?UuidInterface
     {
@@ -33,7 +32,7 @@ final class LifecycleEventArgs
     public function __call(string $method, array $args): mixed
     {
         if ($this->isSetter($method)) {
-            $property = $this->getProperty($method);
+            $property              = $this->getProperty($method);
             $this->args[$property] = $args[0];
         }
 

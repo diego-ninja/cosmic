@@ -24,25 +24,4 @@ $app = new Application(
 );
 
 $app->setAutoExit(false);
-
-$spinner = (new Spinner(style: 'dots'))
-    ->setPadding(4)
-    ->setMessage('Executing <comment>composer-require-checker</comment>...');
-
-try {
-    $process = Process::fromShellCommandline("composer-require-checker");
-    $res = ProcessSpinner::for($process, 'Executing <comment>composer-require-checker</comment>...');
-
-    /**
-    $res = $spinner->callback(function () use ($process) {
-        $process->start();
-        while ($process->isRunning()) {
-            sleep(1);
-        }
-        return $process->isSuccessful();
-    });
-    **/
-} catch (Exception $e) {
-}
-
-
+$app->run();

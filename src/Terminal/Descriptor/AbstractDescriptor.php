@@ -22,12 +22,12 @@ abstract class AbstractDescriptor implements DescriptorInterface
         $this->output = $output;
 
         match (true) {
-            $object instanceof InputArgument => $this->describeInputArgument($object, $options),
-            $object instanceof InputOption => $this->describeInputOption($object, $options),
+            $object instanceof InputArgument   => $this->describeInputArgument($object, $options),
+            $object instanceof InputOption     => $this->describeInputOption($object, $options),
             $object instanceof InputDefinition => $this->describeInputDefinition($object, $options),
-            $object instanceof Command => $this->describeCommand($object, $options),
-            $object instanceof Application => $this->describeApplication($object, $options),
-            default => throw new InvalidArgumentException(sprintf('Object of type "%s" is not describable.', get_debug_type($object))), //phpcs:ignore
+            $object instanceof Command         => $this->describeCommand($object, $options),
+            $object instanceof Application     => $this->describeApplication($object, $options),
+            default                            => throw new InvalidArgumentException(sprintf('Object of type "%s" is not describable.', get_debug_type($object))), //phpcs:ignore
         };
     }
 

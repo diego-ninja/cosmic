@@ -26,7 +26,7 @@ class CallableReflector
         if (is_array($callable)) {
             [$class, $method] = $callable;
 
-            if (! method_exists($class, $method)) {
+            if (!method_exists($class, $method)) {
                 throw NotCallableException::fromInvalidCallable($callable);
             }
 

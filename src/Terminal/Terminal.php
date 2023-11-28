@@ -16,7 +16,7 @@ use function Termwind\terminal;
 final class Terminal
 {
     public const SECTION_HEADER = 'header';
-    public const SECTION_BODY = 'body';
+    public const SECTION_BODY   = 'body';
     public const SECTION_FOOTER = 'footer';
 
     private static ?self $instance = null;
@@ -149,7 +149,7 @@ final class Terminal
     private function __construct(private readonly ConsoleOutput $output)
     {
         self::$sections[self::SECTION_HEADER] = $this->output->section();
-        self::$sections[self::SECTION_BODY] = $this->output->section();
+        self::$sections[self::SECTION_BODY]   = $this->output->section();
         self::$sections[self::SECTION_FOOTER] = $this->output->section();
 
         self::$themeLoader = new ThemeLoader(

@@ -14,9 +14,7 @@ final class ThemeLoader implements ThemeLoaderInterface, ThemeInterface
 {
     private ThemeInterface $theme;
 
-    public function __construct(private array $themes, private readonly OutputInterface $output)
-    {
-    }
+    public function __construct(private array $themes, private readonly OutputInterface $output) {}
     public function load(OutputInterface $output): void
     {
         $this->loadColors($output);
@@ -38,7 +36,7 @@ final class ThemeLoader implements ThemeLoaderInterface, ThemeInterface
     public function enableTheme(string $themeName): void
     {
         if (!isset($this->themes[$themeName])) {
-            throw new InvalidArgumentException("Theme {$themeName} not found");
+            throw new InvalidArgumentException(sprintf("Theme %s not found", $themeName));
         }
 
         $this->theme = $this->themes[$themeName];
@@ -51,8 +49,8 @@ final class ThemeLoader implements ThemeLoaderInterface, ThemeInterface
             if (is_array($color)) {
                 style($name)->color($color["fg"] ?? null);
                 $color = new OutputFormatterStyle(
-                    foreground: $color["fg"] ?? null,
-                    background: $color["bg"] ?? null,
+                    foreground: $color["fg"]   ?? null,
+                    background: $color["bg"]   ?? null,
                     options: $color["options"] ?? null
                 );
             } else {

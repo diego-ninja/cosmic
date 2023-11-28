@@ -25,7 +25,7 @@ final class QuestionHelper extends SymfonyQuestionHelper
     private static function escapeTrailingBackslash(string $text): string
     {
         if (str_ends_with($text, '\\')) {
-            $len = strlen($text);
+            $len  = strlen($text);
             $text = rtrim($text, '\\');
             $text = str_replace("\0", '', $text);
             $text .= str_repeat("\0", $len - strlen($text));

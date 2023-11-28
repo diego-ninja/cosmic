@@ -11,6 +11,5 @@ final class Name
 {
     public function __construct(
         public string $name,
-    ) {
-    }
+    ) {}
 }

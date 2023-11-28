@@ -11,6 +11,5 @@ final class Decorated
 {
     public function __construct(
         public bool $decorated = true,
-    ) {
-    }
+    ) {}
 }

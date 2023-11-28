@@ -11,13 +11,13 @@ use RuntimeException;
 
 class Spinner
 {
-    public const DEFAULT_SPINNER_STYLE = 'dots';
+    public const DEFAULT_SPINNER_STYLE    = 'dots';
     public const DEFAULT_SPINNER_INTERVAL = 1000;
-    public const DEFAULT_SPINNER_PADDING = 2;
-    public const BLINK_OFF = "\e[?25l";
-    public const BLINK_ON = "\e[?25h";
-    public const CLEAR_LINE = "\33[2K\r";
-    public const RETURN_TO_LEFT = "\r";
+    public const DEFAULT_SPINNER_PADDING  = 2;
+    public const BLINK_OFF                = "\e[?25l";
+    public const BLINK_ON                 = "\e[?25h";
+    public const CLEAR_LINE               = "\33[2K\r";
+    public const RETURN_TO_LEFT           = "\r";
 
     private int $child_pid = 0;
 
@@ -74,7 +74,7 @@ class Spinner
 
     private function loopSpinnerFrames(): void
     {
-        echo self::BLINK_OFF;
+        print self::BLINK_OFF;
         while (true) {
             foreach ($this->getSpinnerFrames() as $frame) {
                 $parsed_frame = Terminal::render(
@@ -143,7 +143,7 @@ class Spinner
         if ($child_pid) {
             $this->keyboardInterrupts();
             $this->child_pid = $child_pid;
-            $res = $callback();
+            $res             = $callback();
             posix_kill($child_pid, SIGTERM);
 
             if ($res !== false) {

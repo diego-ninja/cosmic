@@ -17,8 +17,7 @@ class Theme implements ThemeInterface
         private readonly array $config,
         private ?string $logo = null,
         private ?string $notification = null,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws JsonException
@@ -53,17 +52,16 @@ class Theme implements ThemeInterface
      */
     public static function fromThemeFolder(string $folder): self
     {
-        $theme_file = sprintf("%s/theme.json", $folder);
-        $logo_file  = sprintf("%s/logo.php", $folder);
+        $theme_file        = sprintf("%s/theme.json", $folder);
+        $logo_file         = sprintf("%s/logo.php", $folder);
         $notification_file = sprintf("%s/notification.png", $folder);
 
         if (file_exists($theme_file)) {
-            $theme = self::fromFile($theme_file);
-            $theme->logo = file_exists($logo_file) ? require $logo_file : null;
+            $theme               = self::fromFile($theme_file);
+            $theme->logo         = file_exists($logo_file) ? require $logo_file : null;
             $theme->notification = file_exists($notification_file) ? $notification_file : null;
             return $theme;
         }
-
 
         throw new RuntimeException("Theme '$folder' not found.");
     }
@@ -71,11 +69,11 @@ class Theme implements ThemeInterface
     public function toArray(): array
     {
         return [
-            "name"    => $this->name,
-            "colors"  => $this->colors,
-            "styles"  => $this->styles,
-            "icons"   => $this->icons,
-            "config"  => $this->config,
+            "name"   => $this->name,
+            "colors" => $this->colors,
+            "styles" => $this->styles,
+            "icons"  => $this->icons,
+            "config" => $this->config,
         ];
     }
 

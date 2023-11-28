@@ -8,10 +8,10 @@ use Symfony\Component\Console\Input\InputOption;
 
 class Option extends InputOption
 {
-    public const VALUE_NONE = 1;
-    public const VALUE_REQUIRED = 2;
-    public const VALUE_OPTIONAL = 4;
-    public const VALUE_IS_ARRAY = 8;
+    public const VALUE_NONE      = 1;
+    public const VALUE_REQUIRED  = 2;
+    public const VALUE_OPTIONAL  = 4;
+    public const VALUE_IS_ARRAY  = 8;
     public const VALUE_NEGATABLE = 16;
 
     private string $description;

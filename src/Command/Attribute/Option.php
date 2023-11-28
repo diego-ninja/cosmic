@@ -13,6 +13,5 @@ class Option
         public string $option,
         public string $description,
         public ?string $default = null,
-    ) {
-    }
+    ) {}
 }

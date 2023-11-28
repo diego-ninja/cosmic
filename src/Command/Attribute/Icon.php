@@ -11,6 +11,5 @@ class Icon
 {
     public function __construct(
         public string $icon,
-    ) {
-    }
+    ) {}
 }

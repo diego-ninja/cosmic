@@ -27,7 +27,7 @@ final class CompletionCommand extends CosmicCommand
     public function __invoke(?string $shell): int
     {
         $command_name = basename($_SERVER['argv'][0]);
-        $shell = $shell ?? self::guessShell();
+        $shell        = $shell ?? self::guessShell();
 
         $completion_file = __DIR__ . '/../../resources/completion/completion.' . $shell;
         if (!file_exists($completion_file)) {

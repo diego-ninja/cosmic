@@ -23,7 +23,7 @@ class ExpressionParser
         $name = array_shift($tokens);
 
         $arguments = [];
-        $options = [];
+        $options   = [];
 
         foreach ($tokens as $token) {
             if (str_starts_with($token, '--')) {
@@ -38,9 +38,9 @@ class ExpressionParser
         }
 
         return [
-            'name' => $name,
+            'name'      => $name,
             'arguments' => $arguments,
-            'options' => $options,
+            'options'   => $options,
         ];
     }
 
@@ -75,7 +75,7 @@ class ExpressionParser
         // Shortcut [-y|--yell]
         if (str_contains($token, '|')) {
             [$shortcut, $token] = explode('|', $token, 2);
-            $shortcut = ltrim($shortcut, '-');
+            $shortcut           = ltrim($shortcut, '-');
         } else {
             $shortcut = null;
         }

@@ -33,7 +33,7 @@ trait CommandAttributeTrait
 
         $attributes = $this->reflector->getAttributes(Option::class, ReflectionAttribute::IS_INSTANCEOF);
         foreach ($attributes as $attribute) {
-            $option = $attribute->newInstance()->option;
+            $option        = $attribute->newInstance()->option;
             $args[$option] = $attribute->newInstance()->description ?? null;
         }
 
@@ -46,7 +46,7 @@ trait CommandAttributeTrait
 
         $attributes = $this->reflector->getAttributes(Option::class, ReflectionAttribute::IS_INSTANCEOF);
         foreach ($attributes as $attribute) {
-            $option = str_replace("--", "", $attribute->newInstance()->option);
+            $option            = str_replace("--", "", $attribute->newInstance()->option);
             $defaults[$option] = $attribute->newInstance()->default ?? null;
         }
 
@@ -59,13 +59,12 @@ trait CommandAttributeTrait
 
         $attributes = $this->reflector->getAttributes(Alias::class, ReflectionAttribute::IS_INSTANCEOF);
         foreach ($attributes as $attribute) {
-            $alias = str_replace("--", "", $attribute->newInstance()->alias);
+            $alias           = str_replace("--", "", $attribute->newInstance()->alias);
             $aliases[$alias] = $alias;
         }
 
         return $aliases;
     }
-
 
     public function getCommandIcon(): string
     {
@@ -89,7 +88,7 @@ trait CommandAttributeTrait
 
     public function getAvailableEnvironments(): array
     {
-        $envs = [];
+        $envs       = [];
         $attributes = $this->reflector->getAttributes(Environment::class, ReflectionAttribute::IS_INSTANCEOF);
         foreach ($attributes as $attribute) {
             $envs[] = $attribute->newInstance()->environment;
