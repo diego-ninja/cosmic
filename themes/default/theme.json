@@ -1,0 +1,61 @@
+{
+  "name": "default",
+  "version": "1.0.0",
+  "description": "Default Cosmic Terminal Theme",
+  "colors": {
+    "text": "#E5E9F0",
+    "comment": "#EBCB8B",
+    "info": "#81A1C1",
+    "notice": "#8FBCBB",
+    "warning": "#D08770",
+    "error": "#BF616A",
+    "success": "#A3BE8C",
+    "red": "#BF616A",
+    "green": "#A3BE8C",
+    "yellow": "#EBCB8B",
+    "blue": "#81A1C1",
+    "purple": "#B48EAD",
+    "cyan": "#88C0D0",
+    "critical": {
+      "fg": "#BF616A",
+      "options": ["blink"]
+    },
+    "warn": {
+      "fg": "#D08770",
+      "options": ["blink"]
+    },
+    "running": {
+      "fg": "#E5E9F0",
+      "options": ["blink"]
+    }
+  },
+  "icons": {
+    "application": "\uD83D\uDE80",
+    "bullet": "⬡",
+    "success": "⬢",
+    "failure": "⬡"
+  },
+  "styles": {
+    "container" : "w-120 ml-2",
+    "footer" : "w-120 pt-2 ml-2",
+    "emphasis" : "font-bold text-yellow italic",
+    "strong" : "font-bold text-blue",
+    "strike" : "line-through",
+    "hr" : "text-blue",
+    "h1" : "invisible",
+    "heading" : "text-blue pt-1",
+    "language-sh" : "w-120",
+    "language-php" : "w-120",
+    "language-js" : "w-120",
+    "language-sql" : "w-120",
+    "language" : "w-120",
+    "link" : "text-blue underline",
+    "app-icon" : "mr-1",
+    "question" : "text-blue",
+    "default-option" : "font-bold text-blue"
+  },
+  "config": {
+    "icons_enabled": true
+  }
+}
+

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="4"
+    usePhpDocMethodsWithoutMagicCall="true"
+    findUnusedCode="false"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+>
+    <projectFiles>
+	    <directory name="src"/>
+        <directory name="helper"/>
+    </projectFiles>
+    <issueHandlers>
+        <UndefinedConstant errorLevel="suppress"/>
+        <UndefinedFunction errorLevel="suppress"/>
+	    <InternalClass errorLevel="suppress"/>
+        <InternalMethod errorLevel="suppress" />
+    </issueHandlers>
+</psalm>

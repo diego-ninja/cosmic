@@ -1,0 +1,379 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Ninja\Cosmic\Application;
+
+use Closure;
+use DI\Container;
+use InvalidArgumentException;
+use Invoker\Exception\InvocationException;
+use Invoker\Exception\NotCallableException;
+use Invoker\Invoker;
+use Invoker\InvokerInterface;
+use Invoker\ParameterResolver\AssociativeArrayResolver;
+use Invoker\ParameterResolver\Container\ParameterNameContainerResolver;
+use Invoker\ParameterResolver\Container\TypeHintContainerResolver;
+use Invoker\ParameterResolver\ResolverChain;
+use Invoker\ParameterResolver\TypeHintResolver;
+use Ninja\Cosmic\Command\Command;
+use Ninja\Cosmic\Command\CommandInterface;
+use Ninja\Cosmic\Command\EnvironmentAwareInterface;
+use Ninja\Cosmic\Command\Finder\CommandFinder;
+use Ninja\Cosmic\Command\Parser\ExpressionParser;
+use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Event\Lifecycle;
+use Ninja\Cosmic\Reflector\CallableReflector;
+use Ninja\Cosmic\Resolver\HyphenatedInputResolver;
+use Ninja\Cosmic\Terminal\Terminal;
+use NunoMaduro\Collision\Handler;
+use NunoMaduro\Collision\Provider;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use ReflectionException;
+use ReflectionMethod;
+use RuntimeException;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
+use Symfony\Component\Console\Input\Input;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\Output;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Throwable;
+
+final class Application extends \Symfony\Component\Console\Application
+{
+    public const LIFECYCLE_APP_BOOT = 'app.boot';
+    public const LIFECYCLE_APP_SHUTDOWN = 'app.shutdown';
+    public const LIFECYCLE_APP_BUILD = 'app.build';
+    public const LIFECYCLE_APP_INSTALL = 'app.install';
+
+    private ExpressionParser $parser;
+
+    private InvokerInterface $invoker;
+
+    private ?ContainerInterface $container;
+
+    /**
+     * @throws InvocationException
+     * @throws NotCallableException
+     * @throws ReflectionException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function __construct(string $name = 'UNKNOWN', string $version = 'UNKNOWN', ?Container $container = null)
+    {
+        $this->parser = self::createParser();
+        $this->invoker = self::createInvoker();
+
+        $error_handler = new Provider(
+            handler: (new Handler())->setOutput(Terminal::output())
+        );
+        $error_handler->register();
+
+        $this->withContainer($container ?? new Container(), true, true);
+
+        $commands = CommandFinder::find([__DIR__ . "/../Command"]);
+        foreach ($commands as $command_file) {
+            $class_name = get_class_from_file($command_file);
+            $command = $this->container->get($class_name);
+            $command->setApplication($this);
+            $this->registerCommand($command);
+        }
+
+        parent::__construct($name, $version);
+    }
+
+    public function run(?InputInterface $input = null, ?OutputInterface $output = null): int
+    {
+        if ($output === null) {
+            $output = Terminal::output();
+        }
+
+        Lifecycle::dispatchLifecycleEvent(self::LIFECYCLE_APP_BOOT, ["app" => $this]);
+        $execution_result = parent::run($input, $output);
+        Lifecycle::dispatchLifecycleEvent(
+            event_name: self::LIFECYCLE_APP_SHUTDOWN,
+            event_args: ["app" => $this, "execution_result" => $execution_result]
+        );
+
+        return $execution_result;
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function doRunCommand(SymfonyCommand $command, InputInterface $input, OutputInterface $output): int
+    {
+        Lifecycle::dispatchLifecycleEvent(
+            event_name: CommandInterface::LIFECYCLE_COMMAND_RUN,
+            event_args: ["command" => $command]
+        );
+
+        try {
+            $result = parent::doRunCommand($command, $input, $output);
+        } catch (Throwable $e) {
+            Lifecycle::dispatchLifecycleEvent(
+                event_name: CommandInterface::LIFECYCLE_COMMAND_FAILURE,
+                event_args: ["command" => $command, "exception" => $e]
+            );
+            throw $e;
+        }
+
+        if ($result === SymfonyCommand::SUCCESS) {
+            Lifecycle::dispatchLifecycleEvent(
+                event_name: CommandInterface::LIFECYCLE_COMMAND_SUCCESS,
+                event_args: ["command" => $command]
+            );
+        } else {
+            Lifecycle::dispatchLifecycleEvent(
+                event_name: CommandInterface::LIFECYCLE_COMMAND_FAILURE,
+                event_args: ["command" => $command]
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * @throws InvocationException
+     * @throws ReflectionException
+     * @throws NotCallableException
+     */
+    public function registerCommand(CommandInterface $command): Application
+    {
+
+        if (is_subclass_of($command, EnvironmentAwareInterface::class)) {
+            /** @var EnvironmentAwareInterface & CommandInterface $command */
+            return $this->registerCommandInEnvironment($command, Env::get("APP_ENV"));
+        }
+
+        $this->command($command->getSignature(), $command::class)
+            ->setName($command->getCommandName())
+            ->setHidden($command->isHidden())
+            ->setDecorated($command->isDecorated())
+            ->descriptions($command->getCommandDescription(), $command->getArgumentDescriptions())
+            ->defaults($command->getDefaults())
+            ->setAliases($command->getAliases())
+            ->setIcon($command->getCommandIcon())
+            ->setApplication($this);
+
+        return $this;
+    }
+
+    /**
+     * @throws NotCallableException
+     * @throws InvocationException
+     * @throws ReflectionException
+     */
+    public function registerCommandInEnvironment(
+        CommandInterface & EnvironmentAwareInterface $command,
+        string $environment
+    ): Application {
+        if ($command->isAvailableIn($environment)) {
+            $this->command($command->getSignature(), $command::class)
+                ->setName($command->getCommandName())
+                ->setHidden($command->isHidden())
+                ->setDecorated($command->isDecorated())
+                ->descriptions($command->getCommandDescription(), $command->getArgumentDescriptions())
+                ->defaults($command->getDefaults())
+                ->setAliases($command->getAliases())
+                ->setIcon($command->getCommandIcon())
+                ->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    public function withContainer(
+        ContainerInterface $container,
+        bool $byTypeHint = false,
+        bool $byParameterName = false
+    ): void {
+        $this->container = $container;
+
+        $resolver = self::createParameterResolver();
+        if ($byTypeHint) {
+            $resolver->appendResolver(new TypeHintContainerResolver($container));
+        }
+        if ($byParameterName) {
+            $resolver->appendResolver(new ParameterNameContainerResolver($container));
+        }
+
+        $this->invoker = new Invoker($resolver, $container);
+    }
+
+    /**
+     * @throws NotCallableException
+     * @throws InvocationException
+     * @throws ReflectionException
+     */
+    public function command($expression, $callable, array $aliases = []): Command
+    {
+        $this->assertCallableIsValid($callable);
+
+        $command_function = function (InputInterface $input, OutputInterface $output) use ($callable) {
+            $parameters = array_merge(
+                [
+                    'input' => $input,
+                    'output' => $output,
+                    InputInterface::class => $input,
+                    OutputInterface::class => $output,
+                    Input::class => $input,
+                    Output::class => $output,
+                    SymfonyStyle::class => new SymfonyStyle($input, $output),
+                ],
+                $input->getArguments(),
+                $input->getOptions()
+            );
+
+            if ($callable instanceof Closure) {
+                $callable = $callable->bindTo($this, $this);
+            }
+
+            try {
+                return $this->invoker->call($callable, $parameters);
+            } catch (InvocationException $e) {
+                throw new RuntimeException(
+                    sprintf(
+                        "Impossible to call the '%s' command: %s",
+                        $input->getFirstArgument(),
+                        $e->getMessage()
+                    ),
+                    0,
+                    $e
+                );
+            }
+        };
+
+        $command = $this->createCommand($expression, $command_function);
+        $command->setAliases($aliases);
+
+        $command->defaults($this->defaultsViaReflection($command, $callable));
+
+        $this->add($command);
+
+        return $command;
+    }
+
+    private function createCommand($expression, callable $callable): Command
+    {
+        $result = $this->parser->parse($expression);
+
+        $command = new Command($result['name']);
+        $command->getDefinition()->addArguments($result['arguments']);
+        $command->getDefinition()->addOptions($result['options']);
+
+        $command->setCode($callable);
+        $command->setApplication($this);
+
+        return $command;
+    }
+
+
+
+    private static function createInvoker(): InvokerInterface
+    {
+        return new Invoker(self::createParameterResolver());
+    }
+
+    private static function createParser(): ExpressionParser
+    {
+        return new ExpressionParser();
+    }
+
+    private static function createParameterResolver(): ResolverChain
+    {
+        return new ResolverChain([
+            new AssociativeArrayResolver(),
+            new HyphenatedInputResolver(),
+            new TypeHintResolver(),
+        ]);
+    }
+
+    /**
+     * @throws NotCallableException
+     * @throws ReflectionException
+     */
+    private function defaultsViaReflection($command, $callable): array
+    {
+        if (! is_callable($callable)) {
+            return [];
+        }
+
+        $function = CallableReflector::create($callable);
+
+        $definition = $command->getDefinition();
+
+        $defaults = [];
+
+        foreach ($function->getParameters() as $parameter) {
+            if (! $parameter->isDefaultValueAvailable()) {
+                continue;
+            }
+
+            $parameter_name = $parameter->name;
+            $hyphenated_case_name = $this->fromCamelCase($parameter_name);
+
+            if ($definition->hasArgument($hyphenated_case_name) || $definition->hasOption($hyphenated_case_name)) {
+                $parameter_name = $hyphenated_case_name;
+            }
+
+            if (! $definition->hasArgument($parameter_name) && ! $definition->hasOption($parameter_name)) {
+                continue;
+            }
+
+            $defaults[$parameter_name] = $parameter->getDefaultValue();
+        }
+
+        return $defaults;
+    }
+
+
+    /**
+     * @throws ReflectionException
+     */
+    private function assertCallableIsValid($callable): void
+    {
+        if ($this->container) {
+            return;
+        }
+
+        if ($this->isStaticCallToNonStaticMethod($callable)) {
+            [$class, $method] = $callable;
+
+            $message = "['{$class}', '{$method}'] is not a callable because '{$method}' is a static method.";
+            $message .= " Either use [new {$class}(), '{$method}'] or configure a dependency injection container that supports auto wiring like PHP-DI."; //phpcs:ignore
+
+            throw new InvalidArgumentException($message);
+        }
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    private function isStaticCallToNonStaticMethod($callable): bool
+    {
+        if (is_array($callable) && is_string($callable[0])) {
+            [$class, $method] = $callable;
+            $reflection = new ReflectionMethod($class, $method);
+
+            return ! $reflection->isStatic();
+        }
+
+        return false;
+    }
+
+    private function fromCamelCase($input): string
+    {
+        preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
+        $ret = $matches[0];
+
+        foreach ($ret as &$match) {
+            $match = $match === strtoupper($match) ? strtolower($match) : lcfirst($match);
+        }
+
+        return implode('-', $ret);
+    }
+}
