@@ -1,0 +1,61 @@
+{
+  "name": "innsmouth",
+  "version": "1.0.0",
+  "description": "Lovecraftian Terminal Theme",
+  "colors": {
+    "text": "#FEFFFC",
+    "comment": "#96CA4B",
+    "info": "#749441",
+    "notice": "#246B73",
+    "warning": "#D08770",
+    "error": "#854731",
+    "success": "#96CA4B",
+    "red": "#854731",
+    "green": "#96CA4B",
+    "yellow": "#E5DEBB",
+    "blue": "#81A1C1",
+    "purple": "#3B4251",
+    "cyan": "#88C0D0",
+    "critical": {
+      "fg": "#854731",
+      "options": ["blink"]
+    },
+    "warn": {
+      "fg": "#CEA061",
+      "options": ["blink"]
+    },
+    "running": {
+      "fg": "#FEFFFC",
+      "options": ["blink"]
+    }
+  },
+  "icons": {
+    "application": "\uD83E\uDD91",
+    "bullet": "⬢",
+    "success": "⬡",
+    "failure": "⬡"
+  },
+  "styles": {
+    "container" : "w-120 ml-2",
+    "footer" : "w-120 pt-2 ml-2",
+    "emphasis" : "font-bold text-yellow italic",
+    "strong" : "font-bold text-blue",
+    "strike" : "line-through",
+    "hr" : "text-blue",
+    "h1" : "invisible",
+    "heading" : "text-blue pt-1",
+    "language-sh" : "w-120",
+    "language-php" : "w-120",
+    "language-js" : "w-120",
+    "language-sql" : "w-120",
+    "language" : "w-120",
+    "link" : "text-blue underline",
+    "app-icon" : "mr-1",
+    "question" : "text-blue",
+    "default-option" : "font-bold text-blue"
+  },
+  "config": {
+    "icons_enabled": true
+  }
+}
+

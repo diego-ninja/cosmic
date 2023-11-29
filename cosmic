@@ -26,11 +26,8 @@ $dotenv =  file_exists(getcwd() . '/.env') ?
 $dotenv->safeLoad();
 
 try {
-    Terminal::withTheme(
-        Theme::fromThemeFolder(
-            sprintf("%s/themes/%s", __DIR__, Env::get("APP_THEME", "default"))
-        )
-    );
+    Terminal::loadThemes(Env::basePath("themes"))
+        ->enableTheme(Env::get("APP_THEME", "default"));
 
     $app = new Application(
         name: sprintf("%s %s", Terminal::getTheme()->getAppIcon(), Env::get("APP_NAME")),
