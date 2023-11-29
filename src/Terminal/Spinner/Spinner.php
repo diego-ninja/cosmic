@@ -75,6 +75,8 @@ class Spinner
     private function loopSpinnerFrames(): void
     {
         print self::BLINK_OFF;
+
+        /** @phpstan-ignore-next-line */
         while (true) {
             foreach ($this->getSpinnerFrames() as $frame) {
                 $parsed_frame = Terminal::render(
