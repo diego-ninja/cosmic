@@ -11,7 +11,7 @@ use RuntimeException;
 
 class Spinner
 {
-    public const DEFAULT_SPINNER_STYLE    = 'dots';
+    public const DEFAULT_SPINNER_STYLE    = 'dots13';
     public const DEFAULT_SPINNER_INTERVAL = 1000;
     public const DEFAULT_SPINNER_PADDING  = 2;
     public const BLINK_OFF                = "\e[?25l";

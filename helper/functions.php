@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Symfony\Component\Process\Process;
 
 if (!function_exists('snakeize')) {
@@ -55,9 +56,7 @@ if (!function_exists('find_binary')) {
             }
         }
 
-        throw new RuntimeException(
-            sprintf("%s binary not found. Please install it before continue.", $binary)
-        );
+        throw BinaryNotFoundException::withBinary($binary);
     }
 }
 
@@ -102,5 +101,27 @@ if (!function_exists("git_version")) {
         }
 
         return trim($process->getOutput());
+    }
+}
+
+if (!function_exists("is_root")) {
+    function is_root(): bool
+    {
+        return posix_getuid() === 0;
+    }
+}
+
+if (!function_exists('sudo')) {
+    function sudo(string $command, ?string $sudo_passwd = null): string
+    {
+        if (!is_root()) {
+            if (is_null($sudo_passwd)) {
+                return sprintf("pkexec --disable-internal-agent %s", $command);
+            }
+
+            return sprintf("echo %s | sudo -S %s", $sudo_passwd, $command);
+        }
+
+        return $command;
     }
 }

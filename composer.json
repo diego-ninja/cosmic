@@ -55,6 +55,9 @@
             "helper/constants.php"
         ]
     },
+    "bin": [
+        "cosmic"
+    ],
     "config": {
         "allow-plugins": {
             "captainhook/plugin-composer": true,

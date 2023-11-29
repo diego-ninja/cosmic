@@ -49,6 +49,13 @@ class Env
         return $dir ? sprintf("%s/%s", $base_path, $dir) : $base_path;
     }
 
+    public static function buildPath(?string $dir = null): ?string
+    {
+        $default    = self::basePath("builds");
+        $build_path = is_phar() ? $default : self::get("BUILD_PATH", $default);
+        return $dir ? sprintf("%s/%s", $build_path, $dir) : $build_path;
+    }
+
     public static function helpPath(?string $dir = null): ?string
     {
         $default   = self::basePath("docs/commands");
@@ -61,9 +68,14 @@ class Env
         return self::get("APP_DEBUG", false);
     }
 
-    public static function getVersion(): string
+    public static function appVersion(): string
     {
         return git_version(self::basePath()) ?? self::get("APP_VERSION", "unreleased");
+    }
+
+    public static function appName(): string
+    {
+        return self::get("APP_NAME", "cosmic");
     }
 
     public static function get(string $key, mixed $default = null): mixed

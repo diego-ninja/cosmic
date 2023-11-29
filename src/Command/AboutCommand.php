@@ -35,7 +35,7 @@ final class AboutCommand extends CosmicCommand
                     </div>
                     ",
                 Env::get("APP_NAME"),
-                Env::getVersion()
+                Env::appVersion()
             )
         );
         render(

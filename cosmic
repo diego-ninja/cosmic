@@ -3,11 +3,8 @@
 
 use Ninja\Cosmic\Application\Application;
 use Ninja\Cosmic\Config\Env;
-use Ninja\Cosmic\Terminal\Spinner\ProcessSpinner;
-use Ninja\Cosmic\Terminal\Spinner\Spinner;
 use Ninja\Cosmic\Terminal\Terminal;
 use Ninja\Cosmic\Terminal\Theme\Theme;
-use Symfony\Component\Process\Process;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -20,7 +17,7 @@ Terminal::withTheme($theme);
 
 $app = new Application(
     name: sprintf("%s %s", Terminal::getTheme()->getAppIcon(), Env::get("APP_NAME")),
-    version: Env::getVersion()
+    version: Env::appVersion()
 );
 
 $app->setAutoExit(false);
