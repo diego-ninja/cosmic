@@ -73,14 +73,7 @@ final class Application extends \Symfony\Component\Console\Application
         $error_handler->register();
 
         $this->withContainer($container ?? new Container(), true, true);
-
-        $commands = CommandFinder::find([__DIR__ . "/../Command"]);
-        foreach ($commands as $command_file) {
-            $class_name = get_class_from_file($command_file);
-            $command    = $this->container->get($class_name);
-            $command->setApplication($this);
-            $this->registerCommand($command);
-        }
+        $this->registerCommands([__DIR__ . "/../Command"]);
 
         parent::__construct($name, $version);
     }
@@ -167,7 +160,7 @@ final class Application extends \Symfony\Component\Console\Application
      * @throws InvocationException
      * @throws ReflectionException
      */
-    public function registerCommandInEnvironment(
+    private function registerCommandInEnvironment(
         CommandInterface & EnvironmentAwareInterface $command,
         string $environment
     ): Application {
@@ -181,6 +174,26 @@ final class Application extends \Symfony\Component\Console\Application
                 ->setAliases($command->getAliases())
                 ->setIcon($command->getCommandIcon())
                 ->setApplication($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @throws NotCallableException
+     * @throws NotFoundExceptionInterface
+     * @throws InvocationException
+     * @throws ReflectionException
+     * @throws ContainerExceptionInterface
+     */
+    public function registerCommands(array $command_paths): Application
+    {
+        $commands = CommandFinder::find($command_paths);
+        foreach ($commands as $command_file) {
+            $class_name = get_class_from_file($command_file);
+            $command    = $this->container->get($class_name);
+            $command->setApplication($this);
+            $this->registerCommand($command);
         }
 
         return $this;

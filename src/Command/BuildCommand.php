@@ -15,9 +15,9 @@ use Ninja\Cosmic\Config\Env;
 use Ninja\Cosmic\Notifier\NotifiableInterface;
 use ReflectionException;
 
-#[Icon("⚒️ ")]
+#[Icon("📦")]
 #[Name("build")]
-#[Description("Build <info>{env.app_name}</info> binary into builds/ directory")]
+#[Description("Build <info>{env.app_name}</info> binary into <comment>builds</comment> directory")]
 #[Signature("build [--env=]")]
 #[Option("--env", "The .env file to use for building the binary. Use <info>all</info> to compile all available .env files.", ALL_OPTION)] // phpcs:ignore
 #[Alias("app:build")]

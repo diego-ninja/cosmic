@@ -9,7 +9,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 interface ThemeLoaderInterface
 {
     public function load(OutputInterface $output): void;
-    public function addTheme(ThemeInterface $theme): void;
-    public function enableTheme(string $themeName): void;
+    public function addTheme(ThemeInterface $theme): self;
+    public function enableTheme(string $themeName): self;
     public function getEnabledTheme(): ThemeInterface;
+    public function loadDirectory(string $directory): self;
+
 }

@@ -78,6 +78,34 @@ class Env
         return self::get("APP_NAME", "cosmic");
     }
 
+    public static function dump(): array
+    {
+        $ret = [];
+        foreach ($_ENV as $key => $value) {
+            $var["key"]   = $key;
+            $var["value"] = self::get($key);
+            $ret[$key]    = $var;
+        }
+
+        $ret["APP_NAME"]["value"] = self::appName();
+
+        $ret["BASE_PATH"]["key"]   = "BASE_PATH";
+        $ret["BASE_PATH"]["value"] = self::basePath();
+
+        $ret["BUILD_PATH"]["key"]   = "BUILD_PATH";
+        $ret["BUILD_PATH"]["value"] = self::buildPath();
+
+        $ret["COMMAND_HELP_PATH"]["key"]   = "COMMAND_HELP_PATH";
+        $ret["COMMAND_HELP_PATH"]["value"] = self::helpPath();
+
+        $ret["APP_VERSION"]["key"]   = "APP_VERSION";
+        $ret["APP_VERSION"]["value"] = self::appVersion();
+
+        sort($ret);
+
+        return $ret;
+    }
+
     public static function get(string $key, mixed $default = null): mixed
     {
         /** @psalm-suppress UndefinedFunction */

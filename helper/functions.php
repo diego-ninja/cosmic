@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Ninja\Cosmic\Config\Env;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Symfony\Component\Process\Process;
 
@@ -38,7 +39,11 @@ if (!function_exists('value')) {
 if (!function_exists('is_phar')) {
     function is_phar(): bool
     {
-        return Phar::running() !== '';
+        if (Env::get("PHAR_ENABLED", true)) {
+            return Phar::running() !== '';
+        }
+
+        return false;
     }
 }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal;
 
+use JsonException;
 use Ninja\Cosmic\Terminal\Theme\ThemeInterface;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoader;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoaderInterface;
@@ -32,20 +33,34 @@ final class Terminal
         return self::$instance;
     }
 
-    public static function withTheme(ThemeInterface $theme): void
+    public static function withTheme(ThemeInterface $theme): self
     {
         self::getInstance()->addTheme($theme);
         self::getInstance()->enableTheme($theme->getName());
+        return self::getInstance();
     }
 
-    public static function addTheme(ThemeInterface $theme): void
+    /**
+     * @throws JsonException
+     */
+    public static function loadThemes(string $directory): self
+    {
+        $instance = self::getInstance();
+        self::$themeLoader->loadDirectory($directory);
+
+        return $instance;
+    }
+
+    public static function addTheme(ThemeInterface $theme): self
     {
         self::$themeLoader->addTheme($theme);
+        return self::getInstance();
     }
 
-    public static function enableTheme(string $themeName): void
+    public static function enableTheme(string $themeName): self
     {
         self::$themeLoader->enableTheme($themeName);
+        return self::getInstance();
     }
 
     public static function getTheme(): ThemeInterface

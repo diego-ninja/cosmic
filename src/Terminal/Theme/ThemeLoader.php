@@ -21,11 +21,27 @@ final class ThemeLoader implements ThemeLoaderInterface, ThemeInterface
         $this->loadStyles($output);
     }
 
-    public function addTheme(ThemeInterface $theme): void
+    /**
+     * @throws \JsonException
+     */
+    public function loadDirectory(string $directory): ThemeLoaderInterface
+    {
+        $themes = [];
+        foreach (glob($directory . "/*") as $themeFolder) {
+            $theme = Theme::fromThemeFolder($themeFolder);
+            $this->addTheme($theme);
+        }
+
+        return $this;
+    }
+
+    public function addTheme(ThemeInterface $theme): self
     {
         if (!isset($this->themes[$theme->getName()])) {
             $this->themes[$theme->getName()] = $theme;
         }
+
+        return $this;
     }
 
     public function getEnabledTheme(): ThemeInterface
@@ -33,7 +49,7 @@ final class ThemeLoader implements ThemeLoaderInterface, ThemeInterface
         return $this->theme;
     }
 
-    public function enableTheme(string $themeName): void
+    public function enableTheme(string $themeName): self
     {
         if (!isset($this->themes[$themeName])) {
             throw new InvalidArgumentException(sprintf("Theme %s not found", $themeName));
@@ -41,6 +57,8 @@ final class ThemeLoader implements ThemeLoaderInterface, ThemeInterface
 
         $this->theme = $this->themes[$themeName];
         $this->load($this->output);
+
+        return $this;
     }
 
     private function loadColors(OutputInterface $output): void

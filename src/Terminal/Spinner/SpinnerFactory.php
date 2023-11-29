@@ -36,6 +36,8 @@ class SpinnerFactory extends Spinner
                 usleep(1000);
             }
 
+            print $process->getErrorOutput();
+
             return $process->isSuccessful();
         });
     }
