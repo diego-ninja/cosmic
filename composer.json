@@ -15,7 +15,6 @@
         "ext-mbstring": "*",
         "ext-pcntl": "*",
         "ext-posix": "*",
-        "jc21/clitable": "^1.3",
         "jolicode/jolinotif": "^2",
         "nunomaduro/collision": "^7",
         "nunomaduro/termwind": "^1.15",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ebea336ac6fc457b03a68cea239b3cfd",
+    "content-hash": "edf098dee7cd2ee51ae0b2dec282cb9b",
     "packages": [
         {
             "name": "brick/math",
@@ -193,56 +193,6 @@
                 }
             ],
             "time": "2023-11-12T22:16:48+00:00"
-        },
-        {
-            "name": "jc21/clitable",
-            "version": "1.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jc21/clitable.git",
-                "reference": "6de41c33f9ddd1e8a15d6607054d7ea992abf52a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jc21/clitable/zipball/6de41c33f9ddd1e8a15d6607054d7ea992abf52a",
-                "reference": "6de41c33f9ddd1e8a15d6607054d7ea992abf52a",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "victorjonsson/markdowndocs": "dev-master"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "jc21": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-1-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Jamie Curnow",
-                    "email": "jc@jc21.com"
-                }
-            ],
-            "description": "CLI Table output for PHP scripts",
-            "homepage": "https://github.com/jc21/clitable",
-            "keywords": [
-                "cli",
-                "command",
-                "line",
-                "table"
-            ],
-            "support": {
-                "issues": "https://github.com/jc21/clitable/issues",
-                "source": "https://github.com/jc21/clitable/tree/1.3"
-            },
-            "time": "2023-10-08T23:00:01+00:00"
         },
         {
             "name": "jolicode/jolinotif",
@@ -5106,12 +5056,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "01fd41b19678c11355e77cfb63c2b27f6bfe3b1e"
+                "reference": "ad2e43ef644f1c92e021f7106b2a9010bdc1423b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/01fd41b19678c11355e77cfb63c2b27f6bfe3b1e",
-                "reference": "01fd41b19678c11355e77cfb63c2b27f6bfe3b1e",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/ad2e43ef644f1c92e021f7106b2a9010bdc1423b",
+                "reference": "ad2e43ef644f1c92e021f7106b2a9010bdc1423b",
                 "shasum": ""
             },
             "conflict": {
@@ -5448,7 +5398,7 @@
                 "october/cms": "<1.0.469|==1.0.469|==1.0.471|==1.1.1",
                 "october/october": "<=3.4.4",
                 "october/rain": "<1.0.472|>=1.1,<1.1.2",
-                "october/system": "<1.0.476|>=1.1,<1.1.12|>=2,<2.2.34|>=3,<3.0.66",
+                "october/system": "<1.0.476|>=1.1,<1.1.12|>=2,<2.2.34|>=3,<3.5.2",
                 "omeka/omeka-s": "<4.0.3",
                 "onelogin/php-saml": "<2.10.4",
                 "oneup/uploader-bundle": "<1.9.3|>=2,<2.1.5",
@@ -5806,7 +5756,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-11-28T19:04:15+00:00"
+            "time": "2023-11-29T22:04:15+00:00"
         },
         {
             "name": "sebastian/cli-parser",
