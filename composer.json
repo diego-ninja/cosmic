@@ -51,6 +51,11 @@
             "helper/constants.php"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Ninja\\Cosmic\\Tests\\": "tests/"
+        }
+    },
     "bin": [
         "cosmic"
     ],

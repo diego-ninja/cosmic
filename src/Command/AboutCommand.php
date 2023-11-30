@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Command;
 
-use jc21\CliTable;
 use Ninja\Cosmic\Command\Attribute\Alias;
 use Ninja\Cosmic\Command\Attribute\Decorated;
 use Ninja\Cosmic\Command\Attribute\Description;
@@ -12,6 +11,8 @@ use Ninja\Cosmic\Command\Attribute\Icon;
 use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Terminal\Table\Manipulator\BoolManipulator;
+use Ninja\Cosmic\Terminal\Table\Table;
 use Ninja\Cosmic\Terminal\Terminal;
 
 use function Termwind\render;
@@ -78,13 +79,13 @@ final class AboutCommand extends CosmicCommand
 
     private function renderEnvironmentVariables(): void
     {
-        $data  = Env::dump();
-        $table = new CliTable();
-        $table->setTableColor('white');
-        $table->setHeaderColor('yellow');
-        $table->addField(fieldName: 'Variable', fieldKey: 'key', color: 'green');
-        $table->addField(fieldName: 'Value', fieldKey: 'value');
-        $table->injectData($data);
+        $table = (new Table())
+            ->setTableColor('white')
+            ->setHeaderColor('yellow')
+            ->addField(fieldName: 'Variable', fieldKey: 'key', color: 'green')
+            ->addField(fieldName: 'Value', fieldKey: 'value', manipulator: BoolManipulator::TYPE)
+            ->injectData(Env::dump());
+
         $rendered = $table->get();
 
         Terminal::footer()->writeln("");
