@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Terminal;
 
 use JsonException;
+use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
+use Ninja\Cosmic\Terminal\Table\Table;
+use Ninja\Cosmic\Terminal\Table\TableConfig;
 use Ninja\Cosmic\Terminal\Theme\ThemeInterface;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoader;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoaderInterface;
 use ReflectionException;
+use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
+
+use Symfony\Component\Console\Output\OutputInterface;
 
 use function Termwind\terminal;
 
@@ -25,6 +31,7 @@ final class Terminal
     private static ThemeLoaderInterface $themeLoader;
 
     private static array $sections = [];
+
     public static function getInstance(): self
     {
         if (!isset(self::$instance)) {
@@ -159,6 +166,30 @@ final class Terminal
 
         $answer = (new Question())->ask($question, false, $default, ["yes", "no"]);
         return $answer === 'yes' || $answer === 'y';
+    }
+
+    public static function table(array $header, array $data, ?OutputInterface $output = null): void
+    {
+        $table = new Table(
+            data: $data,
+            columns: [],
+            config: new TableConfig(self::getTheme()->getConfig("table"))
+        );
+
+        foreach ($header as $key => $value) {
+            $table->addColumn(new TableColumn(name: $value, key: $key));
+        }
+
+        if ($output) {
+            $output->writeln($table->render());
+        } else {
+            self::output()->writeln($table->render());
+        }
+    }
+
+    public static function color(string $colorName): OutputFormatterStyleInterface
+    {
+        return self::output()->getFormatter()->getStyle($colorName);
     }
 
     private function __construct(private readonly ConsoleOutput $output)

@@ -130,3 +130,28 @@ if (!function_exists('sudo')) {
         return $command;
     }
 }
+
+if (!function_exists('mask')) {
+    function mask(string $string): string
+    {
+        $length = strlen($string);
+        $mask   = str_repeat('*', $length);
+        return substr_replace($string, $mask, 0, $length);
+    }
+}
+
+if (!function_exists('pluralize')) {
+    function pluralize(string $item): string
+    {
+        $lastChar = strtolower($item[strlen($item) - 1]);
+        if ($lastChar === 's') {
+            return $item . 'es';
+        }
+
+        if ($lastChar === 'y') {
+            return substr($item, 0, -1) . 'ies';
+        }
+
+        return $item . 's';
+    }
+}

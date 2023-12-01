@@ -11,8 +11,10 @@ use Ninja\Cosmic\Command\Attribute\Icon;
 use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
 use Ninja\Cosmic\Terminal\Table\Manipulator\BoolManipulator;
 use Ninja\Cosmic\Terminal\Table\Table;
+use Ninja\Cosmic\Terminal\Table\TableConfig;
 use Ninja\Cosmic\Terminal\Terminal;
 
 use function Termwind\render;
@@ -79,17 +81,15 @@ final class AboutCommand extends CosmicCommand
 
     private function renderEnvironmentVariables(): void
     {
-        $table = (new Table())
-            ->setTableColor('white')
-            ->setHeaderColor('yellow')
-            ->addField(fieldName: 'Variable', fieldKey: 'key', color: 'green')
-            ->addField(fieldName: 'Value', fieldKey: 'value', manipulator: BoolManipulator::TYPE)
-            ->injectData(Env::dump());
+        $tableConfig = new TableConfig(Terminal::getTheme()->getConfig("table"));
 
-        $rendered = $table->get();
+        $table = (new Table(data: Env::dump(), columns: [], config: $tableConfig))
+            ->addColumn(new TableColumn(name: 'ENV VAR', key: 'key', color: 'grey'))
+            ->addColumn((new TableColumn(name: 'VALUE', key: 'value'))->addManipulator(new BoolManipulator()));
 
         Terminal::footer()->writeln("");
-        Terminal::footer()->writeln($rendered);
+
+        $table->display(Terminal::footer());
     }
 
     private function displayLogo(): void

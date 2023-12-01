@@ -101,6 +101,11 @@ class Env
         $ret["APP_VERSION"]["key"]   = "APP_VERSION";
         $ret["APP_VERSION"]["value"] = self::appVersion();
 
+        if (self::get("SUDO_PASSWORD", "") !== "") {
+            $ret["SUDO_PASSWORD"]["key"]   = "SUDO_PASSWORD";
+            $ret["SUDO_PASSWORD"]["value"] = mask(self::get("SUDO_PASSWORD", ""));
+        }
+
         sort($ret);
 
         return $ret;

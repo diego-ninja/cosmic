@@ -10,6 +10,9 @@
     "warning": "#cb4b16",
     "error": "#dc322f",
     "success": "#859900",
+    "white": "#fdf6e3",
+    "black": "#000000",
+    "grey": "#657b83",
     "red": "#dc322f",
     "green": "#859900",
     "yellow": "#b58900",
@@ -22,10 +25,6 @@
     },
     "warn": {
       "fg": "#cb4b16",
-      "options": ["blink"]
-    },
-    "running": {
-      "fg": "#fdf6e3",
       "options": ["blink"]
     }
   },
