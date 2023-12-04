@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Command;
 
 use Exception;
+use Ninja\Cosmic\Application\Application;
 use Ninja\Cosmic\Command\Attribute\Alias;
 use Ninja\Cosmic\Command\Attribute\Description;
 use Ninja\Cosmic\Command\Attribute\Icon;
@@ -12,6 +13,7 @@ use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Event\Lifecycle;
 use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
 use Symfony\Component\Process\Process;
 
@@ -29,6 +31,11 @@ final class InstallCommand extends CosmicCommand
     public function __invoke(?string $path): int
     {
         $this->executionResult = $this->build() && $this->install($path);
+
+        Lifecycle::dispatchLifecycleEvent(
+            event_name: Application::LIFECYCLE_APP_INSTALL,
+            event_args: ["result" => $this->executionResult, "path" => $path ?? "/usr/local/bin"]
+        );
 
         return $this->exit();
     }
@@ -67,7 +74,7 @@ final class InstallCommand extends CosmicCommand
             $path,
             Env::appName()
         );
-        print $command;
+
         $command = sudo($command, Env::get("SUDO_PASSWORD"));
 
         return SpinnerFactory::for(

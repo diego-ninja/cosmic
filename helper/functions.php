@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Ninja\Cosmic\Config\Env;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Symfony\Component\Process\Process;
 
@@ -39,11 +38,7 @@ if (!function_exists('value')) {
 if (!function_exists('is_phar')) {
     function is_phar(): bool
     {
-        if (Env::get("PHAR_ENABLED", true)) {
-            return Phar::running() !== '';
-        }
-
-        return false;
+        return Phar::running() !== '';
     }
 }
 
@@ -153,5 +148,35 @@ if (!function_exists('pluralize')) {
         }
 
         return $item . 's';
+    }
+}
+
+if (!function_exists('git_config')) {
+    function git_config(string $key): ?string
+    {
+        $command = sprintf("%s config --global --get %s", find_binary("git"), $key);
+        $process = Process::fromShellCommandline($command);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            return null;
+        }
+
+        return trim($process->getOutput());
+    }
+}
+
+if (!function_exists('unzip')) {
+    function unzip(string $file, ?string $destination_path = null): bool
+    {
+        $command = sprintf("%s %s", find_binary("unzip"), $file);
+        if (!is_null($destination_path)) {
+            $command .= sprintf(" -d %s", $destination_path);
+        }
+
+        $process = Process::fromShellCommandline($command);
+        $process->run();
+
+        return $process->isSuccessful();
     }
 }

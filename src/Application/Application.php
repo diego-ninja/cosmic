@@ -130,7 +130,7 @@ final class Application extends \Symfony\Component\Console\Application
             $result = parent::doRunCommand($command, $input, $output);
         } catch (Throwable $e) {
             Lifecycle::dispatchLifecycleEvent(
-                event_name: CommandInterface::LIFECYCLE_COMMAND_FAILURE,
+                event_name: CommandInterface::LIFECYCLE_COMMAND_ERROR,
                 event_args: ["command" => $command, "exception" => $e]
             );
             throw $e;

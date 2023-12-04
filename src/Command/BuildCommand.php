@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Command;
 
+use Ninja\Cosmic\Application\Application;
 use Ninja\Cosmic\Application\Builder\ApplicationBuilder;
 use Ninja\Cosmic\Command\Attribute\Alias;
 use Ninja\Cosmic\Command\Attribute\Description;
@@ -12,6 +13,7 @@ use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Event\Lifecycle;
 use Ninja\Cosmic\Notifier\NotifiableInterface;
 use ReflectionException;
 
@@ -43,6 +45,11 @@ final class BuildCommand extends CosmicCommand implements NotifiableInterface
         } else {
             $this->executionResult = $this->builder->build($env);
         }
+
+        Lifecycle::dispatchLifecycleEvent(
+            event_name: Application::LIFECYCLE_APP_BUILD,
+            event_args: ["result" => $this->executionResult, "env" => $env ?? "all"]
+        );
 
         return $this->exit();
     }

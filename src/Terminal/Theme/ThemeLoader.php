@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Terminal\Theme;
 
 use InvalidArgumentException;
+use JsonException;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -22,14 +23,20 @@ final class ThemeLoader implements ThemeLoaderInterface, ThemeInterface
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function loadDirectory(string $directory): ThemeLoaderInterface
     {
-        $themes = [];
-        foreach (glob($directory . "/*") as $themeFolder) {
-            $theme = Theme::fromThemeFolder($themeFolder);
-            $this->addTheme($theme);
+        foreach (new \DirectoryIterator($directory) as $fileInfo) {
+            if ($fileInfo->isDot()) {
+                continue;
+            }
+
+            if ($fileInfo->isDir()) {
+                $theme = Theme::fromThemeFolder($fileInfo->getPathname());
+                $this->addTheme($theme);
+            }
+
         }
 
         return $this;

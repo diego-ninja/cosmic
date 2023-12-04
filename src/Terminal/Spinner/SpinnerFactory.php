@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Terminal\Spinner;
 
 use Exception;
+use Ninja\Cosmic\Config\Env;
 use Symfony\Component\Process\Process;
 
 class SpinnerFactory extends Spinner
@@ -36,7 +37,9 @@ class SpinnerFactory extends Spinner
                 usleep(1000);
             }
 
-            print $process->getErrorOutput();
+            if (Env::isDebug()) {
+                print $process->getErrorOutput();
+            }
 
             return $process->isSuccessful();
         });

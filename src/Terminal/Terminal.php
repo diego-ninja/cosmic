@@ -14,7 +14,7 @@ use Ninja\Cosmic\Terminal\Theme\ThemeLoaderInterface;
 use ReflectionException;
 use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\StreamableInputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
@@ -85,7 +85,7 @@ final class Terminal
         return self::getInstance()->output;
     }
 
-    public static function input(): InputInterface
+    public static function input(): StreamableInputInterface
     {
         return self::getInstance()->input;
     }
@@ -127,7 +127,8 @@ final class Terminal
         string $message,
         ?bool $hideAnswer = false,
         ?string $default = null,
-        ?iterable $autocomplete = null
+        ?iterable $autocomplete = null,
+        ?bool $decorated = true
     ): ?string {
         if ($autocomplete) {
             $autocomplete_options = $autocomplete;
@@ -144,12 +145,20 @@ final class Terminal
             $option_selector = "";
         }
 
-        $question = sprintf(
-            '<div class="mt-1 ml-2 mr-1"><span class="app-icon">%s</span><span class="question">%s</span> %s</div>',
-            self::getTheme()->getAppIcon(),
-            $message,
-            $option_selector
-        );
+        if ($decorated) {
+            $question = sprintf(
+                '<div class="mt-1 ml-1 mr-1"><span class="app-icon">%s</span><span class="question">%s</span> %s</div>',
+                self::getTheme()->getAppIcon(),
+                $message,
+                $option_selector
+            );
+        } else {
+            $question = sprintf(
+                '<div class="mt-1 ml-1 mr-1"><span class="question">%s</span> %s</div>',
+                $message,
+                $option_selector
+            );
+        }
 
         return (new Question())->ask($question, $hideAnswer, $default, $autocomplete);
     }
@@ -168,7 +177,7 @@ final class Terminal
         }
 
         $question = sprintf(
-            '<div class="mt-1 ml-2 mr-1"><span class="app-icon">%s</span><span class="question">%s</span> %s</div>',
+            '<div class="mt-1 ml-1 mr-1"><span class="app-icon">%s</span><span class="question">%s</span> %s</div>',
             self::getTheme()->getAppIcon(),
             $message,
             $answer_selector ?? "[yes/no]"
@@ -202,7 +211,7 @@ final class Terminal
         return self::output()->getFormatter()->getStyle($colorName);
     }
 
-    private function __construct(private readonly ConsoleOutput $output, private readonly ?InputInterface $input = null)
+    private function __construct(private readonly ConsoleOutput $output, private readonly ?StreamableInputInterface $input = null)
     {
         self::$sections[self::SECTION_HEADER] = $this->output->section();
         self::$sections[self::SECTION_BODY]   = $this->output->section();

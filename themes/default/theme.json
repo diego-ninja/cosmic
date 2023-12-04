@@ -55,7 +55,7 @@
         "link": "text-blue underline",
         "app-icon": "mr-1",
         "question": "text-blue",
-        "default-option": "font-bold text-blue"
+        "default-option": "font-bold text-yellow"
     },
     "config": {
         "icons_enabled": true,

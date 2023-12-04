@@ -8,7 +8,6 @@ use Ninja\Cosmic\Terminal\Helper\QuestionHelper;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\Console\Helper\SymfonyQuestionHelper;
-use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\StreamableInputInterface;
 use Symfony\Component\Console\Question\Question as SymfonyQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -28,12 +27,12 @@ class Question
 
     public static function setStreamableInput(StreamableInputInterface|null $streamableInput): void
     {
-        self::$streamableInput = $streamableInput ?? new ArgvInput();
+        self::$streamableInput = $streamableInput ?? Terminal::input();
     }
 
     public static function getStreamableInput(): StreamableInputInterface
     {
-        return self::$streamableInput ??= new ArgvInput();
+        return self::$streamableInput ??= Terminal::input();
     }
 
     /**
@@ -41,6 +40,8 @@ class Question
      */
     public function ask(string $question, bool $hideAnswer, mixed $defaultAnswer, iterable $autocomplete = null): mixed
     {
+        Termwind::renderUsing(Terminal::footer());
+
         $html = (new HtmlRenderer())->parse($question)->toString();
 
         $question = new SymfonyQuestion($html, $defaultAnswer);
@@ -73,7 +74,7 @@ class Question
 
         return $this->helper->ask(
             self::getStreamableInput(),
-            Termwind::getRenderer(),
+            Terminal::footer(),
             $question,
         );
     }

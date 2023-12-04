@@ -15,6 +15,7 @@
         "ext-mbstring": "*",
         "ext-pcntl": "*",
         "ext-posix": "*",
+        "ext-zip": "*",
         "jolicode/jolinotif": "^2",
         "nunomaduro/collision": "^7",
         "nunomaduro/termwind": "^1.15",

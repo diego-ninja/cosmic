@@ -19,15 +19,15 @@ if (false === in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
     throw new RuntimeException('Unable to find the Composer autoloader.');
 })();
 
-$dotenv =  file_exists(getcwd() . '/.env') ?
-        Dotenv\Dotenv::createMutable(getcwd()) :
-        Dotenv\Dotenv::createMutable(__DIR__);
+$dotenv = is_phar() ?
+    Dotenv\Dotenv::createMutable(Phar::running()) :
+    Dotenv\Dotenv::createMutable(getcwd());
 
 $dotenv->safeLoad();
 
 try {
-    Terminal::loadThemes(Env::basePath("themes"))
-        ->enableTheme(Env::get("APP_THEME", "default"));
+    Terminal::loadThemes(Env::basePath("themes"));
+    Terminal::enableTheme(Env::get("APP_THEME", "default"));
 
     $app = new Application(
         name: sprintf("%s %s", Terminal::getTheme()->getAppIcon(), Env::get("APP_NAME")),
