@@ -7,6 +7,7 @@ namespace Ninja\Cosmic\Config;
 use Dotenv\Repository\Adapter\PutenvAdapter;
 use Dotenv\Repository\RepositoryBuilder;
 use Dotenv\Repository\RepositoryInterface;
+use Ninja\Cosmic\Terminal\Terminal;
 use Phar;
 use PhpOption\Option;
 
@@ -70,7 +71,20 @@ class Env
 
     public static function isDebug(): bool
     {
+        if (Terminal::input()->hasOption("debug")) {
+            return Terminal::input()->getOption("debug") === true;
+        }
+
         return self::get("APP_DEBUG", false);
+    }
+
+    public static function env(): string
+    {
+        if (Terminal::input()->hasOption("env")) {
+            return Terminal::input()->getOption("env");
+        }
+
+        return self::get("APP_ENV", ENV_LOCAL);
     }
 
     public static function appVersion(): string

@@ -114,6 +114,21 @@ final class Application extends \Symfony\Component\Console\Application
             default: null
         ));
 
+        $definition->addOption(new InputOption(
+            name: "env",
+            shortcut: "-e",
+            mode: InputOption::VALUE_OPTIONAL,
+            description: "The environment to use. Overrides the environment set in <info>.env</info> file.",
+            default: ENV_LOCAL
+        ));
+
+        $definition->addOption(new InputOption(
+            name: "debug",
+            shortcut: "-d",
+            mode: InputOption::VALUE_NONE,
+            description: "Enable debug mode."
+        ));
+
         return $definition;
     }
 
@@ -163,7 +178,7 @@ final class Application extends \Symfony\Component\Console\Application
 
         if (is_subclass_of($command, EnvironmentAwareInterface::class)) {
             /** @var EnvironmentAwareInterface & CommandInterface $command */
-            return $this->registerCommandInEnvironment($command, Env::get("APP_ENV"));
+            return $this->registerCommandInEnvironment($command, Env::env());
         }
 
         $this->command($command->getSignature(), $command::class)
