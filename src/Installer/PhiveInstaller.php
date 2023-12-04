@@ -11,6 +11,9 @@ use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
+use function Cosmic\find_binary;
+use function Cosmic\sudo;
+
 class PhiveInstaller extends AbstractInstaller
 {
     public const PHIVE_INSTALLATION_PATH = "/usr/local/bin/phive";

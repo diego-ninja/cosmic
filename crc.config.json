@@ -2,7 +2,8 @@
   "symbol-whitelist" : [
     "null", "true", "false",
     "static", "self", "parent",
-    "array", "string", "int", "float", "bool", "iterable", "callable", "void", "object", "mixed", "never", "app", "env","go", "SWOOLE_HOOK_ALL", "is_docker", "is_phar", "GLOB_BRACE",
+    "array", "string", "int", "float", "bool", "iterable", "callable", "void", "object", "mixed", "never", "app", "env","go", "SWOOLE_HOOK_ALL", "GLOB_BRACE",
+    "find_binary", "is_root", "get_namespace_from_file",
     "Swoole\\Coroutine",
     "Swoole\\Runtime",
     "Swoole\\Coroutine\\run",
@@ -12,8 +13,7 @@
     "Swoole\\Database\\PDOProxy",
     "value",
     "PhpOption\\Option",
-    "Psr\\Container\\ContainerInterface",
-    "Silly\\Application"
+    "Psr\\Container\\ContainerInterface"
 
   ],
   "php-core-extensions" : [

@@ -6,6 +6,8 @@ namespace Ninja\Cosmic\Event\Dto;
 
 use Ramsey\Uuid\UuidInterface;
 
+use function Cosmic\snakeize;
+
 final class LifecycleEventArgs
 {
     public function __construct(
