@@ -98,7 +98,7 @@ class Table
 
         $response = '';
 
-        $screenWidth = trim(exec("tput cols"));
+        $screenWidth = \Termwind\terminal()->width();
 
         // Idea here is we're column the accumulated length of the data
         // Then adding the quantity of column lengths to accommodate for the extra characters
@@ -106,8 +106,8 @@ class Table
         $dataWidth = mb_strlen($this->getTableTop($columnLengths)) + count($columnLengths);
 
         // Only try and center when content is less than available space
-        if ($this->config->getCenterContent() && (($dataWidth / 2) < $screenWidth)) {
-            $padding = str_repeat(' ', (int)($screenWidth - ($dataWidth / 2)) / 2);
+        if ((($dataWidth / 2) < $screenWidth) && $this->config->getCenterContent()) {
+            $padding = str_repeat(' ', ($screenWidth - ($dataWidth / 2)) / 2);
         } else {
             $padding = str_repeat(' ', $this->config->getPadding());
         }
