@@ -15,6 +15,8 @@ use RuntimeException;
 use Symfony\Component\Process\Process;
 use Throwable;
 
+use function Cosmic\find_binary;
+
 class BoxCompiler implements CompilerInterface
 {
     /**

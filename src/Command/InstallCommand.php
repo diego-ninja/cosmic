@@ -17,6 +17,9 @@ use Ninja\Cosmic\Event\Lifecycle;
 use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
 use Symfony\Component\Process\Process;
 
+use function Cosmic\find_binary;
+use function Cosmic\sudo;
+
 #[Icon("🚚")]
 #[Name("install")]
 #[Description("Install <info>{env.app_name}</info> binary into desired path.")]

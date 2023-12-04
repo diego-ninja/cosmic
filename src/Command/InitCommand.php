@@ -19,10 +19,12 @@ use Phar;
 use ReflectionException;
 use Symfony\Component\Process\Process;
 use Termwind\Termwind;
-
 use ZipArchive;
 
 use function Termwind\render;
+use function Cosmic\is_phar;
+use function Cosmic\git_config;
+use function Cosmic\unzip;
 
 #[Icon("🛠️ ")]
 #[Name("init")]
@@ -168,6 +170,9 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         );
     }
 
+    /**
+     * @throws Exception
+     */
     private function renameApplication(): bool
     {
         $command = sprintf(

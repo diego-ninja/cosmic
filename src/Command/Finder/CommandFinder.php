@@ -7,6 +7,8 @@ namespace Ninja\Cosmic\Command\Finder;
 use Ninja\Cosmic\Command\CommandInterface;
 use Ninja\Cosmic\Command\CosmicCommand;
 
+use function Cosmic\get_class_from_file;
+
 class CommandFinder
 {
     public static function find(array $command_dirs, array &$commands = []): array

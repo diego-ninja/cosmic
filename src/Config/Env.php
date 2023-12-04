@@ -10,6 +10,11 @@ use Dotenv\Repository\RepositoryInterface;
 use Phar;
 use PhpOption\Option;
 
+use function Cosmic\is_phar;
+use function Cosmic\mask;
+use function Cosmic\value;
+use function Cosmic\git_version;
+
 class Env
 {
     protected static bool $putenv = true;

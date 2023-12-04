@@ -4,7 +4,8 @@
 use Ninja\Cosmic\Application\Application;
 use Ninja\Cosmic\Config\Env;
 use Ninja\Cosmic\Terminal\Terminal;
-use Ninja\Cosmic\Terminal\Theme\Theme;
+
+use function Cosmic\is_phar;
 
 if (false === in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
     echo PHP_EOL . 'This app may only be invoked from a command line, got "' . PHP_SAPI . '"' . PHP_EOL;

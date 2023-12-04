@@ -44,6 +44,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
+use function Cosmic\get_class_from_file;
+
 final class Application extends \Symfony\Component\Console\Application
 {
     public const LIFECYCLE_APP_BOOT     = 'app.boot';

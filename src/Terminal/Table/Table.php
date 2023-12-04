@@ -9,6 +9,8 @@ use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
 use Ninja\Cosmic\Terminal\Terminal;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function Cosmic\pluralize;
+
 class Table
 {
     protected ColumnCollection $columns;

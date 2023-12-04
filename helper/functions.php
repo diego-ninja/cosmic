@@ -2,10 +2,14 @@
 
 declare(strict_types=1);
 
+namespace Cosmic;
+
+use Closure;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
+use Phar;
 use Symfony\Component\Process\Process;
 
-if (!function_exists('snakeize')) {
+if (!function_exists('Cosmic\snakeize')) {
     function snakeize(string $input): string
     {
         $pattern = '!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!';
@@ -20,7 +24,7 @@ if (!function_exists('snakeize')) {
     }
 }
 
-if (!function_exists('camelize')) {
+if (!function_exists('Cosmic\camelize')) {
     function camelize(string $input): string
     {
         $input = str_replace(' ', '', ucwords(str_replace('_', ' ', $input)));
@@ -28,21 +32,21 @@ if (!function_exists('camelize')) {
     }
 }
 
-if (!function_exists('value')) {
+if (!function_exists('Cosmic\value')) {
     function value(mixed $value, mixed ...$args): mixed
     {
         return $value instanceof Closure ? $value(...$args) : $value;
     }
 }
 
-if (!function_exists('is_phar')) {
+if (!function_exists('Cosmic\is_phar')) {
     function is_phar(): bool
     {
         return Phar::running() !== '';
     }
 }
 
-if (!function_exists('find_binary')) {
+if (!function_exists('Cosmic\find_binary')) {
     function find_binary(string $binary): string
     {
         $command = sprintf("which %s", $binary);
@@ -60,7 +64,7 @@ if (!function_exists('find_binary')) {
     }
 }
 
-if (!function_exists("get_namespace_from_file")) {
+if (!function_exists("Cosmic\get_namespace_from_file")) {
     function get_namespace_from_file(string $file): ?string
     {
         $ns     = null;
@@ -79,7 +83,7 @@ if (!function_exists("get_namespace_from_file")) {
     }
 }
 
-if (!function_exists("get_class_from_file")) {
+if (!function_exists("Cosmic\get_class_from_file")) {
     function get_class_from_file(string $file): string
     {
         $class_name = basename($file, ".php");
@@ -89,7 +93,7 @@ if (!function_exists("get_class_from_file")) {
     }
 }
 
-if (!function_exists("git_version")) {
+if (!function_exists("Cosmic\git_version")) {
     function git_version(string $path): ?string
     {
         $command = sprintf("cd %s && %s describe --tags --abbrev=0", $path, find_binary("git"));
@@ -104,14 +108,14 @@ if (!function_exists("git_version")) {
     }
 }
 
-if (!function_exists("is_root")) {
+if (!function_exists("Cosmic\is_root")) {
     function is_root(): bool
     {
         return posix_getuid() === 0;
     }
 }
 
-if (!function_exists('sudo')) {
+if (!function_exists('Cosmic\sudo')) {
     function sudo(string $command, ?string $sudo_passwd = null): string
     {
         if (!is_root()) {
@@ -126,7 +130,7 @@ if (!function_exists('sudo')) {
     }
 }
 
-if (!function_exists('mask')) {
+if (!function_exists('Cosmic\mask')) {
     function mask(string $string): string
     {
         $length = strlen($string);
@@ -151,7 +155,7 @@ if (!function_exists('pluralize')) {
     }
 }
 
-if (!function_exists('git_config')) {
+if (!function_exists('Cosmic\git_config')) {
     function git_config(string $key): ?string
     {
         $command = sprintf("%s config --global --get %s", find_binary("git"), $key);
@@ -166,7 +170,7 @@ if (!function_exists('git_config')) {
     }
 }
 
-if (!function_exists('unzip')) {
+if (!function_exists('Cosmic\unzip')) {
     function unzip(string $file, ?string $destination_path = null): bool
     {
         $command = sprintf("%s %s", find_binary("unzip"), $file);
