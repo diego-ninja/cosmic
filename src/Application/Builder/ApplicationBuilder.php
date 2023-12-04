@@ -62,6 +62,9 @@ class ApplicationBuilder
         );
     }
 
+    /**
+     * @throws Exception
+     */
     private function rename(string $env): bool
     {
         $new_name = $env && $env !== ENV_LOCAL ?

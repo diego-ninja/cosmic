@@ -15,6 +15,7 @@ use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Config\Env;
 use Ninja\Cosmic\Event\Lifecycle;
 use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
+use Ninja\Cosmic\Terminal\Terminal;
 use Symfony\Component\Process\Process;
 
 use function Cosmic\find_binary;
@@ -33,6 +34,7 @@ final class InstallCommand extends CosmicCommand
      */
     public function __invoke(?string $path): int
     {
+        Terminal::body()->writeln("");
         $this->executionResult = $this->build() && $this->install($path);
 
         Lifecycle::dispatchLifecycleEvent(

@@ -10,18 +10,17 @@ use Ninja\Cosmic\Command\Attribute\Alias;
 use Ninja\Cosmic\Command\Attribute\Description;
 use Ninja\Cosmic\Command\Attribute\Icon;
 use Ninja\Cosmic\Command\Attribute\Name;
-use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Config\Env;
 use Ninja\Cosmic\Event\Lifecycle;
 use Ninja\Cosmic\Notifier\NotifiableInterface;
+use Ninja\Cosmic\Terminal\Terminal;
 use ReflectionException;
 
 #[Icon("📦")]
 #[Name("build")]
 #[Description("Build <info>{env.app_name}</info> binary into <comment>builds</comment> directory")]
-#[Signature("build [--env=]")]
-#[Option("--env", "The .env file to use for building the binary. Use <info>all</info> to compile all available .env files.", ALL_OPTION)] // phpcs:ignore
+#[Signature("build")]
 #[Alias("app:build")]
 final class BuildCommand extends CosmicCommand implements NotifiableInterface
 {
@@ -33,9 +32,10 @@ final class BuildCommand extends CosmicCommand implements NotifiableInterface
     /**
      * @throws ReflectionException
      */
-    public function __invoke(?string $env): int
+    public function __invoke(): int
     {
-        if ($env === ALL_OPTION) {
+        Terminal::body()->writeln("");
+        if (Env::env() === ALL_OPTION) {
             $environments          = $this->extractEnvironments();
             $this->executionResult = true;
 
@@ -43,12 +43,12 @@ final class BuildCommand extends CosmicCommand implements NotifiableInterface
                 $this->executionResult = $this->builder->build($environment) && $this->executionResult;
             }
         } else {
-            $this->executionResult = $this->builder->build($env);
+            $this->executionResult = $this->builder->build(Env::env());
         }
 
         Lifecycle::dispatchLifecycleEvent(
             event_name: Application::LIFECYCLE_APP_BUILD,
-            event_args: ["result" => $this->executionResult, "env" => $env ?? "all"]
+            event_args: ["result" => $this->executionResult, "env" => Env::env()]
         );
 
         return $this->exit();
