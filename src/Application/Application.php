@@ -36,7 +36,9 @@ use ReflectionMethod;
 use RuntimeException;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\Input;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -64,6 +66,8 @@ final class Application extends \Symfony\Component\Console\Application
      */
     public function __construct(string $name = 'UNKNOWN', string $version = 'UNKNOWN', ?Container $container = null)
     {
+        parent::__construct($name, $version);
+
         $this->parser  = self::createParser();
         $this->invoker = self::createInvoker();
 
@@ -75,13 +79,16 @@ final class Application extends \Symfony\Component\Console\Application
         $this->withContainer($container ?? new Container(), true, true);
         $this->registerCommands([__DIR__ . "/../Command"]);
 
-        parent::__construct($name, $version);
     }
 
     public function run(?InputInterface $input = null, ?OutputInterface $output = null): int
     {
         if ($output === null) {
             $output = Terminal::output();
+        }
+
+        if ($input === null) {
+            $input = Terminal::input();
         }
 
         Lifecycle::dispatchLifecycleEvent(self::LIFECYCLE_APP_BOOT, ["app" => $this]);
@@ -92,6 +99,20 @@ final class Application extends \Symfony\Component\Console\Application
         );
 
         return $execution_result;
+    }
+
+    public function getDefaultInputDefinition(): InputDefinition
+    {
+        $definition = parent::getDefaultInputDefinition();
+        $definition->addOption(new InputOption(
+            name: "theme",
+            shortcut: "-t",
+            mode: InputOption::VALUE_OPTIONAL,
+            description: "The theme to use. Overrides the theme set in <info>.env</info> file.",
+            default: null
+        ));
+
+        return $definition;
     }
 
     /**
@@ -105,6 +126,7 @@ final class Application extends \Symfony\Component\Console\Application
         );
 
         try {
+            $this->enableTheme($this->getThemeName());
             $result = parent::doRunCommand($command, $input, $output);
         } catch (Throwable $e) {
             Lifecycle::dispatchLifecycleEvent(
@@ -386,4 +408,20 @@ final class Application extends \Symfony\Component\Console\Application
 
         return implode('-', $ret);
     }
+
+    private function getThemeName(): string
+    {
+        if (Terminal::input()->hasOption('theme')) {
+            return Terminal::input()->getOption('theme') ?? Env::get('APP_THEME', "default");
+        }
+
+        return Env::get('APP_THEME', "default");
+    }
+
+    private function enableTheme(string $theme): void
+    {
+        Terminal::enableTheme($theme);
+        $this->setName(sprintf("%s %s", Terminal::getTheme()->getAppIcon(), Env::get("APP_NAME")));
+    }
+
 }

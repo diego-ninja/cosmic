@@ -13,6 +13,8 @@ use Ninja\Cosmic\Terminal\Theme\ThemeLoader;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoaderInterface;
 use ReflectionException;
 use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
@@ -35,7 +37,10 @@ final class Terminal
     public static function getInstance(): self
     {
         if (!isset(self::$instance)) {
-            self::$instance = new self(new ConsoleOutput());
+            self::$instance = new self(
+                new ConsoleOutput(),
+                new ArgvInput()
+            );
         }
         return self::$instance;
     }
@@ -78,6 +83,11 @@ final class Terminal
     public static function output(): ConsoleOutput
     {
         return self::getInstance()->output;
+    }
+
+    public static function input(): InputInterface
+    {
+        return self::getInstance()->input;
     }
 
     public static function header(): ConsoleSectionOutput
@@ -192,7 +202,7 @@ final class Terminal
         return self::output()->getFormatter()->getStyle($colorName);
     }
 
-    private function __construct(private readonly ConsoleOutput $output)
+    private function __construct(private readonly ConsoleOutput $output, private readonly ?InputInterface $input = null)
     {
         self::$sections[self::SECTION_HEADER] = $this->output->section();
         self::$sections[self::SECTION_BODY]   = $this->output->section();

@@ -10,7 +10,7 @@
         "warning": "#D08770",
         "error": "#854731",
         "success": "#96CA4B",
-        "white": "#FEFFFC",
+        "white": "#FFFFFF",
         "black": "#000000",
         "grey": "#3B4251",
         "red": "#854731",
@@ -77,7 +77,7 @@
                 "right-mid": "┤",
                 "middle": "│"
             },
-            "table_color": "grey",
+            "table_color": "white",
             "header_color": "green",
             "field_color": "blue"
         }

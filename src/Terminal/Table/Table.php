@@ -57,14 +57,14 @@ class Table
 
         // Headers
         if ($this->config->getShowHeader()) {
-            foreach ($this->columns as $field) {
-                /** @var TableColumn $field */
-                $headerData[$field->key] = trim($field->name);
+            foreach ($this->getColumns() as $column) {
+                /** @var TableColumn $column */
+                $headerData[$column->key] = trim($column->name);
 
-                if (!isset($columnLengths[$field->key])) {
-                    $columnLengths[$field->key] = 0;
+                if (!isset($columnLengths[$column->key])) {
+                    $columnLengths[$column->key] = 0;
                 }
-                $columnLengths[$field->key] = max($columnLengths[$field->key], strlen(trim($field->name)));
+                $columnLengths[$column->key] = max($columnLengths[$column->key], strlen(trim($column->name)));
             }
         }
 
@@ -73,10 +73,10 @@ class Table
             foreach ($this->data as $row) {
                 // Row
                 $cellData[$rowCount] = [];
-                foreach ($this->columns as $field) {
-                    /** @var TableColumn $field */
-                    $key                       = $field->key;
-                    $value                     = $field->getManipulators()->apply($row[$key]);
+                foreach ($this->getColumns() as $column) {
+                    /** @var TableColumn $column */
+                    $key                       = $column->key;
+                    $value                     = $column->getManipulators()->apply($row[$key]);
                     $cellData[$rowCount][$key] = $value;
 
                     // Column Lengths
