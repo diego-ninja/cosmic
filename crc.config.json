@@ -3,7 +3,7 @@
     "null", "true", "false",
     "static", "self", "parent",
     "array", "string", "int", "float", "bool", "iterable", "callable", "void", "object", "mixed", "never", "app", "env","go",
-    "find_binary", "is_root", "get_namespace_from_file",
+    "find_binary", "is_root", "get_namespace_from_file", "is_phar",
     "value",
     "PhpOption\\Option",
     "Psr\\Container\\ContainerInterface"
