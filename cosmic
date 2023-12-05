@@ -5,6 +5,7 @@ use Ninja\Cosmic\Application\Application;
 use Ninja\Cosmic\Config\Env;
 use Ninja\Cosmic\Terminal\Terminal;
 
+use function Cosmic\find_env;
 use function Cosmic\is_phar;
 
 if (false === in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
@@ -20,9 +21,10 @@ if (false === in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
     throw new RuntimeException('Unable to find the Composer autoloader.');
 })();
 
+$env_file = find_env();
 $dotenv = is_phar() ?
-    Dotenv\Dotenv::createMutable(Phar::running()) :
-    Dotenv\Dotenv::createMutable(getcwd());
+    Dotenv\Dotenv::createMutable(Phar::running(), $env_file) :
+    Dotenv\Dotenv::createMutable(getcwd(), $env_file);
 
 $dotenv->safeLoad();
 

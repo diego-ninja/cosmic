@@ -6,6 +6,7 @@ namespace Cosmic;
 
 use Closure;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
+use Ninja\Cosmic\Terminal\Terminal;
 use Phar;
 use Symfony\Component\Process\Process;
 
@@ -182,5 +183,24 @@ if (!function_exists('Cosmic\unzip')) {
         $process->run();
 
         return $process->isSuccessful();
+    }
+}
+
+if (!function_exists('Cosmic\find_env')) {
+    function find_env(): string
+    {
+        $env_file = Terminal::input()->hasParameterOption(["--env", "-e"]) ?
+            sprintf(".env.%s", Terminal::input()->getParameterOption(["--env", "-e"])) :
+            ".env";
+
+        $env_path = is_phar() ?
+            sprintf("%s/%s", Phar::running(), $env_file) :
+            sprintf("%s/%s", getcwd(), $env_file);
+
+        if (file_exists($env_path)) {
+            return $env_file;
+        }
+
+        throw new \RuntimeException(sprintf("Unable to find env file '%s'", $env_file));
     }
 }

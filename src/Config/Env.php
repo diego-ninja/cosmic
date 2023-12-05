@@ -72,7 +72,9 @@ class Env
     public static function isDebug(): bool
     {
         if (Terminal::input()->hasOption("debug")) {
-            return Terminal::input()->getOption("debug") === true;
+            return Terminal::input()->getOption("debug") === true ?
+                true :
+                self::get("APP_DEBUG", false);
         }
 
         return self::get("APP_DEBUG", false);
