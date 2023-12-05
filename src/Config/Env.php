@@ -99,6 +99,15 @@ class Env
         return self::get("APP_NAME", "cosmic");
     }
 
+    public static function shell(?string $icon = null): string
+    {
+        if ($icon) {
+            return sprintf("%s %s", $icon, basename(self::get("SHELL")));
+        }
+
+        return basename(self::get("SHELL"));
+    }
+
     public static function dump(): array
     {
         $ret = [];

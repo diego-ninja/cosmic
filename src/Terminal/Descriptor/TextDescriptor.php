@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Descriptor;
 
+use Ninja\Cosmic\Replacer\EnvironmentReplacer;
 use Ninja\Cosmic\Terminal\Renderer\CommandHelpRenderer;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -203,11 +204,12 @@ class TextDescriptor extends AbstractDescriptor
 
                 foreach ($namespace['commands'] as $name) {
                     $this->writeText("\n");
-                    $spacing_width   = $width - Helper::width($name);
-                    $command         = $commands[$name];
-                    $command_icon    = method_exists($command, 'getIcon') ? $command->getIcon() : '';
-                    $command_aliases = $name === $command->getName() ? $this->getCommandAliasesText($command) : '';
-                    $this->writeText(sprintf('  %s <info>%s</info>%s%s', $command_icon, $name, str_repeat(' ', $spacing_width), $command->getDescription() . " " . $command_aliases), $options); //phpcs:ignore
+                    $spacing_width       = $width - Helper::width($name);
+                    $command             = $commands[$name];
+                    $command_icon        = method_exists($command, 'getIcon') ? $command->getIcon() : '';
+                    $command_aliases     = $name === $command->getName() ? $this->getCommandAliasesText($command) : '';
+                    $command_description = EnvironmentReplacer::replace($command->getDescription());
+                    $this->writeText(sprintf('  %s <info>%s</info>%s%s', $command_icon, $name, str_repeat(' ', $spacing_width), $command_description . " " . $command_aliases), $options); //phpcs:ignore
                 }
             }
 
@@ -232,7 +234,7 @@ class TextDescriptor extends AbstractDescriptor
         $aliases = $command->getAliases();
 
         if ($aliases) {
-            $text = '[ <comment>' . implode('</comment> | <comment>', $aliases) . '</comment> ] ';
+            $text = '[<info>' . implode('</info> | <info>', $aliases) . '</info>] ';
         }
 
         return $text;

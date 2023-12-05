@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cosmic;
 
 use Closure;
+use Ninja\Cosmic\Config\Exception\EnvironmentNotFoundException;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Terminal\Terminal;
 use Phar;
@@ -201,6 +202,6 @@ if (!function_exists('Cosmic\find_env')) {
             return $env_file;
         }
 
-        throw new \RuntimeException(sprintf("Unable to find env file '%s'", $env_file));
+        throw EnvironmentNotFoundException::forEnv($env_file);
     }
 }

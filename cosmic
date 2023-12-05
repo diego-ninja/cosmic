@@ -39,6 +39,7 @@ try {
 
     $app->setAutoExit(false);
     $app->run();
+
 } catch (Throwable $e) {
     throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
 }
