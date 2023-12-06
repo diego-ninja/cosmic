@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Terminal\Select\Input;
 
 use Ninja\Cosmic\Terminal\Select\Handler\SelectHandler;
-use Ninja\Cosmic\Terminal\Select\Input\Trait\ChunkableOptionTrait;
+use Ninja\Cosmic\Terminal\Select\Input\Trait\ColumnableOptionTrait;
 
-abstract class AbstractSelect implements SelectInputInterface
+abstract class AbstractSelect implements SelectInputInterface, ColumnAwareInterface
 {
-    use ChunkableOptionTrait;
+    use ColumnableOptionTrait;
 
     protected array $selections;
 

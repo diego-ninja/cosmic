@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Select\Handler;
 
+use Ninja\Cosmic\Terminal\Select\Input\ColumnAwareInterface;
 use Ninja\Cosmic\Terminal\Select\Input\SelectInputInterface;
 use Ninja\Cosmic\Terminal\Terminal;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +27,7 @@ class SelectHandler
      * @param resource $stream
      */
     public function __construct(
-        protected SelectInputInterface $question,
+        protected SelectInputInterface & ColumnAwareInterface $question,
         protected OutputInterface $output,
         protected $stream = STDIN,
         protected ?int $columns = null,
@@ -160,7 +161,7 @@ class SelectHandler
     {
         $this->output->write("\x0D");
         $this->output->write("\x1B[2K");
-        $lines = $this->question->getChunksCount() - 1;
+        $lines = $this->question->getColumnCount() - 1;
         if ($lines > 0) {
             $this->output->write(str_repeat("\x1B[1A\x1B[2K", $lines));
         }
@@ -177,7 +178,7 @@ class SelectHandler
     protected function message(): string
     {
         $chunkSize   = $this->getColumns();
-        $chunks      = $this->question->getChunks($chunkSize);
+        $chunks      = $this->question->getColumns($chunkSize);
         $columnSpace = (int)floor(($this->terminalWidth() - ($chunkSize * 5)) / $chunkSize);
         return implode(PHP_EOL, array_map(function ($entries) use ($chunks, $columnSpace) {
             $hasCursor = $this->row === array_search($entries, $chunks, true);

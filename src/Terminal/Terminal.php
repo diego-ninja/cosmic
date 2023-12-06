@@ -6,9 +6,8 @@ namespace Ninja\Cosmic\Terminal;
 
 use JsonException;
 use Ninja\Cosmic\Terminal\Select\Handler\SelectHandler;
-use Ninja\Cosmic\Terminal\Select\Helper\Trait\StreamableInputTrait;
 use Ninja\Cosmic\Terminal\Select\Input\CheckboxInput;
-use Ninja\Cosmic\Terminal\Select\Input\RadioInput;
+use Ninja\Cosmic\Terminal\Select\Input\SelectInput;
 use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
 use Ninja\Cosmic\Terminal\Table\Table;
 use Ninja\Cosmic\Terminal\Table\TableConfig;
@@ -16,7 +15,6 @@ use Ninja\Cosmic\Terminal\Theme\ThemeInterface;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoader;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoaderInterface;
 use ReflectionException;
-use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -30,8 +28,6 @@ use function Termwind\terminal;
 
 final class Terminal
 {
-    use StreamableInputTrait;
-
     public const SECTION_HEADER = 'header';
     public const SECTION_BODY   = 'body';
     public const SECTION_FOOTER = 'footer';
@@ -207,7 +203,7 @@ final class Terminal
             $output->getFormatter()->setStyle('hl', $style);
         }
 
-        $question = $allowMultiple ? new CheckboxInput($message, $options) : new RadioInput($message, $options);
+        $question = $allowMultiple ? new CheckboxInput($message, $options) : new SelectInput($message, $options);
         return (
             new SelectHandler(
                 question: $question,
@@ -263,11 +259,7 @@ final class Terminal
 
     protected function getInputStream(): mixed
     {
-        if (self::input() instanceof StreamableInputInterface) {
-            $this->inputStream = self::input()->getStream() ?: STDIN;
-        }
-
-        return $this->inputStream;
+        return self::input()->getStream() ?: STDIN;
     }
 
 }

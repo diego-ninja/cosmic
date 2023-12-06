@@ -6,51 +6,51 @@ namespace Ninja\Cosmic\Terminal\Select\Input\Trait;
 
 use Ninja\Cosmic\Terminal\Select\Input\Exception\IndexOutOfRangeException;
 
-trait ChunkableOptionTrait
+trait ColumnableOptionTrait
 {
-    protected array $chunks;
-    protected int $chunkSize = 3;
+    protected array $columns;
+    protected int $columnSize = 3;
 
     /**
      * @return array<int, list<string>>
      */
-    public function getChunks(int $chunkSize = null): array
+    public function getColumns(int $columnSize = null): array
     {
-        if (!is_null($chunkSize)) {
-            $this->chunkSize = $chunkSize;
+        if (!is_null($columnSize)) {
+            $this->columnSize = $columnSize;
         }
 
-        if (!isset($this->chunks)) {
-            $this->chunks = array_chunk($this->getOptions(), $this->chunkSize);
+        if (!isset($this->columns)) {
+            $this->columns = array_chunk($this->getOptions(), $this->columnSize);
         }
 
-        return $this->chunks;
+        return $this->columns;
     }
 
-    public function getChunkAt(int $index): array
+    public function getColumnAt(int $index): array
     {
-        if (!empty($this->getChunks()[$index])) {
-            return $this->getChunks()[$index];
+        if (!empty($this->getColumns()[$index])) {
+            return $this->getColumns()[$index];
         }
 
         throw IndexOutOfRangeException::withIndex((string)$index);
     }
 
-    public function getChunksCount(): int
+    public function getColumnCount(): int
     {
-        return count($this->getChunks());
+        return count($this->getColumns());
     }
 
     public function hasEntryAt(int $rowIndex, int $colIndex): bool
     {
-        $chunks = $this->getChunks();
+        $chunks = $this->getColumns();
         return array_key_exists($rowIndex, $chunks) && array_key_exists($colIndex, $chunks[$rowIndex]);
     }
 
     public function getEntryAt(int $rowIndex, int $colIndex): string
     {
         if ($this->hasEntryAt($rowIndex, $colIndex)) {
-            return $this->getChunks()[$rowIndex][$colIndex];
+            return $this->getColumns()[$rowIndex][$colIndex];
         }
 
         throw IndexOutOfRangeException::withIndex("$rowIndex:$colIndex");
