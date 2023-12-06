@@ -36,7 +36,9 @@
         "application": "🚀",
         "bullet": "⬢",
         "success": "⬡",
-        "failure": "⬡"
+        "failure": "⬡",
+        "selected": "⬢",
+        "unselected": "⬡"
     },
     "styles": {
         "container": "w-120 ml-2",

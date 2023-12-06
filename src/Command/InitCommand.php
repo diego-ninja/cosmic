@@ -106,7 +106,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             }
         }
 
-        return $this->exit();
+        return $this->success();
     }
 
     /**
@@ -261,15 +261,17 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         self::$replacements["{author.url}"] = $website;
     }
 
-    /**
-     * @throws ReflectionException
-     */
     private function askApplicationLicense(): void
     {
-        $license = Terminal::ask(message: " 📄 License: ", default:  "MIT", decorated: false);
-        Terminal::body()->writeln(" 📄 License: <info>$license</info>");
-        Terminal::footer()->clear();
+        $license = Terminal::select(
+            message: " 📄 License: ",
+            options: self::LICENSES,
+            allowMultiple: false,
+            output: Terminal::output(),
+            columns: 2
+        );
 
+        Terminal::body()->writeln(" 📄 License: <info>$license[0]</info>");
         self::$replacements["{app.license}"] = $license;
     }
 

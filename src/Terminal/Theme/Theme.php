@@ -17,6 +17,7 @@ class Theme implements ThemeInterface
         private readonly array $config,
         private ?string $logo = null,
         private ?string $notification = null,
+        private ?ThemeInterface $parent = null
     ) {}
 
     /**
@@ -32,10 +33,10 @@ class Theme implements ThemeInterface
     {
         return new self(
             name: $data["name"],
-            colors: $data["colors"],
-            styles: $data["styles"],
-            icons: $data["icons"],
-            config: $data["config"],
+            colors: $data["colors"] ?? [],
+            styles: $data["styles"] ?? [],
+            icons: $data["icons"]   ?? [],
+            config: $data["config"] ?? []
         );
     }
 
@@ -60,6 +61,12 @@ class Theme implements ThemeInterface
             $theme               = self::fromFile($theme_file);
             $theme->logo         = file_exists($logo_file) ? require $logo_file : null;
             $theme->notification = file_exists($notification_file) ? $notification_file : null;
+
+            $parent_theme = json_decode(file_get_contents($theme_file), true, JSON_THROW_ON_ERROR, JSON_THROW_ON_ERROR)["extends"] ?? null;
+            if ($parent_theme) {
+                $theme->parent = self::fromThemeFolder(sprintf("%s/../%s", $folder, $parent_theme));
+            }
+
             return $theme;
         }
 
@@ -69,11 +76,11 @@ class Theme implements ThemeInterface
     public function toArray(): array
     {
         return [
-            "name"   => $this->name,
-            "colors" => $this->colors,
-            "styles" => $this->styles,
-            "icons"  => $this->icons,
-            "config" => $this->config,
+            "name"   => $this->getName(),
+            "colors" => $this->getColors(),
+            "styles" => $this->getStyles(),
+            "icons"  => $this->getIcons(),
+            "config" => $this->getConfig(),
         ];
     }
 
@@ -92,39 +99,66 @@ class Theme implements ThemeInterface
         return $this->logo;
     }
 
+    public function getIcons(): array
+    {
+        if ($this->parent) {
+            return array_merge($this->parent->getIcons(), $this->icons);
+        }
+
+        return $this->icons;
+    }
+
     public function getIcon(string $iconName): ?string
     {
-        return $this->icons[$iconName] ?? null;
+        $icons = $this->getIcons();
+        return $icons[$iconName] ?? null;
     }
 
     public function getAppIcon(): ?string
     {
-        return $this->icons["application"] ?? null;
+        $icons = $this->getIcons();
+        return $icons["application"] ?? null;
     }
 
-    public function getConfig(string $key): mixed
+    public function getConfig(?string $key = null): mixed
     {
-        return $this->config[$key] ?? null;
+        if ($this->parent) {
+            $config = array_merge($this->parent->getConfig(), $this->config);
+        } else {
+            $config = $this->config;
+        }
+
+        return $key ? $config[$key] : $config;
     }
 
     public function getColors(): array
     {
+        if ($this->parent) {
+            return array_merge($this->parent->getColors(), $this->colors);
+        }
+
         return $this->colors;
     }
 
     public function getColor(string $colorName): ?string
     {
-        return $this->colors[$colorName] ?? null;
+        $colors = $this->getColors();
+        return $colors[$colorName] ?? null;
     }
 
     public function getStyles(): array
     {
+        if ($this->parent) {
+            return array_merge($this->parent->getStyles(), $this->styles);
+        }
+
         return $this->styles;
     }
 
     public function getStyle(string $styleName): ?string
     {
-        return $this->styles[$styleName] ?? null;
+        $styles = $this->getStyles();
+        return $styles[$styleName] ?? null;
     }
 
     public function getNotificationIcon(): ?string
@@ -140,5 +174,14 @@ class Theme implements ThemeInterface
     public function setLogo(string $logo): void
     {
         $this->logo = $logo;
+    }
+    public function getParent(): ?ThemeInterface
+    {
+        return $this->parent;
+    }
+
+    public function setParent(ThemeInterface $theme): void
+    {
+        $this->parent = $theme;
     }
 }

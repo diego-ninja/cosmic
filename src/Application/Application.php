@@ -78,6 +78,8 @@ final class Application extends \Symfony\Component\Console\Application
         );
         $error_handler->register();
 
+        $this->enableTheme($this->getThemeName());
+
         $this->withContainer($container ?? new Container(), true, true);
         $this->registerCommands([__DIR__ . "/../Command"]);
 
@@ -143,7 +145,6 @@ final class Application extends \Symfony\Component\Console\Application
         );
 
         try {
-            $this->enableTheme($this->getThemeName());
             $result = parent::doRunCommand($command, $input, $output);
         } catch (Throwable $e) {
             Lifecycle::dispatchLifecycleEvent(
@@ -428,8 +429,8 @@ final class Application extends \Symfony\Component\Console\Application
 
     private function getThemeName(): string
     {
-        if (Terminal::input()->hasOption('theme')) {
-            return Terminal::input()->getOption('theme') ?? Env::get('APP_THEME', "default");
+        if (Terminal::input()->hasParameterOption(['--theme', '-t'])) {
+            return Terminal::input()->getParameterOption(['--theme', '-t']) ?? Env::get('APP_THEME', "default");
         }
 
         return Env::get('APP_THEME', "default");

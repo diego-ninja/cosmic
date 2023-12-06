@@ -10,9 +10,10 @@ interface ThemeInterface extends JsonSerializable
 {
     public function getName(): string;
     public function getLogo(): ?string;
+    public function getIcons(): array;
     public function getIcon(string $iconName): ?string;
     public function getAppIcon(): ?string;
-    public function getConfig(string $key): mixed;
+    public function getConfig(?string $key = null): mixed;
     public function getColors(): array;
     public function getColor(string $colorName): ?string;
     public function getStyles(): array;
@@ -20,4 +21,6 @@ interface ThemeInterface extends JsonSerializable
     public function getNotificationIcon(): ?string;
     public function setNotificationIcon(string $icon): void;
     public function setLogo(string $logo): void;
+    public function getParent(): ?ThemeInterface;
+    public function setParent(ThemeInterface $theme): void;
 }

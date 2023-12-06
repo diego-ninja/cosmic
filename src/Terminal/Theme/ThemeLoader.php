@@ -99,6 +99,11 @@ final class ThemeLoader implements ThemeLoaderInterface, ThemeInterface
         return $this->theme->getLogo();
     }
 
+    public function getIcons(): array
+    {
+        return $this->theme->getIcons();
+    }
+
     public function getIcon(string $iconName): ?string
     {
         return $this->theme->getIcon($iconName);
@@ -109,7 +114,7 @@ final class ThemeLoader implements ThemeLoaderInterface, ThemeInterface
         return $this->theme->getAppIcon();
     }
 
-    public function getConfig(string $key): mixed
+    public function getConfig(?string $key = null): mixed
     {
         return $this->theme->getConfig($key);
     }
@@ -157,5 +162,15 @@ final class ThemeLoader implements ThemeLoaderInterface, ThemeInterface
     public function setLogo(string $logo): void
     {
         $this->theme->setLogo($logo);
+    }
+
+    public function getParent(): ?ThemeInterface
+    {
+        return $this->theme->getParent();
+    }
+
+    public function setParent(ThemeInterface $theme): void
+    {
+        $this->theme->setParent($theme);
     }
 }

@@ -1,7 +1,8 @@
 {
-    "name": "innsmouth",
+    "name": "alien",
     "version": "1.0.0",
-    "description": "Lovecraftian Terminal Theme",
+    "description": "Extraterrestrial Terminal Theme for Cosmic",
+    "extends": "default",
     "colors": {
         "text": "#FEFFFC",
         "comment": "#96CA4B",
@@ -33,7 +34,7 @@
         }
     },
     "icons": {
-        "application": "🦑",
+        "application": "\uD83D\uDC7D",
         "bullet": "⬢",
         "success": "⬡",
         "failure": "⬡"

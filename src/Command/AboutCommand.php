@@ -35,9 +35,10 @@ final class AboutCommand extends CosmicCommand
             sprintf(
                 "
                     <div class='w-50 justify-center'>
-                        <span class='mr-1'>%s</span><span class='text-info font-bold'>%s</span>
+                        <span class='mr-1'>%s</span><span class='mr-1'>%s</span><span class='text-info font-bold'>%s</span>
                     </div>
                     ",
+                Terminal::getTheme()->getAppIcon(),
                 Env::get("APP_NAME"),
                 Env::appVersion()
             )
@@ -63,14 +64,12 @@ final class AboutCommand extends CosmicCommand
             )
         );
 
-        if (Env::get("APP_LICENSE")) {
-            render(
-                sprintf(
-                    "<div class='w-50 justify-center'><span>License: <span class='text-notice mr-1'>%s</span></span></div>",
-                    Env::get("APP_LICENSE")
-                )
-            );
-        }
+        render(
+            sprintf(
+                "<div class='w-50 justify-center'><span>Theme: <span class='text-notice mr-1'>%s</span></span></div>",
+                Terminal::getTheme()->getName()
+            )
+        );
 
         if (Env::isDebug()) {
             $this->renderEnvironmentVariables();

@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Terminal;
 
 use JsonException;
+use Ninja\Cosmic\Terminal\Select\Handler\SelectHandler;
+use Ninja\Cosmic\Terminal\Select\Helper\Trait\StreamableInputTrait;
+use Ninja\Cosmic\Terminal\Select\Input\CheckboxInput;
+use Ninja\Cosmic\Terminal\Select\Input\RadioInput;
 use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
 use Ninja\Cosmic\Terminal\Table\Table;
 use Ninja\Cosmic\Terminal\Table\TableConfig;
@@ -12,6 +16,8 @@ use Ninja\Cosmic\Terminal\Theme\ThemeInterface;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoader;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoaderInterface;
 use ReflectionException;
+use Symfony\Component\Console\Cursor;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\StreamableInputInterface;
@@ -24,6 +30,8 @@ use function Termwind\terminal;
 
 final class Terminal
 {
+    use StreamableInputTrait;
+
     public const SECTION_HEADER = 'header';
     public const SECTION_BODY   = 'body';
     public const SECTION_FOOTER = 'footer';
@@ -183,10 +191,32 @@ final class Terminal
             $answer_selector ?? "[yes/no]"
         );
 
+        $question_length = mb_strlen($question);
+        print "\033[10C"; // Move the cursor 10 positions to the right
         $answer = (new Question())->ask($question, false, $default, ["yes", "no"]);
+
         return $answer === 'yes' || $answer === 'y';
     }
 
+    public static function select(string $message, array $options, bool $allowMultiple = true, ?OutputInterface $output = null, int $columns = null): array
+    {
+        $output ??= self::output();
+
+        if (!$output->getFormatter()->hasStyle('hl')) {
+            $style = new OutputFormatterStyle('black', 'white');
+            $output->getFormatter()->setStyle('hl', $style);
+        }
+
+        $question = $allowMultiple ? new CheckboxInput($message, $options) : new RadioInput($message, $options);
+        return (
+            new SelectHandler(
+                question: $question,
+                output: $output,
+                stream: self::getInstance()->getInputStream(),
+                columns: $columns
+            )
+        )->handle();
+    }
     public static function table(array $header, array $data, ?OutputInterface $output = null): void
     {
         $table = new Table(
@@ -230,4 +260,14 @@ final class Terminal
         }
         return self::$sections[$section];
     }
+
+    protected function getInputStream(): mixed
+    {
+        if (self::input() instanceof StreamableInputInterface) {
+            $this->inputStream = self::input()->getStream() ?: STDIN;
+        }
+
+        return $this->inputStream;
+    }
+
 }
