@@ -14,7 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Termwind\HtmlRenderer;
 use Termwind\Termwind;
 
-class Question
+final class Question
 {
     private static StreamableInputInterface|null $streamableInput;
 

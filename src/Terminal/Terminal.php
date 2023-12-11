@@ -193,8 +193,14 @@ final class Terminal
         return $answer === 'yes' || $answer === 'y';
     }
 
-    public static function select(string $message, array $options, bool $allowMultiple = true, ?OutputInterface $output = null, ?int $columns = null, ?int $maxWidth = null): array
-    {
+    public static function select(
+        string $message,
+        array $options,
+        bool $allowMultiple = true,
+        ?OutputInterface $output = null,
+        ?int $columns = null,
+        ?int $maxWidth = null
+    ): array {
         $output ??= self::output();
 
         $question = $allowMultiple ? new CheckboxInput($message, $options) : new SelectInput($message, $options);

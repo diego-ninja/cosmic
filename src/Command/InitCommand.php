@@ -146,7 +146,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     private function replacePlaceholders(): bool
     {
         return SpinnerFactory::for(static function (): bool {
-            $files = ["composer.json", "box.json", "env"];
+            $files = ["composer.json", "box.json", "env", "src/Command/QuoteCommand.php", "docs/commands/quote.md"];
             if (file_exists(self::$replacements["{app.path}"])) {
                 foreach ($files as $file) {
                     $content = file_get_contents(self::$replacements["{app.path}"] . "/$file");
@@ -273,7 +273,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         );
 
         Terminal::body()->writeln(" 📄 License: <info>$license[0]</info>");
-        self::$replacements["{app.license}"] = $license;
+        self::$replacements["{app.license}"] = $license[0];
     }
 
     public function getSuccessMessage(): string
