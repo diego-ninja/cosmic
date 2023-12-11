@@ -11,7 +11,7 @@ use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
 use ReflectionException;
 use Symfony\Component\Process\Process;
 
-class ApplicationBuilder
+readonly class ApplicationBuilder
 {
     public function __construct(private BoxCompiler $compiler) {}
 

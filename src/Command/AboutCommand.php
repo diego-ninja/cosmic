@@ -59,7 +59,7 @@ final class AboutCommand extends CosmicCommand
                     </div>
                     ",
                 Env::get("APP_AUTHOR"),
-                Env::get("APP_AUTHOR_URL"),
+                Env::get("APP_URL"),
                 Env::get("APP_AUTHOR_EMAIL")
             )
         );
