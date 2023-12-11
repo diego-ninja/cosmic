@@ -14,6 +14,15 @@ class RadioInput extends AbstractSelect
             throw UnknownOptionException::withOption($option);
         }
 
-        $this->selections = $this->isSelected($option) ? [] : [$option];
+        $this->selections = [$option];
+    }
+
+    public function deselect(string $option): void
+    {
+        if (empty(array_intersect($this->options, [$option]))) {
+            throw UnknownOptionException::withOption($option);
+        }
+
+        $this->selections = [];
     }
 }

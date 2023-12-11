@@ -19,6 +19,10 @@
         "blue": "#81A1C1",
         "purple": "#B48EAD",
         "cyan": "#88C0D0",
+        "hl": {
+            "fg": "#E5E9F0",
+            "bg": "#4C566A"
+        },
         "critical": {
             "fg": "#BF616A",
             "options": [
@@ -37,8 +41,10 @@
         "bullet": "⬢",
         "success": "⬡",
         "failure": "⬡",
-        "selected": "⬢",
-        "unselected": "⬡"
+        "radio_selected": "⬢",
+        "radio": "⬡",
+        "checkbox": "☐",
+        "checkbox_selected": "✔"
     },
     "styles": {
         "container": "w-120 ml-2",

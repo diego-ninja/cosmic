@@ -15,7 +15,6 @@ use Ninja\Cosmic\Terminal\Theme\ThemeInterface;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoader;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoaderInterface;
 use ReflectionException;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\StreamableInputInterface;
@@ -194,14 +193,9 @@ final class Terminal
         return $answer === 'yes' || $answer === 'y';
     }
 
-    public static function select(string $message, array $options, bool $allowMultiple = true, ?OutputInterface $output = null, int $columns = null): array
+    public static function select(string $message, array $options, bool $allowMultiple = true, ?OutputInterface $output = null, ?int $columns = null, ?int $maxWidth = null): array
     {
         $output ??= self::output();
-
-        if (!$output->getFormatter()->hasStyle('hl')) {
-            $style = new OutputFormatterStyle('black', 'white');
-            $output->getFormatter()->setStyle('hl', $style);
-        }
 
         $question = $allowMultiple ? new CheckboxInput($message, $options) : new SelectInput($message, $options);
         return (
@@ -209,7 +203,8 @@ final class Terminal
                 question: $question,
                 output: $output,
                 stream: self::getInstance()->getInputStream(),
-                columns: $columns
+                columns: $columns,
+                terminalWidth: $maxWidth
             )
         )->handle();
     }

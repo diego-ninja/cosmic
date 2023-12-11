@@ -8,8 +8,10 @@ use Ninja\Cosmic\Terminal\Select\Input\Exception\IndexOutOfRangeException;
 
 trait ColumnableOptionTrait
 {
+    public const DEFAULT_COLUMN_SIZE = 3;
+
     protected array $columns;
-    protected int $columnSize = 3;
+    protected int $columnSize = self::DEFAULT_COLUMN_SIZE;
 
     /**
      * @return array<int, list<string>>

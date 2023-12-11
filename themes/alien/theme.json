@@ -31,13 +31,14 @@
             "options": [
                 "blink"
             ]
+        },
+        "hl": {
+            "fg": "#88C0D0",
+            "bg": "#3B4251"
         }
     },
     "icons": {
-        "application": "\uD83D\uDC7D",
-        "bullet": "⬢",
-        "success": "⬡",
-        "failure": "⬡"
+        "application": "\uD83D\uDC7D"
     },
     "styles": {
         "container": "w-120 ml-2",

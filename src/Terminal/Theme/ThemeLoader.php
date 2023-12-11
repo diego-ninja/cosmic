@@ -76,7 +76,7 @@ final class ThemeLoader implements ThemeLoaderInterface, ThemeInterface
                 $color = new OutputFormatterStyle(
                     foreground: $color["fg"]   ?? null,
                     background: $color["bg"]   ?? null,
-                    options: $color["options"] ?? null
+                    options: $color["options"] ?? []
                 );
             } else {
                 style($name)->color($color);

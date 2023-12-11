@@ -14,8 +14,15 @@ class CheckboxInput extends AbstractSelect
             throw UnknownOptionException::withOption($option);
         }
 
-        $this->selections = $this->isSelected($option) ?
-            array_values(array_diff($this->selections, [$option])) :
-            [$option];
+        $this->selections = array_values(array_unique(array_merge($this->selections, [$option])));
+    }
+
+    public function deselect(string $option): void
+    {
+        if (empty(array_intersect($this->options, [$option]))) {
+            throw UnknownOptionException::withOption($option);
+        }
+
+        $this->selections = array_values(array_diff($this->selections, [$option]));
     }
 }

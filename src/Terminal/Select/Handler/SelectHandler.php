@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Select\Handler;
 
+use Ninja\Cosmic\Terminal\Select\Input\CheckboxInput;
 use Ninja\Cosmic\Terminal\Select\Input\ColumnAwareInterface;
 use Ninja\Cosmic\Terminal\Select\Input\SelectInputInterface;
 use Ninja\Cosmic\Terminal\Terminal;
@@ -20,8 +21,7 @@ class SelectHandler
 
     protected int $row;
     protected int $column;
-    protected bool $firstRun     = false;
-    protected int $terminalWidth = 0;
+    protected bool $firstRun = false;
 
     /**
      * @param resource $stream
@@ -29,8 +29,9 @@ class SelectHandler
     public function __construct(
         protected SelectInputInterface & ColumnAwareInterface $question,
         protected OutputInterface $output,
-        protected $stream = STDIN,
+        protected mixed $stream = STDIN,
         protected ?int $columns = null,
+        protected ?int $terminalWidth = null
     ) {
         $this->row    = 0;
         $this->column = 0;
@@ -45,7 +46,9 @@ class SelectHandler
     {
         $this->firstRun = true;
         $ctrlMode       = $this->question->controlMode();
-        $usage          = $ctrlMode === self::SIMPLE_CTR ? '[<comment>ENTER=select</>]' : '[<comment>SPACE=select</>, <comment>ENTER=submit</>]';
+        $usage          = $ctrlMode === self::SIMPLE_CTR ?
+            '[<comment>ENTER=select</comment>]' :
+            '[<comment>SPACE=select</comment>, <comment>ENTER=submit</comment>]';
 
         $this->output->writeln('');
         $this->output->writeln('<text>' . $this->question->getMessage() . '</text> ' . $usage);
@@ -58,12 +61,12 @@ class SelectHandler
         while (!feof($this->stream)) {
             $char = fread($this->stream, 1);
             if (" " === $char && $ctrlMode !== self::SIMPLE_CTR) {
-                $this->tryCellSelection();
+                $this->select();
             } elseif ("\033" === $char) {
-                $this->tryCellNavigation($char, $ctrlMode);
+                $this->navigate($char, $ctrlMode);
             } elseif (10 === ord($char)) {
                 if ($ctrlMode === self::SIMPLE_CTR && !$this->question->hasSelections()) {
-                    $this->tryCellSelection();
+                    $this->select();
                 }
                 $this->clear();
                 break;
@@ -107,20 +110,24 @@ class SelectHandler
     protected function right(): void
     {
         if ($this->exists($this->row, $this->column + 1)) {
-            $this->column += 1;
+            ++$this->column;
         }
     }
 
-    protected function tryCellSelection(): void
+    protected function select(): void
     {
         // Try to select cell.
         if ($this->exists($this->row, $this->column)) {
             $option = $this->question->getEntryAt($this->row, $this->column);
-            $this->question->select($option);
+            if ($this->question->isSelected($option)) {
+                $this->question->deselect($option);
+            } else {
+                $this->question->select($option);
+            }
         }
     }
 
-    protected function tryCellNavigation(string $char, int $ctrlMode = self::DEFAULT_CTR): void
+    protected function navigate(string $char, int $ctrlMode = self::DEFAULT_CTR): void
     {
         $char .= fread($this->stream, 2);
         if (empty($char[2]) || !in_array($char[2], ['A', 'B', 'C', 'D'])) {
@@ -142,7 +149,7 @@ class SelectHandler
                 break;
         }
         if ($ctrlMode === self::SIMPLE_CTR) {
-            $this->tryCellSelection();
+            $this->select();
         }
     }
 
@@ -177,13 +184,14 @@ class SelectHandler
 
     protected function message(): string
     {
-        $chunkSize   = $this->getColumns();
-        $chunks      = $this->question->getColumns($chunkSize);
-        $columnSpace = (int)floor(($this->terminalWidth() - ($chunkSize * 5)) / $chunkSize);
-        return implode(PHP_EOL, array_map(function ($entries) use ($chunks, $columnSpace) {
-            $hasCursor = $this->row === array_search($entries, $chunks, true);
+        $columnSize  = $this->getColumns();
+        $columns     = $this->question->getColumns($columnSize);
+        $columnSpace = (int)floor(($this->terminalWidth() - ($columnSize * 5)) / $columnSize);
+
+        return implode(PHP_EOL, array_map(function ($entries) use ($columns, $columnSpace) {
+            $hasCursor = $this->row === array_search($entries, $columns, true);
             return $this->makeRow($entries, ($hasCursor ? $this->column : -10), $columnSpace);
-        }, $chunks));
+        }, $columns));
     }
 
     protected function makeRow(array $entries, int $activeColumn, int $columnSpace): string
@@ -199,9 +207,27 @@ class SelectHandler
         $selected = $this->question->isSelected($option);
         $name     = substr($option, 0, ($maxWidth - 1));
 
+        return
+            $this->isMultiple() ?
+                $this->checkbox($name, $selected, $hasCursor, $maxWidth) :
+                $this->radio($name, $selected, $hasCursor, $maxWidth);
+    }
+
+    protected function checkbox(string $name, bool $selected, bool $hasCursor, int $maxWidth): string
+    {
         return sprintf(
             $hasCursor ? ' <hl> %1$s %2$s </hl>' : ' <%3$s> %1$s %2$s </%3$s>',
-            ($selected ? Terminal::getTheme()->getIcon("selected") : Terminal::getTheme()->getIcon("unselected")),
+            ($selected ? Terminal::getTheme()->getIcon("checkbox_selected") : Terminal::getTheme()->getIcon("checkbox")),
+            $name . str_repeat(' ', $maxWidth - mb_strlen($name)),
+            ($selected ? 'info' : 'comment')
+        );
+    }
+
+    protected function radio(string $name, bool $selected, bool $hasCursor, int $maxWidth): string
+    {
+        return sprintf(
+            $hasCursor ? ' <hl> %1$s %2$s </hl>' : ' <%3$s> %1$s %2$s </%3$s>',
+            ($selected ? Terminal::getTheme()->getIcon("radio_selected") : Terminal::getTheme()->getIcon("radio")),
             $name . str_repeat(' ', $maxWidth - mb_strlen($name)),
             ($selected ? 'info' : 'comment')
         );
@@ -209,15 +235,15 @@ class SelectHandler
 
     public function terminalWidth(): int
     {
-        return terminal()->width();
+        return $this->terminalWidth ?? terminal()->width();
     }
 
     public function getColumns(): int
     {
-        return $this->columns ?? $this->chunkSize();
+        return $this->columns ?? $this->columnSize();
     }
 
-    public function chunkSize(): int
+    public function columnSize(): int
     {
         $max     = $this->terminalWidth();
         $largest = array_reduce($this->question->getOptions(), 'max', 0);
@@ -231,6 +257,11 @@ class SelectHandler
         }
 
         return 3;
+    }
+
+    protected function isMultiple(): bool
+    {
+        return $this->question instanceof CheckboxInput;
     }
 
 }

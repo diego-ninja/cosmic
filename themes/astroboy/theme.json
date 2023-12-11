@@ -1,7 +1,7 @@
 {
   "name": "astroboy",
   "version": "1.0.0",
-  "description": "Default Cosmic Terminal Theme",
+  "description": "Solarized Cosmic Terminal Theme",
   "extends": "default",
   "colors": {
     "text": "#fdf6e3",
@@ -27,6 +27,10 @@
     "warn": {
       "fg": "#cb4b16",
       "options": ["blink"]
+    },
+    "hl": {
+      "fg": "#fdf6e3",
+      "bg": "#657b83"
     }
   },
   "icons": {

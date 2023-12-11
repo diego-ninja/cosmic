@@ -268,7 +268,8 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             options: self::LICENSES,
             allowMultiple: false,
             output: Terminal::output(),
-            columns: 2
+            columns: 3,
+            maxWidth: 90
         );
 
         Terminal::body()->writeln(" 📄 License: <info>$license[0]</info>");
