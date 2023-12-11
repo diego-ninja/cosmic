@@ -66,6 +66,51 @@ final class CompletionCommand extends CosmicCommand
         return $this->success();
     }
 
+    public function getCommandHelp(): ?string
+    {
+        $fullCommand = $_SERVER['PHP_SELF'];
+        $commandName = basename($fullCommand);
+        $fullCommand = @realpath($fullCommand) ?: $fullCommand;
+
+        $shell                     = self::guessShell();
+        [$rcFile, $completionFile] = match ($shell) {
+            'fish'  => ['~/.config/fish/config.fish', "/etc/fish/completions/$commandName.fish"],
+            'zsh'   => ['~/.zshrc', '$fpath[1]/_' . $commandName],
+            default => ['~/.bashrc', "/etc/bash_completion.d/$commandName"],
+        };
+
+        $supportedShells = implode(', ', $this->getSupportedShells());
+
+        return <<<EOH
+        The <info>%command.name%</> command dumps the shell completion script required
+        to use shell autocompletion (currently, {$supportedShells} completion are supported).
+
+        <comment>Static installation
+        -------------------</>
+
+        Dump the script to a global completion file and restart your shell:
+
+            <info>%command.full_name% {$shell} | sudo tee {$completionFile}</>
+
+        Or dump the script to a local file and source it:
+
+            <info>%command.full_name% {$shell} > completion.sh</>
+
+            <comment># source the file whenever you use the project</>
+            <info>source completion.sh</>
+
+            <comment># or add this line at the end of your "{$rcFile}" file:</>
+            <info>source /path/to/completion.sh</>
+
+        <comment>Dynamic installation
+        --------------------</>
+
+        Add this to the end of your shell configuration file (e.g. <info>"{$rcFile}"</>):
+
+            <info>eval "$({$fullCommand} completion {$shell})"</>
+        EOH;
+    }
+
     private function getSupportedShells(): array
     {
         if (!empty($this->supported_shells)) {

@@ -122,7 +122,7 @@ class TextDescriptor extends AbstractDescriptor
     {
         $command->mergeApplicationDefinition(false);
 
-        if ($description = $command->getDescription()) {
+        if ($description = EnvironmentReplacer::replace($command->getDescription())) {
             $this->writeText('<comment>Description:</comment>', $options);
             $this->writeText("\n");
             $this->writeText('  ' . $description);

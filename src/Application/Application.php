@@ -190,6 +190,7 @@ final class Application extends \Symfony\Component\Console\Application
             ->defaults($command->getDefaults())
             ->setAliases($command->getAliases())
             ->setIcon($command->getCommandIcon())
+            ->setHelp($command->getCommandHelp() ?? "")
             ->setApplication($this);
 
         return $this;
@@ -213,6 +214,7 @@ final class Application extends \Symfony\Component\Console\Application
                 ->defaults($command->getDefaults())
                 ->setAliases($command->getAliases())
                 ->setIcon($command->getCommandIcon())
+                ->setHelp($command->getCommandHelp() ?? "")
                 ->setApplication($this);
         }
 
