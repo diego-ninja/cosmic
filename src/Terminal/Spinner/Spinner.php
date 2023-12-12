@@ -6,6 +6,8 @@ namespace Ninja\Cosmic\Terminal\Spinner;
 
 use Exception;
 use JsonException;
+use Ninja\Cosmic\Terminal\Spinner\Exception\SpinnerStyleFileNotFoundException;
+use Ninja\Cosmic\Terminal\Spinner\Exception\SpinnerStyleFileParsingException;
 use Ninja\Cosmic\Terminal\Terminal;
 use RuntimeException;
 
@@ -51,16 +53,20 @@ class Spinner
 
     private function loadStyles(): void
     {
-        $spinner_style_file = __DIR__ . '/spinners.json';
-        if (!file_exists($spinner_style_file)) {
-            throw new RuntimeException(sprintf('Spinner styles definitions file %s not found', $spinner_style_file));
+        $this->styles = $this->getStylesFromJsonFile(__DIR__ . '/spinners.json');
+    }
+
+    private function getStylesFromJsonFile(string $file): array
+    {
+        if (!file_exists($file)) {
+            throw SpinnerStyleFileNotFoundException::withFile($file);
         }
 
         try {
-            $spinner_json = file_get_contents($spinner_style_file);
-            $this->styles = json_decode($spinner_json, true, 512, JSON_THROW_ON_ERROR);
+            $json = file_get_contents($file);
+            return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            throw new RuntimeException('Could not load spinner styles', 0, $e);
+            throw SpinnerStyleFileParsingException::withFile($file, $e);
         }
     }
 

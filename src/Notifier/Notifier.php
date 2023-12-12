@@ -38,6 +38,11 @@ class Notifier
         self::getInstance()->notifyError($message);
     }
 
+    public static function notify(string $message): void
+    {
+        self::getInstance()->notifySuccess($message);
+    }
+
     private function notifySuccess(string $message): void
     {
         $this->notifier->send($this->getSuccessNotification($message));
