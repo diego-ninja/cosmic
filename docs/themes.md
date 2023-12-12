@@ -146,8 +146,6 @@ The recommended way for generating application ANSI logos is to use the followin
 
 🤓 PRO TIP: If you convert your notification icon into an ANSI logo using the above site, you can use the same image for both the logo and the notification icon, giving your application a consistent look.
 
-```bash
-
 ## Extending a theme
 
 If you want to create a new theme that is based on an existing theme but with some modifications, you can extend the existing theme class and override the `getStyles` method to add or modify styles.
