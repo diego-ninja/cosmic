@@ -1,4 +1,4 @@
-# 🎨 Terminal Themes
+# 🎨 Terminal Themes (DRAFT)
 
 ## Overview
 
@@ -148,35 +148,7 @@ The recommended way for generating application ANSI logos is to use the followin
 
 ## Extending a theme
 
-If you want to create a new theme that is based on an existing theme but with some modifications, you can extend the existing theme class and override the `getStyles` method to add or modify styles.
-
-Here's an example:
-
-```php
-namespace Ninja\Cosmic\Terminal\Theme;
-
-class MyExtendedTheme extends ExistingTheme
-{
-    public function getName(): string
-    {
-        return 'my-extended-theme';
-    }
-
-    public function getStyles(): array
-    {
-        // Get the styles from the parent theme
-        $styles = parent::getStyles();
-
-        // Modify an existing style
-        $styles['highlight']->setBackground('green');
-
-        // Add a new style
-        $styles['warning'] = new OutputFormatterStyle('black', 'yellow');
-
-        return $styles;
-    }
-}
-```
+TBA
 
 ## Enabling a Theme at Runtime
 
