@@ -31,9 +31,13 @@ trait CommandAttributeTrait
     {
         $args = [];
 
-        $attributes = $this->reflector->getAttributes(Option::class, ReflectionAttribute::IS_INSTANCEOF);
+        $attributes = array_merge(
+            $this->reflector->getAttributes(Option::class, ReflectionAttribute::IS_INSTANCEOF),
+            $this->reflector->getAttributes(Argument::class, ReflectionAttribute::IS_INSTANCEOF)
+        );
+
         foreach ($attributes as $attribute) {
-            $option        = $attribute->newInstance()->option;
+            $option        = $attribute->newInstance()->name;
             $args[$option] = $attribute->newInstance()->description ?? null;
         }
 
@@ -44,9 +48,13 @@ trait CommandAttributeTrait
     {
         $defaults = [];
 
-        $attributes = $this->reflector->getAttributes(Option::class, ReflectionAttribute::IS_INSTANCEOF);
+        $attributes = array_merge(
+            $this->reflector->getAttributes(Option::class, ReflectionAttribute::IS_INSTANCEOF),
+            $this->reflector->getAttributes(Argument::class, ReflectionAttribute::IS_INSTANCEOF)
+        );
+
         foreach ($attributes as $attribute) {
-            $option            = str_replace("--", "", $attribute->newInstance()->option);
+            $option            = str_replace("--", "", $attribute->newInstance()->name);
             $defaults[$option] = $attribute->newInstance()->default ?? null;
         }
 

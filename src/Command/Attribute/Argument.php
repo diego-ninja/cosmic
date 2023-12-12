@@ -8,15 +8,16 @@ use Attribute;
 use InvalidArgumentException;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-class Option
+class Argument
 {
     public function __construct(
         public string $name,
         public string $description,
         public ?string $default = null,
     ) {
-        if (!str_starts_with($name, "--")) {
-            throw new InvalidArgumentException("Option name must start with --");
+        if (str_starts_with($name, "--")) {
+            throw new InvalidArgumentException("Argument name must start with a letter");
         }
     }
+
 }

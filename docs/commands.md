@@ -1,4 +1,4 @@
-## 🛠️ Creating Commands
+# 🛠️ Commands
 
 ### Step 1: Implementing and extending
 
@@ -24,8 +24,8 @@ namespace Ninja\Cosmic\Command;
 #[Name('my_command')]  
 #[Description('This is my command')]  
 #[Signature('my_command [--argument=] [--option]')]  
-#[Option('--argument', 'This is an argument', 'default_value')]  
-#[Option('--option', 'This is an option')]
+#[Argument('argument', 'This is an argument')]  
+#[Option('--option', 'This is an option', 'default_value')]
 #[Alias("mycommand:alias")]
 #[Env("DEV")]
 #[Env("STAGING")]
@@ -92,13 +92,16 @@ final class MyCommand extends CosmicCommand implements CommandInterface
 ```  
 
 #### Option (Repeatable)
-Defines an option or an argument for the command. **Options** are always optional by default, and  they start with a double dash in its name, if an option should be required, then it should be an argument. Arguments and options can have a description and a default value, that can be defined as the second and third parameter of the attribute.
+Defines an option for the command. **Options** are always optional by default, and  they start with a double dash in its name, if an option should be required, then it should be an argument. Options can have a description and a default value, that can be defined as the second and third parameter of the attribute.
+
+#### Argument (Repeatable)
+Defines an argument for the command. Arguments can have a description and a default value, that can be defined as the second and third parameter of the attribute.
 
 #### Env (Repeatable)
 Defines the environments where the command is enabled, if this attribute is not present the command will be always enabled. This is useful if you need to define commands that should be disabled in certain environments, for example, a command that flushes databases could be disabled in PROD environment.
 
 Commands that are suitable to be enabled or disabled in a certain environment should implement the `EnvironmentAwareInterface'. CosmicCommand` class, via the `CommandAttributeTrait` already implements the methods exposed by the interface.
-### Hidden
+#### Hidden
 If this attribute is present, the command will not appear in the command list, this attribute doesn't disable the command, just hide it from the list. If you need to disable a command, you can use the `Env` attribute to completely enable or disable a command depending on the running environment.
 
 #### Decorated

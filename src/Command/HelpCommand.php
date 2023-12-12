@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Command;
 
+use Ninja\Cosmic\Command\Attribute\Argument;
 use Ninja\Cosmic\Command\Attribute\Decorated;
 use Ninja\Cosmic\Command\Attribute\Description;
 use Ninja\Cosmic\Command\Attribute\Icon;
@@ -24,7 +25,7 @@ use Symfony\Component\Console\Helper\DescriptorHelper;
 #[Signature("help [--raw] [--format=] [command_name]")]
 #[Option("--raw", "To output raw command help")]
 #[Option("--format", "The output format (txt, xml, json, or md)", "txt")]
-#[Option("command_name", "The command name", "help")]
+#[Argument("command_name", "The command name", "help")]
 #[Decorated(false)]
 final class HelpCommand extends CosmicCommand
 {

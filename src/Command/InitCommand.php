@@ -6,6 +6,7 @@ namespace Ninja\Cosmic\Command;
 
 use Exception;
 use Ninja\Cosmic\Command\Attribute\Alias;
+use Ninja\Cosmic\Command\Attribute\Argument;
 use Ninja\Cosmic\Command\Attribute\Description;
 use Ninja\Cosmic\Command\Attribute\Icon;
 use Ninja\Cosmic\Command\Attribute\Name;
@@ -30,7 +31,7 @@ use function Cosmic\unzip;
 #[Name("init")]
 #[Description("Initialize and configure a new <info>cosmic</info> application")]
 #[Signature("init [--path=] [name]")]
-#[Option("name", "The name of the new application", null)]
+#[Argument("name", "The name of the new application", null)]
 #[Option("--path", "The path to initialize the new application in", null)]
 #[Alias("app:init")]
 final class InitCommand extends CosmicCommand implements NotifiableInterface

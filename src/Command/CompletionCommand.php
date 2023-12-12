@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Command;
 
 use DirectoryIterator;
+use Ninja\Cosmic\Command\Attribute\Argument;
 use Ninja\Cosmic\Command\Attribute\Decorated;
 use Ninja\Cosmic\Command\Attribute\Description;
 use Ninja\Cosmic\Command\Attribute\Icon;
 use Ninja\Cosmic\Command\Attribute\Name;
-use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Terminal\Terminal;
 use Symfony\Component\Console\Command\CompleteCommand;
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Command\CompleteCommand;
 #[Name("completion")]
 #[Description('Dump the shell completion script. <comment>[default: "{env.shell}"]</comment>')]
 #[Signature("completion [shell]")]
-#[Option("shell", 'The shell type (e.g. "bash"), the value of the "$SHELL" env var will be used if this is not given')] //phpcs:ignore
+#[Argument("shell", 'The shell type (e.g. "bash"), the value of the "$SHELL" env var will be used if this is not given')] //phpcs:ignore
 #[Decorated(false)]
 final class CompletionCommand extends CosmicCommand
 {

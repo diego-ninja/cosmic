@@ -45,6 +45,12 @@ class Table
         return $this;
     }
 
+    public function addRow(array $row): self
+    {
+        $this->data[] = $row;
+        return $this;
+    }
+
     public function display(?OutputInterface $output): void
     {
         $output ? $output->writeln($this->render()) : Terminal::output()->writeln($this->render());
