@@ -131,6 +131,10 @@ This section holds miscellaneous configuration used along the application, at th
 
 
 You can use the default theme as guide when you need to define a new theme,
+
+### notification.png
+This file is used when displaying an os-based notification using the Notifier class, the recomended settings for this file is an PNG image of width and height of 512px and transparent background.
+
 ### logo.php
 This file is a PHP script that returns a string containing ANSI escape codes. These codes are used to format text in a terminal, allowing for things like color changes and cursor movements. It represents the colorful banner with the app logo that is displayed when the about command is executed
 
@@ -139,8 +143,11 @@ To generate a file like this, you would need to design your logo or banner using
 The recommended way for generating application ANSI logos is to use the following site with the Unicode + True Color options enabled:
 
 [Image to ANSI](https://dom111.github.io/image-to-ansi/)
-### notification.png
-This file is used when displaying an os-based notification using the Notifier class, the recomended settings for this file is an PNG image of width and height of 512px and transparent background.
+
+🤓 PRO TIP: If you convert your notification icon into an ANSI logo using the above site, you can use the same image for both the logo and the notification icon, giving your application a consistent look.
+
+```bash
+
 ## Extending a theme
 
 If you want to create a new theme that is based on an existing theme but with some modifications, you can extend the existing theme class and override the `getStyles` method to add or modify styles.
