@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Command;
 
+use Exception;
 use InvalidArgumentException;
 use Ninja\Cosmic\Command\Input\Argument;
 use Ninja\Cosmic\Command\Input\Option;
+use Ninja\Cosmic\Replacer\CommandReplacer;
+use Ninja\Cosmic\Replacer\ReplacerFactory;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
@@ -18,6 +21,15 @@ final class Command extends SymfonyCommand
     protected string $icon = '';
 
     protected bool $decorated = true;
+
+    /**
+     * @throws Exception
+     */
+    public function __construct(string $name = null)
+    {
+        ReplacerFactory::registerReplacer(CommandReplacer::forCommand($this));
+        parent::__construct($name);
+    }
 
     public function isDecorated(): bool
     {

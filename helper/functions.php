@@ -7,6 +7,7 @@ namespace Cosmic;
 use Closure;
 use Ninja\Cosmic\Config\Exception\EnvironmentNotFoundException;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
+use Ninja\Cosmic\Replacer\ReplacerFactory;
 use Ninja\Cosmic\Terminal\Terminal;
 use Phar;
 use Symfony\Component\Process\Process;
@@ -203,5 +204,12 @@ if (!function_exists('Cosmic\find_env')) {
         }
 
         throw EnvironmentNotFoundException::forEnv($env_file);
+    }
+}
+
+if (!function_exists('Cosmic\replace')) {
+    function replace(string $string): string
+    {
+        return ReplacerFactory::r($string);
     }
 }

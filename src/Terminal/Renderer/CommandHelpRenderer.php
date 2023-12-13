@@ -6,10 +6,10 @@ namespace Ninja\Cosmic\Terminal\Renderer;
 
 use Ninja\Cosmic\Config\Env;
 use Ninja\Cosmic\Parser\MarkdownParser;
-use Ninja\Cosmic\Replacer\EnvironmentReplacer;
 use Ninja\Cosmic\Terminal\Terminal;
 use Symfony\Component\Console\Command\Command;
 
+use function Cosmic\replace;
 use function Termwind\render;
 use function Termwind\style;
 
@@ -69,8 +69,8 @@ class CommandHelpRenderer
 
     private function renderCommandInlineHelp(Command $command): void
     {
-        $description = EnvironmentReplacer::replace($command->getDescription());
-        $help        = EnvironmentReplacer::replace($command->getProcessedHelp());
+        $description = replace($command->getDescription());
+        $help        = replace($command->getProcessedHelp());
 
         if ($help && $help !== $description) {
             $this->renderHeader();

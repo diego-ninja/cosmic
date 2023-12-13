@@ -10,11 +10,22 @@ class EnvironmentReplacer extends AbstractReplacer
 {
     public const REPLACER_PREFIX = 'env';
 
-    public function getPlaceholderValue(string $placeholder): mixed
+    protected static ?EnvironmentReplacer $instance = null;
+
+    public static function getInstance(): EnvironmentReplacer
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
+
+    public function getPlaceholderValue(string $placeholder): string
     {
         if ($placeholder === "shell") {
             return Env::shell();
         }
-        return Env::get(strtoupper($placeholder));
+        return (string)Env::get(strtoupper($placeholder));
     }
 }

@@ -13,23 +13,19 @@ use Ninja\Cosmic\Replacer\Exception\UndefinedReplacerPrefixException;
 abstract class AbstractReplacer implements ReplacerInterface
 {
     public const REPLACER_PREFIX = null;
-    public static function getInstance(): static
-    {
-        return new static();
-    }
 
-    public static function replace(string $content): string
+    public function replace(string $content): string
     {
-        $placeholders = self::getInstance()->extractPlaceholders(
+        $placeholders = $this->extractPlaceholders(
             content: $content
         );
 
         foreach ($placeholders as $key => $placeholder) {
-            $value = self::getInstance()->getPlaceholderValue(
+            $value = $this->getPlaceholderValue(
                 placeholder: $key
             );
 
-            $content = self::getInstance()->replacePlaceholder(
+            $content = $this->replacePlaceholder(
                 content: $content,
                 placeholder: "{" . $placeholder . "}",
                 value: $value
@@ -85,6 +81,6 @@ abstract class AbstractReplacer implements ReplacerInterface
     {
         return static::REPLACER_PREFIX;
     }
-    abstract public function getPlaceholderValue(string $placeholder): mixed;
+    abstract public function getPlaceholderValue(string $placeholder): ?string;
 
 }

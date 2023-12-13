@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Descriptor;
 
-use Ninja\Cosmic\Replacer\EnvironmentReplacer;
 use Ninja\Cosmic\Terminal\Renderer\CommandHelpRenderer;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -15,6 +14,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 
+use function Cosmic\replace;
 use function strlen;
 
 class TextDescriptor extends AbstractDescriptor
@@ -122,7 +122,7 @@ class TextDescriptor extends AbstractDescriptor
     {
         $command->mergeApplicationDefinition(false);
 
-        if ($description = EnvironmentReplacer::replace($command->getDescription())) {
+        if ($description = replace($command->getDescription())) {
             $this->writeText('<comment>Description:</comment>', $options);
             $this->writeText("\n");
             $this->writeText('  ' . $description);
@@ -208,7 +208,7 @@ class TextDescriptor extends AbstractDescriptor
                     $command             = $commands[$name];
                     $command_icon        = method_exists($command, 'getIcon') ? $command->getIcon() : '';
                     $command_aliases     = $name === $command->getName() ? $this->getCommandAliasesText($command) : '';
-                    $command_description = EnvironmentReplacer::replace($command->getDescription());
+                    $command_description = replace($command->getDescription());
                     $this->writeText(sprintf('  %s <info>%s</info>%s%s', $command_icon, $name, str_repeat(' ', $spacing_width), $command_description . " " . $command_aliases), $options); //phpcs:ignore
                 }
             }

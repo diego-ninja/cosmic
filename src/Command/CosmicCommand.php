@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Command;
 
+use Exception;
 use Invoker\Exception\InvocationException;
 use Invoker\Exception\NotCallableException;
 use Ninja\Cosmic\Application\Application;
 use Ninja\Cosmic\Command\Attribute\CommandAttributeTrait;
 use Ninja\Cosmic\Notifier\NotifiableInterface;
 use Ninja\Cosmic\Notifier\Notifier;
-use Ninja\Cosmic\Replacer\EnvironmentReplacer;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
+
+use function Cosmic\replace;
 
 class CosmicCommand implements CommandInterface, EnvironmentAwareInterface
 {
@@ -23,6 +25,9 @@ class CosmicCommand implements CommandInterface, EnvironmentAwareInterface
     protected ReflectionClass $reflector;
     protected Application $application;
 
+    /**
+     * @throws Exception
+     */
     public function __construct()
     {
         $this->reflector = new ReflectionClass($this);
@@ -56,7 +61,7 @@ class CosmicCommand implements CommandInterface, EnvironmentAwareInterface
     protected function success(): int
     {
         if ($this instanceof NotifiableInterface) {
-            Notifier::success(EnvironmentReplacer::replace($this->getSuccessMessage()));
+            Notifier::success(replace($this->getSuccessMessage()));
         }
 
         return SymfonyCommand::SUCCESS;
@@ -65,7 +70,7 @@ class CosmicCommand implements CommandInterface, EnvironmentAwareInterface
     protected function failure(): int
     {
         if ($this instanceof NotifiableInterface) {
-            Notifier::error(EnvironmentReplacer::replace($this->getErrorMessage()));
+            Notifier::error(replace($this->getErrorMessage()));
         }
 
         return SymfonyCommand::FAILURE;

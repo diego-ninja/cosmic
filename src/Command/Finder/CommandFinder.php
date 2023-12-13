@@ -22,7 +22,7 @@ class CommandFinder
 
                 $item = sprintf("%s/%s", $command_dir, $item);
                 if (is_dir($item)) {
-                    $commands = array_merge($commands, self::find([$item], $commands));
+                    $commands = self::find([$item], $commands);
                 } elseif (self::isCommand($item)) {
                     $commands[] = $item;
                 }
