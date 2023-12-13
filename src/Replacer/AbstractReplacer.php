@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Replacer;
 
 use Exception;
+use Ninja\Cosmic\Replacer\Exception\UndefinedReplacerPrefixException;
 
+/**
+ * @phpstan-consistent-constructor
+ */
 abstract class AbstractReplacer implements ReplacerInterface
 {
     public const REPLACER_PREFIX = null;
@@ -41,7 +45,7 @@ abstract class AbstractReplacer implements ReplacerInterface
     public function __construct()
     {
         if (!defined('static::REPLACER_PREFIX')) {
-            throw new Exception("Replacer prefix cannot be null");
+            throw UndefinedReplacerPrefixException::forReplacer(replacer: static::class);
         }
     }
 
