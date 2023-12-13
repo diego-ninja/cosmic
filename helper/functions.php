@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cosmic;
 
 use Closure;
+use Ninja\Cosmic\Config\Env;
 use Ninja\Cosmic\Config\Exception\EnvironmentNotFoundException;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Replacer\ReplacerFactory;
@@ -45,6 +46,10 @@ if (!function_exists('Cosmic\value')) {
 if (!function_exists('Cosmic\is_phar')) {
     function is_phar(): bool
     {
+        if (is_cosmic()) {
+            return false;
+        }
+
         return Phar::running() !== '';
     }
 }
@@ -126,7 +131,9 @@ if (!function_exists('Cosmic\sudo')) {
                 return sprintf("pkexec --disable-internal-agent %s", $command);
             }
 
-            return sprintf("echo %s | sudo -S %s", $sudo_passwd, $command);
+            $password = decypher($sudo_passwd, Env::get("APP_KEY"));
+
+            return sprintf("echo %s | sudo -S %s", $password, $command);
         }
 
         return $command;
@@ -134,15 +141,14 @@ if (!function_exists('Cosmic\sudo')) {
 }
 
 if (!function_exists('Cosmic\mask')) {
-    function mask(string $string): string
+    function mask(string $string, ?int $length = null): string
     {
-        $length = strlen($string);
-        $mask   = str_repeat('*', $length);
-        return substr_replace($string, $mask, 0, $length);
+        $length = $length ?? strlen($string);
+        return str_repeat('*', $length);
     }
 }
 
-if (!function_exists('pluralize')) {
+if (!function_exists('Cosmic\pluralize')) {
     function pluralize(string $item): string
     {
         $lastChar = strtolower($item[strlen($item) - 1]);
@@ -211,5 +217,56 @@ if (!function_exists('Cosmic\replace')) {
     function replace(string $string): string
     {
         return ReplacerFactory::r($string);
+    }
+}
+
+if (!function_exists('Cosmic\is_cosmic')) {
+    function is_cosmic(): bool
+    {
+        $check = sprintf("%s/vendor/diego-ninja/cosmic", getcwd());
+        return file_exists($check);
+    }
+}
+
+if (!function_exists('Cosmic\randomize')) {
+    function randomize(int $length): string
+    {
+        return substr(
+            str_shuffle(
+                str_repeat(
+                    $x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                    (int)ceil($length / strlen($x))
+                )
+            ),
+            1,
+            $length
+        );
+    }
+}
+
+if (!function_exists('Cosmic\cypher')) {
+    function cypher(string $plain, string $key): string
+    {
+        $cipher = "AES-128-CBC";
+
+        $iv_length      = openssl_cipher_iv_length($cipher);
+        $iv             = openssl_random_pseudo_bytes($iv_length);
+        $ciphertext_raw = openssl_encrypt($plain, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+        $hmac           = hash_hmac('sha256', $ciphertext_raw, $key, true);
+        return base64_encode($iv . $hmac . $ciphertext_raw);
+    }
+}
+
+if (!function_exists('Cosmic\decypher')) {
+    function decypher(string $cipher_text, string $key): string
+    {
+        $cipher  = "AES-128-CBC";
+        $sha2len = 32;
+
+        $c              = base64_decode($cipher_text);
+        $iv_length      = openssl_cipher_iv_length($cipher);
+        $iv             = substr($c, 0, $iv_length);
+        $ciphertext_raw = substr($c, $iv_length + $sha2len);
+        return openssl_decrypt($ciphertext_raw, $cipher, $key, OPENSSL_RAW_DATA, $iv);
     }
 }

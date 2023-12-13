@@ -118,6 +118,7 @@ class Env
         }
 
         $ret["APP_NAME"]["value"] = self::appName();
+        $ret["APP_KEY"]["value"]  = mask(self::get("APP_KEY", ""));
 
         $ret["BASE_PATH"]["key"]   = "BASE_PATH";
         $ret["BASE_PATH"]["value"] = self::basePath();
@@ -133,7 +134,7 @@ class Env
 
         if (self::get("SUDO_PASSWORD", "") !== "") {
             $ret["SUDO_PASSWORD"]["key"]   = "SUDO_PASSWORD";
-            $ret["SUDO_PASSWORD"]["value"] = mask(self::get("SUDO_PASSWORD", ""));
+            $ret["SUDO_PASSWORD"]["value"] = mask(self::get("SUDO_PASSWORD", ""), 10);
         }
 
         sort($ret);

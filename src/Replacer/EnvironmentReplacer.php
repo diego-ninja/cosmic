@@ -26,6 +26,11 @@ class EnvironmentReplacer extends AbstractReplacer
         if ($placeholder === "shell") {
             return Env::shell();
         }
+
+        if ($placeholder === "app_version") {
+            return Env::appVersion();
+        }
+
         return (string)Env::get(strtoupper($placeholder));
     }
 }

@@ -6,6 +6,7 @@ use Ninja\Cosmic\Config\Env;
 use Ninja\Cosmic\Terminal\Terminal;
 
 use function Cosmic\find_env;
+use function Cosmic\is_cosmic;
 use function Cosmic\is_phar;
 
 if (false === in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
@@ -29,7 +30,7 @@ $dotenv = is_phar() ?
 $dotenv->safeLoad();
 
 try {
-    Terminal::loadThemes(Env::basePath("themes"));
+    Terminal::loadThemes(__DIR__ . "/themes");
     Terminal::enableTheme(Env::get("APP_THEME", "default"));
 
     $app = new Application(

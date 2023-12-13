@@ -7,3 +7,4 @@
 .env.local
 box.json
 .php-cs-fixer.cache
+

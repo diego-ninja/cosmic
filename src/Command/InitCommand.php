@@ -22,6 +22,9 @@ use Symfony\Component\Process\Process;
 use Termwind\Termwind;
 use ZipArchive;
 
+use function Cosmic\cypher;
+use function Cosmic\mask;
+use function Cosmic\randomize;
 use function Termwind\render;
 use function Cosmic\is_phar;
 use function Cosmic\git_config;
@@ -80,6 +83,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         $this->askApplicationAuthor();
         $this->askApplicationWebsite();
         $this->askApplicationLicense();
+        $this->askSudoPassword();
 
         if (Terminal::confirm("Do you confirm generation of the application?", "yes")) {
             Terminal::body()->clear();
@@ -177,7 +181,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     private function renameApplication(): bool
     {
         $command = sprintf(
-            "cd %s && mv cosmic-app %s && mv env .env && cp .env .env.local",
+            "cd %s && mv cosmic-app %s && mv env .env && cp .env .env.local && mkdir .cosmic",
             self::$replacements["{app.path}"],
             self::$replacements["{app.name}"]
         );
@@ -275,6 +279,21 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
 
         Terminal::body()->writeln(" 📄 License: <info>$license[0]</info>");
         self::$replacements["{app.license}"] = $license[0];
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    private function askSudoPassword(): void
+    {
+        $password = Terminal::ask(message: "🔑 Sudo password: ", hideAnswer: true, decorated: false);
+        Terminal::body()->writeln(" 🔑 Sudo password: <info>" . mask($password) . "</info>");
+        Terminal::footer()->clear();
+
+        $key = randomize(32);
+
+        self::$replacements["{app.key}"]       = $key;
+        self::$replacements["{sudo.password}"] = cypher($password, $key);
     }
 
     public function getSuccessMessage(): string
