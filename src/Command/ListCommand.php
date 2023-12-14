@@ -11,7 +11,7 @@ use Ninja\Cosmic\Command\Attribute\Hidden;
 use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
-use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Parser\MarkdownParser;
 use Ninja\Cosmic\Terminal\Descriptor\TextDescriptor;
 use Ninja\Cosmic\Terminal\Renderer\CommandHelpRenderer;

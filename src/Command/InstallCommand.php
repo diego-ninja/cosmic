@@ -12,7 +12,7 @@ use Ninja\Cosmic\Command\Attribute\Icon;
 use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
-use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Event\Lifecycle;
 use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
 use Ninja\Cosmic\Terminal\Terminal;

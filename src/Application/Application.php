@@ -21,7 +21,7 @@ use Ninja\Cosmic\Command\CommandInterface;
 use Ninja\Cosmic\Command\EnvironmentAwareInterface;
 use Ninja\Cosmic\Command\Finder\CommandFinder;
 use Ninja\Cosmic\Command\Parser\ExpressionParser;
-use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Event\Lifecycle;
 use Ninja\Cosmic\Reflector\CallableReflector;
 use Ninja\Cosmic\Resolver\HyphenatedInputResolver;

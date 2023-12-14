@@ -10,7 +10,7 @@ use Ninja\Cosmic\Command\Attribute\Description;
 use Ninja\Cosmic\Command\Attribute\Icon;
 use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Signature;
-use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
 use Ninja\Cosmic\Terminal\Table\Manipulator\BoolManipulator;
 use Ninja\Cosmic\Terminal\Table\Table;

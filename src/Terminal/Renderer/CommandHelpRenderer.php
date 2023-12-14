@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Renderer;
 
-use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Parser\MarkdownParser;
 use Ninja\Cosmic\Terminal\Terminal;
 use Symfony\Component\Console\Command\Command;

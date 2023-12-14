@@ -12,6 +12,7 @@
     "require": {
         "php": "^8.2",
         "ext-json": "*",
+        "ext-hash": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "ext-pcntl": "*",

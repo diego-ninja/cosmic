@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Installer;
 
 use Exception;
-use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ninja\Cosmic\Config\Exception;
+namespace Ninja\Cosmic\Environment\Exception;
 
 class EnvironmentNotFoundException extends \RuntimeException
 {

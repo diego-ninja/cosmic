@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Replacer;
 
-use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Environment\Env;
 
 class EnvironmentReplacer extends AbstractReplacer
 {

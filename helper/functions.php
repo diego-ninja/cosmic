@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Cosmic;
 
 use Closure;
-use Ninja\Cosmic\Config\Env;
-use Ninja\Cosmic\Config\Exception\EnvironmentNotFoundException;
+use Ninja\Cosmic\Environment\Env;
+use Ninja\Cosmic\Environment\Exception\EnvironmentNotFoundException;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Replacer\ReplacerFactory;
 use Ninja\Cosmic\Terminal\Terminal;
@@ -131,7 +131,7 @@ if (!function_exists('Cosmic\sudo')) {
                 return sprintf("pkexec --disable-internal-agent %s", $command);
             }
 
-            $password = decypher($sudo_passwd, Env::get("APP_KEY"));
+            $password = decipher($sudo_passwd, Env::get("APP_KEY"));
 
             return sprintf("echo %s | sudo -S %s", $password, $command);
         }
@@ -231,16 +231,11 @@ if (!function_exists('Cosmic\is_cosmic')) {
 if (!function_exists('Cosmic\randomize')) {
     function randomize(int $length): string
     {
-        return substr(
-            str_shuffle(
-                str_repeat(
-                    $x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-                    (int)ceil($length / strlen($x))
-                )
-            ),
-            1,
-            $length
-        );
+        if (extension_loaded('openssl')) {
+            return bin2hex(openssl_random_pseudo_bytes($length));
+        }
+
+        return bin2hex(random_bytes($length));
     }
 }
 
@@ -253,12 +248,13 @@ if (!function_exists('Cosmic\cypher')) {
         $iv             = openssl_random_pseudo_bytes($iv_length);
         $ciphertext_raw = openssl_encrypt($plain, $cipher, $key, OPENSSL_RAW_DATA, $iv);
         $hmac           = hash_hmac('sha256', $ciphertext_raw, $key, true);
+
         return base64_encode($iv . $hmac . $ciphertext_raw);
     }
 }
 
-if (!function_exists('Cosmic\decypher')) {
-    function decypher(string $cipher_text, string $key): string
+if (!function_exists('Cosmic\decipher')) {
+    function decipher(string $cipher_text, string $key): string
     {
         $cipher  = "AES-128-CBC";
         $sha2len = 32;
@@ -267,6 +263,7 @@ if (!function_exists('Cosmic\decypher')) {
         $iv_length      = openssl_cipher_iv_length($cipher);
         $iv             = substr($c, 0, $iv_length);
         $ciphertext_raw = substr($c, $iv_length + $sha2len);
+
         return openssl_decrypt($ciphertext_raw, $cipher, $key, OPENSSL_RAW_DATA, $iv);
     }
 }

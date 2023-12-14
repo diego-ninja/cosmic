@@ -6,7 +6,7 @@ namespace Ninja\Cosmic\Application\Builder;
 
 use Exception;
 use Ninja\Cosmic\Application\Compiler\BoxCompiler;
-use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
 use ReflectionException;
 use Symfony\Component\Process\Process;

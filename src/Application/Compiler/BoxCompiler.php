@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Application\Compiler;
 
-use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Exception\ConfigFileNotFound;
 use Ninja\Cosmic\Installer\PhiveInstaller;

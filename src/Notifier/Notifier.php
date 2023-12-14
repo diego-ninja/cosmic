@@ -6,7 +6,7 @@ namespace Ninja\Cosmic\Notifier;
 
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
-use Ninja\Cosmic\Config\Env;
+use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Terminal\Terminal;
 
 class Notifier
