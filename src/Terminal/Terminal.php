@@ -169,7 +169,7 @@ final class Terminal
     /**
      * @throws ReflectionException
      */
-    public static function confirm(string $message, ?string $default = null): bool
+    public static function confirm(string $message, ?string $default = null, ?bool $decorated = true): bool
     {
         if ($default !== null) {
             $answer_selector = match ($default) {
@@ -179,15 +179,24 @@ final class Terminal
             };
         }
 
-        $question = sprintf(
-            '<div class="mt-1 ml-1 mr-1"><span class="app-icon">%s</span><span class="question">%s</span> %s</div>',
-            self::getTheme()->getAppIcon(),
-            $message,
-            $answer_selector ?? "[yes/no]"
-        );
+        if ($decorated) {
+            $question = sprintf(
+                '<div class="mt-1 ml-1 mr-1"><span class="app-icon">%s</span><span class="question">%s</span> %s</div>',
+                self::getTheme()->getAppIcon(),
+                $message,
+                $answer_selector ?? "[yes/no]"
+            );
 
-        $question_length = mb_strlen($question);
-        print "\033[10C"; // Move the cursor 10 positions to the right
+        } else {
+            $question = sprintf(
+                '%s %s',
+                $message,
+                "[yes/no]"
+            );
+        }
+
+        //        $question_length = mb_strlen($question);
+        //        print sprintf("\033[%dC", $question_length);
         $answer = (new Question())->ask($question, false, $default, ["yes", "no"]);
 
         return $answer === 'yes' || $answer === 'y';

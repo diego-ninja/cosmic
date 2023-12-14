@@ -3,7 +3,6 @@
 
 use Ninja\Cosmic\Application\Application;
 use Ninja\Cosmic\Environment\Env;
-use Ninja\Cosmic\Environment\EnvironmentBuilder;
 use Ninja\Cosmic\Environment\Exception\EnvironmentNotFoundException;
 use Ninja\Cosmic\Terminal\Terminal;
 
@@ -26,8 +25,9 @@ if (false === in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
 try {
     $env_file = find_env();
 } catch (EnvironmentNotFoundException $e) {
-    EnvironmentBuilder::build(getcwd());
-    $env_file = find_env();
+    Terminal::reset();
+    Terminal::output()->writeln("<error>You need at least one environment file present to run a cosmic app. Please create them before continue.</error>");
+    die(1);
 }
 
 $dotenv = is_phar() ?

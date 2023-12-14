@@ -6,6 +6,7 @@ namespace Cosmic;
 
 use Closure;
 use Ninja\Cosmic\Environment\Env;
+use Ninja\Cosmic\Environment\EnvironmentBuilder;
 use Ninja\Cosmic\Environment\Exception\EnvironmentNotFoundException;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Replacer\ReplacerFactory;
@@ -127,7 +128,7 @@ if (!function_exists('Cosmic\sudo')) {
     function sudo(string $command, ?string $sudo_passwd = null): string
     {
         if (!is_root()) {
-            if (is_null($sudo_passwd)) {
+            if (is_null($sudo_passwd) || $sudo_passwd === "") {
                 return sprintf("pkexec --disable-internal-agent %s", $command);
             }
 
@@ -207,6 +208,12 @@ if (!function_exists('Cosmic\find_env')) {
 
         if (file_exists($env_path)) {
             return $env_file;
+        }
+
+        if (Terminal::confirm(message: "🤔 Environment files not found, create them now?", default: "yes", decorated: false)) {
+            EnvironmentBuilder::build(getcwd());
+            Terminal::reset();
+            return find_env();
         }
 
         throw EnvironmentNotFoundException::forEnv($env_file);

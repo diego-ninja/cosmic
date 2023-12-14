@@ -73,11 +73,43 @@ Cosmic will ask you for your sudo password to install the application. If you pr
 
 # 🧰 Usage
 
-Once installed you can use the `cosmic` command to generate, build and install your own application.
+Once installed you can use the `cosmic` command to generate, build and install your own application. 
+
+To generate a new application you can use the `app:init` command:
+
+```bash
+cosmic init
+```
+this command is interactive and will ask you for the name, author and other information about your application. Once the command finishes you will have a fully functional PHP application in the directory you specified.
+The generated application includes an example command, the `quote` command,  that you can use to test your application amd use as a reference to build your own commands.
+
+<pre> 
+php cosmic-app quote
+
+<font color="#EBCB8B"><i>- &quot;Once upon a midnight dreary, while I pondered, weak and weary...&quot;</i></font>
+
+ 🐦 The Raven - <font color="#81A1C1">Edgar Allan Poe</font> 
+</pre>
+
+The cosmic binary is able to detect if it is executed inside a cosmic application and will use the application environment instead of the bundled environment. This allows you to use the cosmic binary to build and install your application.
 
 ## Commands
 
 Cosmic comes with a set of commands that you can use to generate, build and install your own application, this default set of commands is called the `core` commands and are available in every Cosmic application.
+
+The cosmic core commands are:
+
+### 🛠️ init
+
+### 📦 build
+
+### 🚚 install
+
+### ❤️ about
+
+### 🔮 help
+
+### 🐚 completion
 
 # 📄 Documentation
 
