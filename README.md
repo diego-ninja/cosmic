@@ -1,6 +1,7 @@
 ![](assets/logo-portrait.png)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![wakatime](https://wakatime.com/badge/user/bd65f055-c9f3-4f73-92aa-3c9810f70cc3/project/018c0d4c-5525-4929-a0c3-da68ddd3448f.svg)](https://wakatime.com/badge/user/bd65f055-c9f3-4f73-92aa-3c9810f70cc3/project/018c0d4c-5525-4929-a0c3-da68ddd3448f)
 
 # 🛸 Overview
 
@@ -22,6 +23,7 @@ Cosmic needs the following to run:
    - openssl
    - pcntl
    - posix
+   - random
    - zip
  - [box](https://box-project.github.io/box/) to build the application phar file
 
@@ -65,6 +67,8 @@ cd cosmic
 composer install
 php cosmic app:install
 ```
+this will install the cosmic application in `/usr/local/bin` directory.
+Cosmic will ask you for your sudo password to install the application. If you prefer installing the application in another directory you can use the `--path` option.
 
 
 # 🧰 Usage
