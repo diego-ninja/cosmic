@@ -13,13 +13,13 @@ use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
-use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
+use Ninja\Cosmic\Installer\AptInstaller;
+use Ninja\Cosmic\Signer\KeySigner;
+use Ninja\Cosmic\Signer\UserSigner;
 use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
 use Ninja\Cosmic\Terminal\Table\Table;
 use Ninja\Cosmic\Terminal\Table\TableConfig;
 use Ninja\Cosmic\Terminal\Terminal;
-
-use Symfony\Component\Process\Process;
 
 use function Cosmic\find_binary;
 
@@ -35,106 +35,78 @@ class SignCommand extends CosmicCommand
 {
     public function __invoke(string $binary, ?string $user, ?string $key): int
     {
+        if (!$this->hasGPG()) {
+            throw BinaryNotFoundException::withBinary("gpg");
+        }
+
         if (!file_exists($binary)) {
-            Terminal::output()->writeln("Binary file <comment>{$binary}</comment> does not exist.");
-            return $this->failure();
+            Terminal::output()->writeln(
+                sprintf("Binary file <comment>%s</comment> does not exist.", $binary)
+            );
         }
 
         if (!$key && !$user) {
-            $default_key = $this->findGPGKey(Env::get("APP_AUTHOR_EMAIL"));
-            if ($default_key) {
-                Terminal::output()->writeln("Detected the following GPG key associated to the author email:");
-                Terminal::output()->writeln("");
-                $this->displayGPGKey($default_key, Env::get("APP_AUTHOR_EMAIL"));
-
-                if (Terminal::confirm("Do you want to use this key to sign the binary?", "yes")) {
-                    $this->executionResult = $this->signBinary($binary, Env::get("APP_AUTHOR_EMAIL"), $default_key);
-                    return $this->exit();
-                }
-
-                return $this->success();
-            }
-            Terminal::output()->writeln("You must provide a <comment>--user</comment> or <comment>--key</comment> to sign the binary.");
-            return $this->failure();
+            $this->executionResult = $this->tryDefaultSign($binary);
         }
 
         if ($user) {
-            $this->executionResult = $this->signBinary($binary, $user, $this->findGPGKey($user));
+            $this->executionResult = $this->sign($binary, $user, UserSigner::findGPGKey($user));
         }
 
         if ($key) {
-            $this->executionResult = $this->signBinary($binary, null, $key);
+            $this->executionResult = $this->sign($binary, null, $key);
         }
 
         return $this->exit();
     }
 
-    private function signBinary(string $binary, ?string $user, ?string $key): bool
+    private function hasGPG(): bool
     {
         $gpg = find_binary("gpg");
         if (!$gpg) {
-            throw BinaryNotFoundException::withBinary("gpg");
+            Terminal::output()->writeln("Binary <comment>gpg</comment> not found.");
+            if (Terminal::confirm(
+                sprintf("Do you want <info>%s</info> try to install the missing %s binary?", Env::get("APP_NAME"), "gpg"),
+                "yes"
+            )) {
+                $installer = new AptInstaller(Terminal::output());
+                $installer->addPackage("gpg");
+                $is_installed = $installer->install();
+                if (!$is_installed) {
+                    Terminal::output()->writeln("Unable to install <comment>gpg</comment> binary. Please install it manually.");
+                    return false;
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
-        if (file_exists(sprintf("%s.asc", $binary))) {
-            unlink(sprintf("%s.asc", $binary));
-        }
-
-        if ($user) {
-            $command = sprintf("%s -u %s --detach-sign --output %s.asc %s", $gpg, $user, $binary, $binary);
-            return SpinnerFactory::for(
-                callable: Process::fromShellCommandline($command),
-                message: sprintf(
-                    "Signing binary <comment>%s</comment> for user <info>%s</info> with key <notice>%s</notice>",
-                    $binary,
-                    $user,
-                    $this->getKeyID($key)
-                )
-            );
-        }
-
-        if ($key) {
-            $command = sprintf("%s --default-key %s --detach-sign --output %s.asc %s", $gpg, $key, $binary, $binary);
-            return SpinnerFactory::for(
-                callable: Process::fromShellCommandline($command),
-                message: sprintf("Signing binary <info>%s</info> with key <info>%s</info>", $binary, $key)
-            );
-        }
-
-        return false;
+        return true;
 
     }
 
-    private function findGPGKey(?string $user_email): ?string
+    private function tryDefaultSign(string $binary): bool
     {
-        $gpg = find_binary("gpg");
-        if (!$gpg) {
-            throw BinaryNotFoundException::withBinary("gpg");
-        }
+        $default_key = UserSigner::findGPGKey(Env::get("APP_AUTHOR_EMAIL"));
+        if ($default_key) {
+            Terminal::output()->writeln("Detected the following GPG key associated to the author email:");
+            Terminal::output()->writeln("");
+            $this->displayGPGKey($default_key, Env::get("APP_AUTHOR_EMAIL"));
 
-        $user_email = $user_email ?? Env::get("APP_AUTHOR_EMAIL");
-
-        $command = sprintf("%s --list-keys --keyid-format LONG %s", $gpg, $user_email);
-        $process = Process::fromShellCommandline($command);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            return null;
-        }
-
-        $output = $process->getOutput();
-        $lines  = explode("\n", $output);
-        $key    = null;
-        foreach ($lines as $line) {
-            if (str_starts_with($line, "pub")) {
-                $parts = explode("  ", $line);
-                $key   = trim($parts[1]);
-                break;
+            if (Terminal::confirm("Do you want to use this key to sign the binary?", "yes")) {
+                $this->executionResult = $this->sign($binary, Env::get("APP_AUTHOR_EMAIL"), $default_key);
+                return true;
             }
         }
 
-        return $key;
+        return false;
+    }
 
+    private function sign(string $binary, ?string $user, ?string $key): bool
+    {
+        return $user ? (new UserSigner($binary, $user, $key))->sign() : (new KeySigner($binary, $key))->sign();
     }
 
     private function displayGPGKey(string $key, string $user): void
@@ -150,8 +122,8 @@ class SignCommand extends CosmicCommand
         $config->setPadding(1);
 
         $table = (new Table(data: $data, columns: [], config: $config))
-            ->addColumn(new TableColumn(name: 'ENV VAR', key: 'key', color: 'cyan'))
-            ->addColumn((new TableColumn(name: 'VALUE', key: 'value')));
+            ->addColumn(new TableColumn(name: '', key: 'key', color: 'cyan'))
+            ->addColumn((new TableColumn(name: '', key: 'value')));
 
         $table->display(Terminal::output());
     }
@@ -183,13 +155,5 @@ class SignCommand extends CosmicCommand
                 "value" => $matches['usage'] ?? null,
             ],
         ];
-    }
-
-    private function getKeyID(string $key): string
-    {
-        $pattern = '/(?P<cypher>\w+)\/(?P<key_id>\w+)\s(?P<created_at>\d{4}-\d{2}-\d{2})\s\[(?P<usage>\w+)\]\s\[expires:\s(?P<expires_at>\d{4}-\d{2}-\d{2})\]/';
-        preg_match($pattern, $key, $matches);
-
-        return sprintf("%s/%s", $matches["cypher"], $matches['key_id']);
     }
 }

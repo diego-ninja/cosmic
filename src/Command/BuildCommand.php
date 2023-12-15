@@ -44,6 +44,10 @@ final class BuildCommand extends CosmicCommand implements NotifiableInterface
             }
         } else {
             $this->executionResult = $this->builder->build(Env::env());
+            if ($this->executionResult) {
+                if (Terminal::confirm("Do you want to sign the binary?", "yes")) {
+                }
+            }
         }
 
         Lifecycle::dispatchLifecycleEvent(

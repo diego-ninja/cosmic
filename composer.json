@@ -1,8 +1,21 @@
 {
     "name": "diego-ninja/cosmic",
-    "description": "Cosmic CLI microframework compatible with Symfony Console",
+    "description": "The ultimate php framework for building CLI applications.",
     "license": "MIT",
     "type": "library",
+    "keywords": [
+        "cli",
+        "console",
+        "framework",
+        "application",
+        "command",
+        "command-line",
+        "terminal",
+        "shell",
+        "themes",
+        "spinner",
+        "table"
+    ],
     "authors": [
         {
             "name": "Diego Rin Martin",
