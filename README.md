@@ -19,13 +19,13 @@
 
 Cosmic is, in one hand a PHP framework for building CLI applications, and in the other hand a CLI application for building PHP applications.
 
-- 🛸 [Overview](./docs/overview)
-- ✋ [Requirements](./docs/requirements)
-- 📦 [Installation](./docs/installation)
-  - [Using Phive](./docs/installation#using-phive)
-  - [GitHub releases](./docs/installation#github-releases)
-  - [Building from source](./docs/installation#building-from-source)
-- 🧰 [Basic usage](./docs/usage)
-  - [Bundled Commands](./docs/usage#bundled-commands)
-- 🤝 [Contributing](./docs/contributing)
-- 🙏 [Credits](./docs/credits)
+- 🛸 [Overview](./docs/overview.md)
+- ✋ [Requirements](./docs/requirements.md)
+- 📦 [Installation](./docs/installation.md)
+  - [Using Phive](./docs/installation.md#using-phive)
+  - [GitHub releases](./docs/installation.md#github-releases)
+  - [Building from source](./docs/installation.md#building-from-source)
+- 🧰 [Basic usage](./docs/usage.md)
+  - [Bundled Commands](./docs/usage.md#bundled-commands)
+- 🤝 [Contributing](./docs/contributing.md)
+- 🙏 [Credits](./docs/credits.md)
