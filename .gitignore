@@ -1,6 +1,7 @@
 /vendor
 /.idea
 /.vscode
+/builds
 .phpunit.result.cache
 .phpunit.cache/
 .env
