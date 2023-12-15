@@ -25,7 +25,7 @@ use function Cosmic\find_binary;
 
 #[Icon("🔏")]
 #[Name("sign")]
-#[Description("Sign the built binary into <comment>builds</comment> directory")]
+#[Description("Sign the binary passed as parameter with the provided GPG key.")]
 #[Signature("sign [--user=] [--key=] [binary]")]
 #[Argument("binary", description: "The binary to sign")]
 #[Option("--user", description: "The user email to sign the binary")]
