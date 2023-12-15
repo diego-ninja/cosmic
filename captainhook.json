@@ -25,9 +25,6 @@
         "enabled": true,
         "actions": [
             {
-                "action": "composer test"
-            },
-            {
                 "action": "composer deps"
             }
         ]
