@@ -44,7 +44,8 @@
         "ramsey/uuid": "^4.7",
         "symfony/console": "^6",
         "symfony/process": "^6",
-        "vlucas/phpdotenv": "^5"
+        "vlucas/phpdotenv": "^5",
+        "nesbot/carbon": "^2.72"
     },
     "require-dev": {
         "captainhook/captainhook": "^5.10",

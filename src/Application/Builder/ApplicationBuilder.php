@@ -22,7 +22,7 @@ readonly class ApplicationBuilder
     public function build(string $environment): bool
     {
         return
-            $this->setup($environment) && $this->compiler->compile() && $this->rename($environment) && $this->restore();
+            $this->setup($environment) && $this->compiler->compile() && $this->restore();
     }
 
     /**
@@ -61,25 +61,4 @@ readonly class ApplicationBuilder
             message: 'Restoring initial environment'
         );
     }
-
-    /**
-     * @throws Exception
-     */
-    private function rename(string $env): bool
-    {
-        $new_name = $env && $env !== ENV_LOCAL ?
-            sprintf("%s.%s", Env::appName(), $env) :
-            sprintf("%s", Env::appName());
-
-        $command = sprintf("mv builds/%s.phar builds/%s", Env::appName(), $new_name);
-
-        return SpinnerFactory::for(
-            callable: (Process::fromShellCommandline($command))->setWorkingDirectory(Env::basePath()),
-            message: sprintf(
-                'Renaming built phar binary to <info>%s</info>',
-                $new_name
-            )
-        );
-    }
-
 }
