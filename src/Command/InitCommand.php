@@ -14,7 +14,11 @@ use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Notifier\NotifiableInterface;
+use Ninja\Cosmic\Terminal\Input\Question;
 use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
+use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
+use Ninja\Cosmic\Terminal\Table\Table;
+use Ninja\Cosmic\Terminal\Table\TableConfig;
 use Ninja\Cosmic\Terminal\Terminal;
 use Phar;
 use ReflectionException;
@@ -58,6 +62,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     ];
 
     private static array $replacements = [];
+    private static array $summary      = [];
 
     /**
      * @throws ReflectionException
@@ -65,7 +70,6 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
      */
     public function __invoke(?string $name, ?string $path): int
     {
-        Termwind::renderUsing(Terminal::header());
         render(
             sprintf(
                 "<div class='m-1 bg-cyan p-4 w-80'>%s</div>",
@@ -73,9 +77,9 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             )
         );
 
-        Terminal::header()->writeln(" This utility will walk you through creating a new <info>cosmic</info> application.");
-        Terminal::header()->writeln(" Press <comment>^C</comment> at any time to quit.");
-        Terminal::header()->writeln("");
+        Terminal::output()->writeln(" This utility will walk you through creating a new <info>cosmic</info> application.");
+        Terminal::output()->writeln(" Press <comment>^C</comment> at any time to quit.");
+        Terminal::output()->writeln("");
 
         $this->askPackageName();
         $this->askApplicationPath();
@@ -85,7 +89,11 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         $this->askApplicationLicense();
         $this->askSudoPassword();
 
-        if (Terminal::confirm("Do you confirm generation of the application?", "yes")) {
+        Terminal::clear(count(self::$summary));
+        Terminal::output()->writeln("");
+        $this->displaySummary();
+
+        if (Question::confirm("Do you confirm generation of the application?")) {
             Terminal::body()->clear();
             Terminal::body()->writeln("");
             Terminal::body()->writeln(
@@ -95,7 +103,6 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
                 )
             );
 
-            Terminal::footer()->clear();
             $this->executionResult = $this->expandApplication() && $this->replacePlaceholders() && $this->installApplicationDependencies() && $this->renameApplication();
 
             if ($this->executionResult) {
@@ -191,64 +198,47 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         );
     }
 
-    /**
-     * @throws ReflectionException
-     */
     private function askPackageName(): void
     {
         $default_name = sprintf("%s/cosmic-app", get_current_user());
-        $package_name = Terminal::ask(
-            message: sprintf("%s Package name (vendor/name): ", "📦"),
+        $package_name = Question::ask(
+            message: sprintf(" %s <question>Package name</question> (vendor/name):", "📦"),
             default: $default_name,
             decorated: false
         );
         [,$binary_name] = explode("/", $package_name);
 
-        Terminal::body()->writeln(" 📦 Package name: <info>$package_name</info>");
-        Terminal::body()->writeln(" ⚙️  Binary name: <info>$binary_name</info>");
-        Terminal::footer()->clear();
+        self::$summary[] = ["key" => "📦 Package name", "value" => $package_name];
+        self::$summary[] = ["key" => "🚀 Binary name", "value" => $binary_name];
 
         self::$replacements["{app.name}"]     = $binary_name;
         self::$replacements["{app.root}"]     = ucfirst($binary_name);
         self::$replacements["{package.name}"] = $package_name;
     }
 
-    /**
-     * @throws ReflectionException
-     */
     private function askApplicationPath(): void
     {
         $default_path = getcwd();
-        $path         = Terminal::ask(message: "📁 Application path: ", default: $default_path, decorated: false);
+        $path         = Question::ask(message: " 📁 <question>Application path</question>:", default: $default_path, decorated: false);
 
+        self::$summary[] = ["key" => "📁 Application path ", "value" => $path];
         self::$replacements["{app.path}"] = $path;
-
-        Terminal::body()->writeln(" 📁 Application path: <info>$path</info>");
-        Terminal::footer()->clear();
     }
 
-    /**
-     * @throws ReflectionException
-     */
     private function askApplicationDescription(): void
     {
-        $description = Terminal::ask(message: "🔖 Description: ", decorated: false);
-        Terminal::body()->writeln(" 🔖 Description: <info>$description</info>");
-        Terminal::footer()->clear();
+        $description = Question::ask(message: " 📄 <question>Description</question>:", decorated: false);
 
+        self::$summary[] = ["key" => "📄 Description", "value" => $description ?? ""];
         self::$replacements["{app.description}"] = $description;
     }
 
-    /**
-     * @throws ReflectionException
-     */
     private function askApplicationAuthor(): void
     {
-        $author = Terminal::ask(message: " 🥷 Author: ", default: git_config("user.name"), decorated: false);
-        Terminal::footer()->clear();
-        $email = Terminal::ask(message: " 📧 E-Mail: ", default: git_config("user.email"), decorated: false);
-        Terminal::body()->writeln(" 🥷 Author: <info>$author</info> <$email>");
-        Terminal::footer()->clear();
+        $author = Question::ask(message: " 🥷 <question>Author</question>:", default: git_config("user.name"), decorated: false);
+        $email = Question::ask(message: " 📧 <question>E-Mail</question>:", default: git_config("user.email"), decorated: false);
+
+        self::$summary[] = ["key" => "🥷 Author", "value" => sprintf("%s <%s>", $author, $email)];
 
         self::$replacements["{author.name}"]  = $author;
         self::$replacements["{author.email}"] = $email;
@@ -259,17 +249,16 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
      */
     private function askApplicationWebsite(): void
     {
-        $website = Terminal::ask(message: " 🌎 Website: ", default: git_config("user.website"), decorated: false);
-        Terminal::body()->writeln(" 🌎 Website: <info>$website</info>");
-        Terminal::footer()->clear();
+        $website = Question::ask(message: " 🌎 <question>Website</question>:", default: git_config("user.website"), decorated: false);
 
+        self::$summary[] = ["key" => "🌎 Website", "value" => $website];
         self::$replacements["{author.url}"] = $website;
     }
 
     private function askApplicationLicense(): void
     {
         $license = Terminal::select(
-            message: " 📄 License: ",
+            message: " 🔎 <question>License</question>: ",
             options: self::LICENSES,
             allowMultiple: false,
             output: Terminal::output(),
@@ -277,24 +266,49 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             maxWidth: 90
         );
 
-        Terminal::body()->writeln(" 📄 License: <info>$license[0]</info>");
+        self::$summary[] = ["key" => "🔎 License", "value" => $license[0]];
         self::$replacements["{app.license}"] = $license[0];
     }
 
-    /**
-     * @throws ReflectionException
-     */
     private function askSudoPassword(): void
     {
-        $password = Terminal::ask(message: "🔑 Sudo password: ", hideAnswer: true, decorated: false);
-        Terminal::body()->writeln(" 🔑 Sudo password: <info>" . mask($password) . "</info>");
-        Terminal::footer()->clear();
+        $password = Question::hidden(message: " 🔑 <question>Sudo password</question>:", decorated: false);
+        if ($password) {
+            $key = randomize(32);
 
-        $key = randomize(32);
+            self::$replacements["{app.key}"]       = $key;
+            self::$replacements["{sudo.password}"] = cypher($password, $key);
 
-        self::$replacements["{app.key}"]       = $key;
-        self::$replacements["{sudo.password}"] = cypher($password, $key);
+            self::$summary[] = ["key" => "🔑 Sudo password", "value" => mask($password, 10)];
+        }
     }
+
+    private function displaySummary(): void
+    {
+        $config = new TableConfig();
+        $config->setShowHeader(false);
+        $config->setPadding(1);
+
+        (new Table(data: self::$summary, columns: [], config: $config))
+            ->addColumn(new TableColumn(name: '', key: 'key', color: 'cyan'))
+            ->addColumn((new TableColumn(name: '', key: 'value')))
+            ->display(Terminal::output());
+    }
+
+    private function clearForm(): void
+    {
+        Terminal::output()->write("\033[2A");
+        Terminal::output()->write("\033[2K");
+        Terminal::output()->write("\033[1A");
+        Terminal::output()->write("\033[2K");
+        Terminal::output()->write("\033[2A");
+        Terminal::output()->write("\033[2K");
+        Terminal::output()->write("\033[1A");
+        Terminal::output()->write("\033[2K");
+        Terminal::output()->write("\033[1A");
+        Terminal::output()->write("\033[2K");
+    }
+
 
     public function getSuccessMessage(): string
     {

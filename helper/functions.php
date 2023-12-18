@@ -11,6 +11,7 @@ use Ninja\Cosmic\Environment\Exception\EnvironmentNotFoundException;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Exception\UnexpectedValueException;
 use Ninja\Cosmic\Replacer\ReplacerFactory;
+use Ninja\Cosmic\Terminal\Input\Question;
 use Ninja\Cosmic\Terminal\Terminal;
 use Phar;
 use ReflectionException;
@@ -245,7 +246,7 @@ if (!function_exists('Cosmic\find_env')) {
             return $env_file;
         }
 
-        if (Terminal::confirm(message: "🤔 Environment files not found, create them now?", default: "yes", decorated: false)) {
+        if (Question::confirm(message: " 🤔 Environment files not found, create them now?", decorated: false)) {
             EnvironmentBuilder::build(getcwd());
             Terminal::reset();
             return find_env();

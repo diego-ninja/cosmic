@@ -15,6 +15,7 @@ use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Environment\Env;
+use Ninja\Cosmic\Terminal\Input\Question;
 use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
 use Ninja\Cosmic\Terminal\Terminal;
 
@@ -54,7 +55,7 @@ final class PublishCommand extends CosmicCommand
 
         $this->displayRelease($release);
 
-        if (Terminal::confirm(message: "Do you want to publish the release?", default: "yes")) {
+        if (Question::confirm(message: "Do you want to publish the release?")) {
             $this->executionResult = SpinnerFactory::for(
                 callable:  static function () use ($release): bool {
                     return (new GithubClientPublisher())->publish($release) !== null;

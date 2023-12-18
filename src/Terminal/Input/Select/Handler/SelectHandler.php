@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Ninja\Cosmic\Terminal\Select\Handler;
+namespace Ninja\Cosmic\Terminal\Input\Select\Handler;
 
-use Ninja\Cosmic\Terminal\Select\Input\CheckboxInput;
-use Ninja\Cosmic\Terminal\Select\Input\ColumnAwareInterface;
-use Ninja\Cosmic\Terminal\Select\Input\SelectInputInterface;
+use Ninja\Cosmic\Terminal\Input\Select\Input\CheckboxInput;
+use Ninja\Cosmic\Terminal\Input\Select\Input\ColumnAwareInterface;
+use Ninja\Cosmic\Terminal\Input\Select\Input\SelectInputInterface;
 use Ninja\Cosmic\Terminal\Terminal;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use function Termwind\terminal;
 
 class SelectHandler
@@ -47,8 +46,8 @@ class SelectHandler
         $this->firstRun = true;
         $ctrlMode       = $this->question->controlMode();
         $usage          = $ctrlMode === self::SIMPLE_CTR ?
-            '[<comment>ENTER=select</comment>]' :
-            '[<comment>SPACE=select</comment>, <comment>ENTER=submit</comment>]';
+            '[<question>ENTER=select</question>]' :
+            '[<question>SPACE=select</question>, <question>ENTER=submit</question>]';
 
         $this->output->writeln('');
         $this->output->writeln('<text>' . $this->question->getMessage() . '</text> ' . $usage);
@@ -219,7 +218,7 @@ class SelectHandler
             $hasCursor ? ' <hl> %1$s %2$s </hl>' : ' <%3$s> %1$s %2$s </%3$s>',
             ($selected ? Terminal::getTheme()->getIcon("checkbox_selected") : Terminal::getTheme()->getIcon("checkbox")),
             $name . str_repeat(' ', $maxWidth - mb_strlen($name)),
-            ($selected ? 'info' : 'comment')
+            ($selected ? 'info' : 'question')
         );
     }
 
@@ -229,7 +228,7 @@ class SelectHandler
             $hasCursor ? ' <hl> %1$s %2$s </hl>' : ' <%3$s> %1$s %2$s </%3$s>',
             ($selected ? Terminal::getTheme()->getIcon("radio_selected") : Terminal::getTheme()->getIcon("radio")),
             $name . str_repeat(' ', $maxWidth - mb_strlen($name)),
-            ($selected ? 'info' : 'comment')
+            ($selected ? 'info' : 'question')
         );
     }
 

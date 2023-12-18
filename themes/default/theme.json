@@ -5,7 +5,7 @@
     "colors": {
         "text": "#E5E9F0",
         "comment": "#EBCB8B",
-        "info": "#81A1C1",
+        "info": "#88C0D0",
         "notice": "#8FBCBB",
         "warning": "#D08770",
         "error": "#BF616A",
@@ -19,6 +19,8 @@
         "blue": "#81A1C1",
         "purple": "#B48EAD",
         "cyan": "#88C0D0",
+        "question": "#88C0D0",
+        "default": "#88C0D0",
         "hl": {
             "fg": "#E5E9F0",
             "bg": "#4C566A"

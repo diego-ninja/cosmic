@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ninja\Cosmic\Terminal\Select\Input;
+namespace Ninja\Cosmic\Terminal\Input\Select\Input;
 
-use Ninja\Cosmic\Terminal\Select\Input\Exception\UnknownOptionException;
+use Ninja\Cosmic\Terminal\Input\Select\Input\Exception\UnknownOptionException;
 
 class RadioInput extends AbstractSelect
 {
