@@ -32,6 +32,12 @@ The init command is used to generate a new application boilerplate. After execut
 ### 📦 build
 The build command is used to build your application into a single PHAR file. This file can be used to distribute your application to other users.
 
+### 🔑 sign
+The sign command is used to sign the application PHAR file using GPG. This command requires the GPG key ID to sign the PHAR file. You can use the `--key` or `--user` options to specify the key ID or you can set the `APP_SIGNING_KEY` environment variable to the key ID.
+
+### 🚀 publish
+The publish command is used to publish a new release of your application to GitHub. At the moment this command uses the GitHub CLI under the hood to create the release, so you need to have the GitHub CLI installed and configured to use this command.
+
 ### 🚚 install
 The install command is used to install your application in the system. This command will copy the PHAR file to the `/usr/local/bin` directory and will make the file executable system-wide . This command requires sudo privileges.
 

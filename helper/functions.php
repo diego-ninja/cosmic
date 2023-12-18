@@ -9,9 +9,13 @@ use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Environment\EnvironmentBuilder;
 use Ninja\Cosmic\Environment\Exception\EnvironmentNotFoundException;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
+use Ninja\Cosmic\Exception\UnexpectedValueException;
 use Ninja\Cosmic\Replacer\ReplacerFactory;
 use Ninja\Cosmic\Terminal\Terminal;
 use Phar;
+use ReflectionException;
+use ReflectionNamedType;
+use ReflectionProperty;
 use Symfony\Component\Process\Process;
 
 if (!function_exists('Cosmic\snakeize')) {
@@ -52,6 +56,17 @@ if (!function_exists('Cosmic\is_phar')) {
         }
 
         return Phar::running() !== '';
+    }
+}
+
+if (!function_exists('Cosmic\is_git')) {
+    function is_git(): bool
+    {
+        $command = sprintf("%s rev-parse --is-inside-work-tree", find_binary("git"));
+        $process = Process::fromShellCommandline($command);
+        $process->run();
+
+        return $process->isSuccessful();
     }
 }
 
@@ -121,6 +136,26 @@ if (!function_exists("Cosmic\is_root")) {
     function is_root(): bool
     {
         return posix_getuid() === 0;
+    }
+}
+
+if (!function_exists("Cosmic\is_nullable")) {
+    /**
+     * @throws UnexpectedValueException
+     */
+    function is_nullable(string $property, string $classname = null): bool
+    {
+        try {
+            $type = (new ReflectionProperty($classname, $property))->getType();
+            if ($type !== null) {
+                /** @var ReflectionNamedType $type */
+                return $type->allowsNull();
+            }
+
+            return false;
+        } catch (ReflectionException $e) {
+            throw UnexpectedValueException::fromException($e);
+        }
     }
 }
 
@@ -272,5 +307,20 @@ if (!function_exists('Cosmic\decipher')) {
         $ciphertext_raw = substr($c, $iv_length + $sha2len);
 
         return openssl_decrypt($ciphertext_raw, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+    }
+}
+
+if (!function_exists('Cosmic\human_filesize')) {
+    function human_filesize(int $bytes, int $precision = 2): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+
+        $bytes = max($bytes, 0);
+        $pow   = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow   = min($pow, count($units) - 1);
+
+        $bytes /= (1 << (10 * $pow));
+
+        return sprintf('%s %s', round($bytes, $precision), $units[$pow]);
     }
 }

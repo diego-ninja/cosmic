@@ -12,3 +12,4 @@ Cosmic needs the following to run:
     - zip
 - [box](https://box-project.github.io/box/) to build the application phar file
 - [gpg](https://www.gnupg.org/) to sign the application phar file
+- [gh](https://cli.github.com/) to create releases on GitHub

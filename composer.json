@@ -33,6 +33,7 @@
         "ext-random": "*",
         "ext-zip": "*",
         "jolicode/jolinotif": "^2",
+        "nesbot/carbon": "^2.72",
         "nunomaduro/collision": "^7",
         "nunomaduro/termwind": "^1.15",
         "phlak/config": "^8.0",

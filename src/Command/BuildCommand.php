@@ -10,7 +10,10 @@ use Ninja\Cosmic\Command\Attribute\Alias;
 use Ninja\Cosmic\Command\Attribute\Description;
 use Ninja\Cosmic\Command\Attribute\Icon;
 use Ninja\Cosmic\Command\Attribute\Name;
+use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
+use Ninja\Cosmic\Crypt\KeyRing;
+use Ninja\Cosmic\Crypt\SignerInterface;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Event\Lifecycle;
 use Ninja\Cosmic\Notifier\NotifiableInterface;
@@ -20,7 +23,8 @@ use ReflectionException;
 #[Icon("📦")]
 #[Name("build")]
 #[Description("Build <info>{env.app_name}</info> binary into <comment>builds</comment> directory")]
-#[Signature("build")]
+#[Signature("build [--sign]")]
+#[Option("--sign", description: "Sign the binary after building it. A key for the author email must exist in the keychain.")]
 #[Alias("app:build")]
 final class BuildCommand extends CosmicCommand implements NotifiableInterface
 {
@@ -32,7 +36,7 @@ final class BuildCommand extends CosmicCommand implements NotifiableInterface
     /**
      * @throws ReflectionException
      */
-    public function __invoke(): int
+    public function __invoke(?bool $sign): int
     {
         Terminal::body()->writeln("");
         if (Env::env() === ALL_OPTION) {
@@ -44,8 +48,13 @@ final class BuildCommand extends CosmicCommand implements NotifiableInterface
             }
         } else {
             $this->executionResult = $this->builder->build(Env::env());
-            if ($this->executionResult) {
-                if (Terminal::confirm("Do you want to sign the binary?", "yes")) {
+            if ($this->executionResult && $sign) {
+                $keyring      = KeyRing::public();
+                $built_binary = sprintf("./builds/%s.phar", Env::get("APP_NAME"));
+
+                $default_key = $keyring->all()->getByEmail(Env::get("APP_AUTHOR_EMAIL"));
+                if ($default_key instanceof SignerInterface) {
+                    $this->executionResult = $default_key->sign($built_binary);
                 }
             }
         }

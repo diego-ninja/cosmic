@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Exception;
 
-class BinaryNotFoundException extends \RuntimeException
+class BinaryNotFoundException extends CosmicException
 {
     public static function withBinary(string $binary): self
     {

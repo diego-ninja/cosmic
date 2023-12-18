@@ -15,7 +15,7 @@ final class SelectInput extends RadioInput
             throw new BadMethodCallException('Can\'t create selection without options');
         }
 
-        parent::__construct($message, $options, [$options[0]]);
+        parent::__construct($message, $options);
     }
 
     public function controlMode(): int

@@ -73,7 +73,7 @@ final class InstallCommand extends CosmicCommand
     private function install(string $path): bool
     {
         $command = sprintf(
-            "mv %s/builds/%s %s/%s",
+            "mv %s/builds/%s.phar %s/%s",
             Env::basePath(),
             Env::appName(),
             $path,

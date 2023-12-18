@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ninja\Cosmic\Signer\Exception;
+namespace Ninja\Cosmic\Crypt\Exception;
 
 class SignatureFileNotFoundException extends \RuntimeException
 {
