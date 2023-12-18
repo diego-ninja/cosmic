@@ -5,9 +5,15 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Crypt;
 
 use Carbon\CarbonImmutable;
+use Ninja\Cosmic\Terminal\RenderableInterface;
+use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
+use Ninja\Cosmic\Terminal\Table\Table;
+use Ninja\Cosmic\Terminal\Table\TableableInterface;
+use Ninja\Cosmic\Terminal\Table\TableConfig;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /** @phpstan-consistent-constructor */
-abstract class AbstractKey implements KeyInterface
+abstract class AbstractKey implements KeyInterface, TableableInterface, RenderableInterface
 {
     protected KeyCollection $keys;
     public function __construct(
@@ -81,4 +87,56 @@ abstract class AbstractKey implements KeyInterface
             is_subclass_of($this, SignerInterface::class) && $this->isAbleTo(KeyInterface::GPG_USAGE_SIGN);
     }
 
+    public static function getSignatureFilePath(string $file_path): string
+    {
+        return sprintf("%s.%s", $file_path, SignerInterface::SIGNATURE_SUFFIX);
+    }
+
+    public function render(OutputInterface $output): void
+    {
+        $config = new TableConfig();
+        $config->setShowHeader(false);
+        $config->setPadding(1);
+
+        $table = (new Table(data: $this->getTableData(), columns: [], config: $config))
+            ->addColumn(new TableColumn(name: '', key: 'key', color: 'cyan'))
+            ->addColumn((new TableColumn(name: '', key: 'value')));
+
+        $table->display($output);
+
+    }
+
+    public function getTableData(): array
+    {
+        return [
+            'Key ID' => [
+                "key"   => "⬡ Key ID",
+                "value" => $this->id ?? null,
+            ],
+            'Method' => [
+                "key"   => "⬡ Method",
+                "value" => $this->method ?? null,
+            ],
+            'Created' => [
+                "key"   => "⬡ Created",
+                "value" => $this->createdAt->toFormattedDateString(),
+            ],
+            'Expires' => [
+                "key"   => "⬡ Expires",
+                "value" => $this->expiresAt ? $this->expiresAt->toFormattedDateString() : '',
+            ],
+            'Usage' => [
+                "key"   => "⬡ Usage",
+                "value" => $this->usage ?? null,
+            ],
+            'Fingerprint' => [
+                "key"   => "⬡ Fingerprint",
+                "value" => $this->fingerprint ?? null,
+            ],
+            'User ID' => [
+                "key"   => "⬡ User ID",
+                "value" => (string)$this->uid,
+            ],
+        ];
+    }
 }

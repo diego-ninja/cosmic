@@ -18,14 +18,11 @@ use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Installer\AptInstaller;
 use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
-use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
-use Ninja\Cosmic\Terminal\Table\Table;
-use Ninja\Cosmic\Terminal\Table\TableConfig;
 use Ninja\Cosmic\Terminal\Terminal;
 
 use function Cosmic\find_binary;
 
-#[Icon("🔏")]
+#[Icon("🔑")]
 #[Name("sign")]
 #[Description("Sign the binary passed as parameter with the provided GPG key.")]
 #[Signature("sign [-u|--user=] [-k|--key-id=] [binary]")]
@@ -112,7 +109,7 @@ class SignCommand extends CosmicCommand
         Terminal::output()->writeln("Using the following GPG key to sign the selected file:");
         Terminal::output()->writeln("");
 
-        $this->displayGPGKey($user_key);
+        $user_key->render(Terminal::output());
 
         if (Terminal::confirm("Do you want to use this key to sign the binary?", "yes")) {
             $this->executionResult = $this->sign($binary, $user_key);
@@ -149,7 +146,7 @@ class SignCommand extends CosmicCommand
         Terminal::output()->writeln("");
         Terminal::output()->writeln("Detected the following GPG key associated to the key id:");
         Terminal::output()->writeln("");
-        $this->displayGPGKey($key);
+        $key->render(Terminal::output());
 
         if (Terminal::confirm("Do you want to use this key to sign the binary?", "yes")) {
             $this->executionResult = $this->sign($binary, $key);
@@ -161,14 +158,17 @@ class SignCommand extends CosmicCommand
 
     private function tryDefaultSign(string $binary): bool
     {
-        $keyring     = KeyRing::public();
-        $default_key = $keyring->all()->getByEmail(Env::get("APP_AUTHOR_EMAIL"));
+        $keyring = KeyRing::public();
+
+        $default_key = Env::get("APP_SIGNING_KEY") ?
+            $keyring->all()->getById(Env::get("APP_SIGNING_KEY")) :
+            $keyring->all()->getByEmail(Env::get("APP_AUTHOR_EMAIL"));
 
         if ($default_key) {
             Terminal::output()->writeln("");
             Terminal::output()->writeln("Detected the following GPG key associated to the author email:");
             Terminal::output()->writeln("");
-            $this->displayGPGKey($default_key);
+            $default_key->render(Terminal::output());
 
             if (Terminal::confirm("Do you want to use this key to sign the binary?", "yes")) {
                 $this->executionResult = $this->sign($binary, $default_key);
@@ -194,51 +194,4 @@ class SignCommand extends CosmicCommand
 
     }
 
-    private function displayGPGKey(AbstractKey $key): void
-    {
-        $data   = $this->formatKeyData($key);
-        $config = new TableConfig();
-        $config->setShowHeader(false);
-        $config->setPadding(1);
-
-        $table = (new Table(data: $data, columns: [], config: $config))
-            ->addColumn(new TableColumn(name: '', key: 'key', color: 'cyan'))
-            ->addColumn((new TableColumn(name: '', key: 'value')));
-
-        $table->display(Terminal::output());
-    }
-
-    private function formatKeyData(AbstractKey $key): array
-    {
-        return [
-            'Key ID' => [
-                "key"   => "Key ID",
-                "value" => $key->id ?? null,
-            ],
-            'Method' => [
-                "key"   => "Method",
-                "value" => $key->method ?? null,
-            ],
-            'Created' => [
-                "key"   => "Created",
-                "value" => $key->createdAt->toFormattedDateString(),
-            ],
-            'Expires' => [
-                "key"   => "Expires",
-                "value" => $key->expiresAt ? $key->expiresAt->toFormattedDateString() : '',
-            ],
-            'Usage' => [
-                "key"   => "Usage",
-                "value" => $key->usage ?? null,
-            ],
-            'Fingerprint' => [
-                "key"   => "Fingerprint",
-                "value" => $key->fingerprint ?? null,
-            ],
-            'User ID' => [
-                "key"   => "User ID",
-                "value" => (string)$key->uid,
-            ],
-        ];
-    }
 }

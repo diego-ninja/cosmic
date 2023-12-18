@@ -274,3 +274,19 @@ if (!function_exists('Cosmic\decipher')) {
         return openssl_decrypt($ciphertext_raw, $cipher, $key, OPENSSL_RAW_DATA, $iv);
     }
 }
+
+if (!function_exists('Cosmic\human_filesize')) {
+    function human_filesize(string $filename, int $precision = 2): string
+    {
+        $bytes = filesize($filename);
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+
+        $bytes = max($bytes, 0);
+        $pow   = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow   = min($pow, count($units) - 1);
+
+        $bytes /= (1 << (10 * $pow));
+
+        return sprintf('%s %s', round($bytes, $precision), $units[$pow]);
+    }
+}

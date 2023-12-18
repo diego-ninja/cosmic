@@ -33,6 +33,7 @@
         "ext-random": "*",
         "ext-zip": "*",
         "jolicode/jolinotif": "^2",
+        "nesbot/carbon": "^2.72",
         "nunomaduro/collision": "^7",
         "nunomaduro/termwind": "^1.15",
         "phlak/config": "^8.0",
@@ -44,8 +45,7 @@
         "ramsey/uuid": "^4.7",
         "symfony/console": "^6",
         "symfony/process": "^6",
-        "vlucas/phpdotenv": "^5",
-        "nesbot/carbon": "^2.72"
+        "vlucas/phpdotenv": "^5"
     },
     "require-dev": {
         "captainhook/captainhook": "^5.10",

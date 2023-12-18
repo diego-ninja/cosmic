@@ -22,11 +22,11 @@ final class PublicKey extends AbstractKey implements SignerInterface
 
         try {
             $command = sprintf(
-                "%s --batch --yes --default-key %s --detach-sign --output %s.asc %s",
+                "%s --batch --yes --default-key %s --detach-sign --output %s %s",
                 find_binary("gpg"),
                 $this->id,
-                $file_path,
-                $this->getSignatureFilePath($file_path)
+                self::getSignatureFilePath($file_path),
+                $file_path
             );
 
             $process = Process::fromShellCommandline($command);
@@ -45,7 +45,7 @@ final class PublicKey extends AbstractKey implements SignerInterface
             throw new \RuntimeException("This key is not able to sign/verify");
         }
 
-        if (!file_exists($this->getSignatureFilePath($file_path))) {
+        if (!file_exists(self::getSignatureFilePath($file_path))) {
             throw SignatureFileNotFoundException::for($file_path);
         }
 
@@ -53,7 +53,7 @@ final class PublicKey extends AbstractKey implements SignerInterface
             $command = sprintf(
                 "%s --verify %s %s",
                 find_binary("gpg"),
-                $this->getSignatureFilePath($file_path),
+                self::getSignatureFilePath($file_path),
                 $file_path
             );
 
@@ -65,11 +65,6 @@ final class PublicKey extends AbstractKey implements SignerInterface
         } catch (ProcessFailedException $e) {
             return false;
         }
-    }
-
-    private function getSignatureFilePath(string $file_path): string
-    {
-        return sprintf("%s.%s", $file_path, SignerInterface::SIGNATURE_SUFFIX);
     }
 
 }
