@@ -139,7 +139,7 @@ class Asset
             "%s [%s] [%s]",
             $this->name,
             $this->state,
-            $this->size ?? human_filesize($this->path)
+            $this->size ? human_filesize($this->size): human_filesize(filesize($this->path))
         );
     }
 

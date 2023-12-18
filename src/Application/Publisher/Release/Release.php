@@ -7,17 +7,18 @@ namespace Ninja\Cosmic\Application\Publisher\Release;
 use Carbon\CarbonImmutable;
 use Ninja\Cosmic\Application\Publisher\Asset\Asset;
 use Ninja\Cosmic\Application\Publisher\Asset\AssetCollection;
-use Ninja\Cosmic\Terminal\RenderableInterface;
-use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
-use Ninja\Cosmic\Terminal\Table\Table;
+use Ninja\Cosmic\Exception\MissingInterfaceException;
+use Ninja\Cosmic\Serializer\SerializableInterface;
+use Ninja\Cosmic\Serializer\SerializableTrait;
 use Ninja\Cosmic\Terminal\Table\TableableInterface;
-use Ninja\Cosmic\Terminal\Table\TableConfig;
+use Ninja\Cosmic\Terminal\Table\TableableTrait;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class Release implements TableableInterface, RenderableInterface
+final class Release implements TableableInterface, SerializableInterface
 {
+    use SerializableTrait;
+    use TableableTrait;
     private AssetCollection $assets;
-
     public CarbonImmutable $createdAt;
     public ?CarbonImmutable $publishedAt = null;
 
@@ -114,59 +115,13 @@ final class Release implements TableableInterface, RenderableInterface
         return $this->isPrerelease;
     }
 
-    public function toArray(): array
-    {
-        return [
-            'name'         => $this->name,
-            'tagName'      => $this->tagName,
-            'description'  => $this->description,
-            'url'          => $this->url,
-            'isDraft'      => $this->isDraft,
-            'isPrerelease' => $this->isPrerelease,
-            'createdAt'    => $this->createdAt->format('Y-m-d H:i:s'),
-            'publishedAt'  => $this->publishedAt?->format('Y-m-d H:i:s') ?? "unpublished",
-            'assets'       => $this->assets->toArray(),
-        ];
-    }
-
-    public function getTableData(): array
-    {
-        $formatted   = [];
-        $unformatted = $this->toArray();
-
-        $extract = static function ($value) {
-            if (is_bool($value)) {
-                return $value ? 'Yes' : 'No';
-            }
-
-            if (is_array($value)) {
-                return implode(', ', $value);
-            }
-
-            return $value ?? '';
-        };
-
-        foreach ($unformatted as $key => $value) {
-            $key             = ucfirst($key);
-            $formatted[$key] = [
-                "key"   => sprintf("⬡ %s", $key),
-                "value" => $extract($value),
-            ];
-        }
-
-        return $formatted;
-    }
-
+    /**
+     * @throws MissingInterfaceException
+     */
     public function render(OutputInterface $output): void
     {
-        $config = new TableConfig();
-        $config->setShowHeader(false);
-        $config->setPadding(1);
-
-        $table = (new Table(data: $this->getTableData(), columns: [], config: $config))
-            ->addColumn(new TableColumn(name: '', key: 'key', color: 'cyan'))
-            ->addColumn((new TableColumn(name: '', key: 'value')));
-
-        $table->display($output);
+        $this->asTable()->display($output);
     }
+
+
 }

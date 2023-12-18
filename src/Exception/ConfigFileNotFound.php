@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Exception;
 
-class ConfigFileNotFound extends \RuntimeException
+class ConfigFileNotFound extends CosmicException
 {
     public static function forFile(string $file): self
     {

@@ -5,17 +5,20 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Crypt;
 
 use Carbon\CarbonImmutable;
-use Ninja\Cosmic\Terminal\RenderableInterface;
-use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
-use Ninja\Cosmic\Terminal\Table\Table;
+use Ninja\Cosmic\Exception\MissingInterfaceException;
+use Ninja\Cosmic\Serializer\SerializableInterface;
+use Ninja\Cosmic\Serializer\SerializableTrait;
 use Ninja\Cosmic\Terminal\Table\TableableInterface;
-use Ninja\Cosmic\Terminal\Table\TableConfig;
+use Ninja\Cosmic\Terminal\Table\TableableTrait;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /** @phpstan-consistent-constructor */
-abstract class AbstractKey implements KeyInterface, TableableInterface, RenderableInterface
+abstract class AbstractKey implements KeyInterface, SerializableInterface, TableableInterface
 {
-    protected KeyCollection $keys;
+    use SerializableTrait;
+    use TableableTrait;
+
+    protected KeyCollection $subKeys;
     public function __construct(
         public readonly string $id,
         public readonly string $method,
@@ -25,7 +28,7 @@ abstract class AbstractKey implements KeyInterface, TableableInterface, Renderab
         public readonly ?Uid $uid = null,
         public ?string $fingerprint = null
     ) {
-        $this->keys = new KeyCollection([]);
+        $this->subKeys = new KeyCollection([]);
     }
 
     public function isAbleTo(string $usage): bool
@@ -78,7 +81,7 @@ abstract class AbstractKey implements KeyInterface, TableableInterface, Renderab
 
     public function addSubKey(KeyInterface $key): void
     {
-        $this->keys->add($key);
+        $this->subKeys->add($key);
     }
 
     public function isAbleToSign(): bool
@@ -92,51 +95,13 @@ abstract class AbstractKey implements KeyInterface, TableableInterface, Renderab
         return sprintf("%s.%s", $file_path, SignerInterface::SIGNATURE_SUFFIX);
     }
 
+    /**
+     * @throws MissingInterfaceException
+     */
     public function render(OutputInterface $output): void
     {
-        $config = new TableConfig();
-        $config->setShowHeader(false);
-        $config->setPadding(1);
 
-        $table = (new Table(data: $this->getTableData(), columns: [], config: $config))
-            ->addColumn(new TableColumn(name: '', key: 'key', color: 'cyan'))
-            ->addColumn((new TableColumn(name: '', key: 'value')));
+        $this->asTable()->display($output);
 
-        $table->display($output);
-
-    }
-
-    public function getTableData(): array
-    {
-        return [
-            'Key ID' => [
-                "key"   => "⬡ Key ID",
-                "value" => $this->id ?? null,
-            ],
-            'Method' => [
-                "key"   => "⬡ Method",
-                "value" => $this->method ?? null,
-            ],
-            'Created' => [
-                "key"   => "⬡ Created",
-                "value" => $this->createdAt->toFormattedDateString(),
-            ],
-            'Expires' => [
-                "key"   => "⬡ Expires",
-                "value" => $this->expiresAt ? $this->expiresAt->toFormattedDateString() : '',
-            ],
-            'Usage' => [
-                "key"   => "⬡ Usage",
-                "value" => $this->usage ?? null,
-            ],
-            'Fingerprint' => [
-                "key"   => "⬡ Fingerprint",
-                "value" => $this->fingerprint ?? null,
-            ],
-            'User ID' => [
-                "key"   => "⬡ User ID",
-                "value" => (string)$this->uid,
-            ],
-        ];
     }
 }

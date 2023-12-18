@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Table;
 
-interface TableableInterface
+use Ninja\Cosmic\Terminal\RenderableInterface;
+
+interface TableableInterface extends RenderableInterface
 {
     public function getTableData(): array;
+    public function asTable(): Table;
 }
