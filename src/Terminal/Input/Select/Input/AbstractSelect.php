@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Ninja\Cosmic\Terminal\Select\Input;
+namespace Ninja\Cosmic\Terminal\Input\Select\Input;
 
-use Ninja\Cosmic\Terminal\Select\Handler\SelectHandler;
-use Ninja\Cosmic\Terminal\Select\Input\Trait\ColumnableOptionTrait;
+use Ninja\Cosmic\Terminal\Input\Select\Handler\SelectHandler;
+use Ninja\Cosmic\Terminal\Input\Select\Input\Trait\ColumnableOptionTrait;
 
 abstract class AbstractSelect implements SelectInputInterface, ColumnAwareInterface
 {

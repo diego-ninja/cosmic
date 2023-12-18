@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Terminal;
 
 use JsonException;
-use Ninja\Cosmic\Terminal\Select\Handler\SelectHandler;
-use Ninja\Cosmic\Terminal\Select\Input\CheckboxInput;
-use Ninja\Cosmic\Terminal\Select\Input\SelectInput;
+use Ninja\Cosmic\Terminal\Input\Select\Handler\SelectHandler;
+use Ninja\Cosmic\Terminal\Input\Select\Input\CheckboxInput;
+use Ninja\Cosmic\Terminal\Input\Select\Input\SelectInput;
 use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
 use Ninja\Cosmic\Terminal\Table\Table;
 use Ninja\Cosmic\Terminal\Table\TableConfig;
@@ -20,9 +20,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\StreamableInputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
-
 use Symfony\Component\Console\Output\OutputInterface;
-
 use function Termwind\terminal;
 
 final class Terminal
@@ -108,98 +106,24 @@ final class Terminal
         return self::getInstance()->getSection(self::SECTION_FOOTER);
     }
 
-    private function clear(): void
+    public static function clear(int $lines): void
     {
-        terminal()->clear();
+        for ($i = 0; $i < $lines; $i++) {
+            self::output()->write("\033[1A");
+            self::output()->write("\033[2K");
+        }
+
+        self::output()->write("\033[1G");
     }
 
     public static function reset(): void
     {
-        self::getInstance()->clear();
+        terminal()->clear();
     }
 
     public static function render(string $message): ?string
     {
         return self::output()->getFormatter()->format($message);
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    public static function ask(
-        string $message,
-        ?bool $hideAnswer = false,
-        ?string $default = null,
-        ?iterable $autocomplete = null,
-        ?bool $decorated = true
-    ): ?string {
-        if ($autocomplete) {
-            $autocomplete_options = $autocomplete;
-            foreach ($autocomplete_options as $key => $value) {
-                if ($value === $default) {
-                    $autocomplete_options[$key] = "<span class='default-option'>{$value}</span>";
-                }
-            }
-
-            $option_selector = "[" . implode(separator: '/', array: $autocomplete_options) . "]";
-        } elseif ($default) {
-            $option_selector = "[<span class='default-option'>{$default}</span>]";
-        } else {
-            $option_selector = "";
-        }
-
-        if ($decorated) {
-            $question = sprintf(
-                '<div class="mt-1 ml-1 mr-1"><span class="app-icon">%s</span><span class="question">%s</span> %s</div>',
-                self::getTheme()->getAppIcon(),
-                $message,
-                $option_selector
-            );
-        } else {
-            $question = sprintf(
-                '<div class="mt-1 ml-1 mr-1"><span class="question">%s</span> %s</div>',
-                $message,
-                $option_selector
-            );
-        }
-
-        return (new Question())->ask($question, $hideAnswer, $default, $autocomplete);
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    public static function confirm(string $message, ?string $default = null, ?bool $decorated = true): bool
-    {
-        if ($default !== null) {
-            $answer_selector = match ($default) {
-                'yes', 'y' => "[<span class='default-option'>yes</span>/no]",
-                'no', 'n' => "[yes/<span class='default-option'>no</span>]",
-                default => $default = null,
-            };
-        }
-
-        if ($decorated) {
-            $question = sprintf(
-                '<div class="mt-1 ml-1 mr-1"><span class="app-icon">%s</span><span class="question">%s</span> %s</div>',
-                self::getTheme()->getAppIcon(),
-                $message,
-                $answer_selector ?? "[yes/no]"
-            );
-
-        } else {
-            $question = sprintf(
-                '%s %s',
-                $message,
-                "[yes/no]"
-            );
-        }
-
-        //        $question_length = mb_strlen($question);
-        //        print sprintf("\033[%dC", $question_length);
-        $answer = (new Question())->ask($question, false, $default, ["yes", "no"]);
-
-        return $answer === 'yes' || $answer === 'y';
     }
 
     public static function select(

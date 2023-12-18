@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ninja\Cosmic\Terminal\Select\Input\Trait;
+namespace Ninja\Cosmic\Terminal\Input\Select\Input\Trait;
 
-use Ninja\Cosmic\Terminal\Select\Input\Exception\IndexOutOfRangeException;
+use Ninja\Cosmic\Terminal\Input\Select\Input\Exception\IndexOutOfRangeException;
 
 trait ColumnableOptionTrait
 {

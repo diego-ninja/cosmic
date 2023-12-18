@@ -17,6 +17,7 @@ use Ninja\Cosmic\Crypt\SignerInterface;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Installer\AptInstaller;
+use Ninja\Cosmic\Terminal\Input\Question;
 use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
 use Ninja\Cosmic\Terminal\Terminal;
 
@@ -59,14 +60,16 @@ class SignCommand extends CosmicCommand
         return $this->exit();
     }
 
+    /**
+     * @throws BinaryNotFoundException
+     */
     private function hasGPG(): bool
     {
         $gpg = find_binary("gpg");
         if (!$gpg) {
             Terminal::output()->writeln("Binary <comment>gpg</comment> not found.");
-            if (Terminal::confirm(
-                sprintf("Do you want <info>%s</info> try to install the missing %s binary?", Env::get("APP_NAME"), "gpg"),
-                "yes"
+            if (Question::confirm(
+                sprintf("Do you want <info>%s</info> try to install the missing %s binary?", Env::get("APP_NAME"), "gpg")
             )) {
                 $installer = new AptInstaller(Terminal::output());
                 $installer->addPackage("gpg");
@@ -111,7 +114,7 @@ class SignCommand extends CosmicCommand
 
         $user_key->render(Terminal::output());
 
-        if (Terminal::confirm("Do you want to use this key to sign the binary?", "yes")) {
+        if (Question::confirm("Do you want to use this key to sign the binary?")) {
             $this->executionResult = $this->sign($binary, $user_key);
             return true;
         }
@@ -148,7 +151,7 @@ class SignCommand extends CosmicCommand
         Terminal::output()->writeln("");
         $key->render(Terminal::output());
 
-        if (Terminal::confirm("Do you want to use this key to sign the binary?", "yes")) {
+        if (Question::confirm("Do you want to use this key to sign the binary?")) {
             $this->executionResult = $this->sign($binary, $key);
             return true;
         }
@@ -170,7 +173,7 @@ class SignCommand extends CosmicCommand
             Terminal::output()->writeln("");
             $default_key->render(Terminal::output());
 
-            if (Terminal::confirm("Do you want to use this key to sign the binary?", "yes")) {
+            if (Question::confirm("Do you want to use this key to sign the binary?")) {
                 $this->executionResult = $this->sign($binary, $default_key);
                 return true;
             }

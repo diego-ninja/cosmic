@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ninja\Cosmic\Terminal\Select\Input\Exception;
+namespace Ninja\Cosmic\Terminal\Input\Select\Input\Exception;
 
 class UnknownOptionException extends \RuntimeException
 {

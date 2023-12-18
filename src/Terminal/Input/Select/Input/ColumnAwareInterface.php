@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ninja\Cosmic\Terminal\Select\Input;
+namespace Ninja\Cosmic\Terminal\Input\Select\Input;
 
 interface ColumnAwareInterface
 {
