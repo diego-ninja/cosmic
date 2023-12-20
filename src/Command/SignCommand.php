@@ -21,6 +21,8 @@ use Ninja\Cosmic\Terminal\Input\Question;
 use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
 use Ninja\Cosmic\Terminal\Terminal;
 
+use Ninja\Cosmic\Terminal\UI\UI;
+
 use function Cosmic\find_binary;
 
 #[Icon("🔑")]
@@ -33,6 +35,9 @@ use function Cosmic\find_binary;
 #[Alias("app:sign")]
 class SignCommand extends CosmicCommand
 {
+    /**
+     * @throws BinaryNotFoundException
+     */
     public function __invoke(string $binary, ?string $user, ?string $keyId): int
     {
         if (!$this->hasGPG()) {
@@ -108,10 +113,7 @@ class SignCommand extends CosmicCommand
             $user_key = $keyring->all()->getById($keyId);
         }
 
-        Terminal::output()->writeln("");
-        Terminal::output()->writeln("Using the following GPG key to sign the selected file:");
-        Terminal::output()->writeln("");
-
+        UI::p("Using the following GPG key to sign the selected file:");
         $user_key->render(Terminal::output());
 
         if (Question::confirm("Do you want to use this key to sign the binary?")) {
@@ -124,11 +126,11 @@ class SignCommand extends CosmicCommand
 
     private function selectKey(array $keys): string
     {
-        $selection = Terminal::select(
+        $selection = Question::select(
             message: "Select the key to use to sign the binary",
             options: $keys,
             allowMultiple: false,
-            maxWidth: 120,
+            maxWidth: 120
         )[0];
 
         return array_flip($keys)[$selection];
@@ -147,7 +149,7 @@ class SignCommand extends CosmicCommand
         }
 
         Terminal::output()->writeln("");
-        Terminal::output()->writeln("Detected the following GPG key associated to the key id:");
+        Terminal::output()->writeln(" Detected the following GPG key associated to the key id:");
         Terminal::output()->writeln("");
         $key->render(Terminal::output());
 
@@ -169,7 +171,7 @@ class SignCommand extends CosmicCommand
 
         if ($default_key) {
             Terminal::output()->writeln("");
-            Terminal::output()->writeln("Detected the following GPG key associated to the author email:");
+            Terminal::output()->writeln(" Detected the following GPG key associated to the author email:");
             Terminal::output()->writeln("");
             $default_key->render(Terminal::output());
 

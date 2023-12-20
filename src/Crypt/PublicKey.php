@@ -39,6 +39,11 @@ final class PublicKey extends AbstractKey implements SignerInterface
         }
     }
 
+    public function getTableTitle(): ?string
+    {
+        return "🔑 GPG Public Key";
+    }
+
     public function verify(string $file_path): bool
     {
         if (!$this->isAbleTo(KeyInterface::GPG_USAGE_SIGN)) {

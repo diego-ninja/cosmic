@@ -18,7 +18,8 @@ class Table
     public function __construct(
         protected array $data,
         ?array $columns,
-        protected TableConfig $config
+        protected TableConfig $config,
+        protected ?string $title = null
     ) {
         $this->columns = new ColumnCollection($columns);
     }
@@ -48,6 +49,12 @@ class Table
     public function addRow(array $row): self
     {
         $this->data[] = $row;
+        return $this;
+    }
+
+    public function setTitle(?string $title): self
+    {
+        $this->title = $title;
         return $this;
     }
 
@@ -120,6 +127,13 @@ class Table
             $padding = str_repeat(' ', $this->config->getPadding());
         }
 
+        // Add the title if it exists
+        if ($this->title !== null) {
+            $titleRow = $padding . $this->getTitleTop($columnLengths);
+            $titleRow .= $padding . $this->formatTitleRow($this->title, $columnLengths);
+            $response = $titleRow . $response;
+        }
+
         // Now draw the table!
         $response .= $padding . $this->getTableTop($columnLengths);
         if ($this->config->getShowHeader()) {
@@ -176,20 +190,65 @@ class Table
         return $response;
     }
 
+    protected function getTitleTop(array $columnLengths): string
+    {
+        $color = $this->config->getTableColor();
+        $total = array_sum($columnLengths) + count($columnLengths) + 1;
+
+        $response = Terminal::color($color)->apply($this->getChar('top-left'));
+        $response .= Terminal::color($color)->apply($this->getChar('top', $total + 2));
+
+        return
+            substr($response, 0, -3) .
+            Terminal::color($color)->apply($this->getChar('top-right')) .
+            PHP_EOL;
+
+    }
+
+    protected function formatTitleRow(string $title, array $columnLengths): string
+    {
+        $tableColor  = $this->config->getTableColor();
+        $headerColor = $this->config->getTitleColor();
+
+        $total = array_sum($columnLengths) + count($columnLengths) + 1;
+
+        $c          = chr(27);
+        $lineLength = mb_strwidth(preg_replace("/($c\[(.*?)m)/", '', $title)) + 1;
+
+        $response = $this->getChar('left');
+        $response .= sprintf(" <%s>%s</%s>", $headerColor, $title, $headerColor);
+
+        for ($x = $lineLength; $x < ($total + 5); $x++) {
+            $response .= ' ';
+        }
+
+        return
+            substr($response, 0, -3) .
+            Terminal::color($tableColor)->apply($this->getChar('right')) .
+            PHP_EOL;
+    }
+
     protected function getTableTop(array $columnLengths): string
     {
         $color = $this->config->getTableColor();
 
-        $response = Terminal::color($color)->apply($this->getChar('top-left'));
+        $response = $this->title ?
+            Terminal::color($color)->apply($this->getChar('left-mid')) :
+            Terminal::color($color)->apply($this->getChar('top-left'));
+
         foreach ($columnLengths as $length) {
             $response .= Terminal::color($color)
                 ->apply($this->getChar('top', $length + 2));
             $response .= $this->getChar('top-mid');
         }
 
+        $closeChar = $this->title ?
+            $this->getChar('right-mid') :
+            $this->getChar('top-right');
+
         return
             substr($response, 0, -3) .
-            Terminal::color($color)->apply($this->getChar('top-right')) .
+            Terminal::color($color)->apply($closeChar) .
             PHP_EOL;
     }
 

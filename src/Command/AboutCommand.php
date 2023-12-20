@@ -83,12 +83,12 @@ final class AboutCommand extends CosmicCommand
         $tableConfig = new TableConfig(Terminal::getTheme()->getConfig("table"));
 
         $table = (new Table(data: Env::dump(), columns: [], config: $tableConfig))
-            ->addColumn(new TableColumn(name: 'ENV VAR', key: 'key', color: 'grey'))
+            ->addColumn(new TableColumn(name: 'ENV VAR', key: 'key', color: 'gray500'))
             ->addColumn((new TableColumn(name: 'VALUE', key: 'value'))->addManipulator(new BoolManipulator()));
 
-        Terminal::footer()->writeln("");
+        Terminal::output()->writeln("");
 
-        $table->display(Terminal::footer());
+        $table->display(Terminal::output());
     }
 
     private function displayLogo(): void

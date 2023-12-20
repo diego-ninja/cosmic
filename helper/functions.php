@@ -282,6 +282,21 @@ if (!function_exists('Cosmic\randomize')) {
     }
 }
 
+if (!function_exists('Cosmic\termwindize')) {
+    function termwindize(string $message): string
+    {
+        return preg_replace_callback(
+            '/<(\w+)>(.*?)<\/\1>/s',
+            static function ($matches) {
+                $tag     = $matches[1];
+                $content = $matches[2];
+                return sprintf('<span class="text-%s">%s</span>', $tag, $content);
+            },
+            $message
+        );
+    }
+}
+
 if (!function_exists('Cosmic\cypher')) {
     function cypher(string $plain, string $key): string
     {
