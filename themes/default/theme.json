@@ -13,8 +13,16 @@
         "table": {
             "charset": "double",
             "table_color": "white",
-            "header_color": "cyan",
-            "field_color": "white"
+            "header_color": "notice",
+            "field_color": "text"
+        },
+        "summary": {
+            "charset": "double",
+            "table_color": "white",
+            "header_color": "notice",
+            "title_color": "info",
+            "field_color": "text",
+            "show_header": false
         }
     }
 }

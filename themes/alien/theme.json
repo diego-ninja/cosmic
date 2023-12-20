@@ -11,12 +11,8 @@
         "warning": "#D08770",
         "error": "#854731",
         "success": "#96CA4B",
-        "red": "#854731",
-        "green": "#96CA4B",
-        "yellow": "#E5DEBB",
-        "blue": "#81A1C1",
-        "purple": "#3B4251",
-        "cyan": "#88C0D0"
+        "question": "#749441",
+        "default": "#749441"
     },
     "icons": {
         "application": "\uD83D\uDC7D"
@@ -65,8 +61,8 @@
         "table": {
             "charset": "rounded",
             "table_color": "white",
-            "header_color": "green",
-            "field_color": "blue"
+            "header_color": "notice",
+            "field_color": "text"
         }
     }
 }

@@ -7,6 +7,8 @@ namespace Ninja\Cosmic\Terminal\UI;
 use Ninja\Cosmic\Terminal\Terminal;
 use Ninja\Cosmic\Terminal\UI\Element\Header;
 use Ninja\Cosmic\Terminal\UI\Element\OrderedList;
+use Ninja\Cosmic\Terminal\UI\Element\Paragraph;
+use Ninja\Cosmic\Terminal\UI\Element\Summary;
 use Ninja\Cosmic\Terminal\UI\Element\Table;
 use Ninja\Cosmic\Terminal\UI\Element\UnorderedList;
 
@@ -38,5 +40,20 @@ class UI
     public static function table(array $header, array $data): void
     {
         (new Table(Terminal::output()))($header, $data);
+    }
+
+    public static function summary(
+        array $data,
+        int $width = self::DEFAULT_OUTPUT_WIDTH,
+        ?string $title = null
+    ): void {
+        (new Summary(Terminal::output()))($data, $width, $title);
+    }
+
+    public static function p(
+        string $message,
+        int $width = self::DEFAULT_OUTPUT_WIDTH
+    ): void {
+        (new Paragraph(Terminal::output()))($message, $width);
     }
 }

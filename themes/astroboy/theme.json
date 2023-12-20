@@ -11,15 +11,8 @@
     "warning": "#cb4b16",
     "error": "#dc322f",
     "success": "#859900",
-    "white": "#fdf6e3",
-    "black": "#000000",
-    "grey": "#657b83",
-    "red": "#dc322f",
-    "green": "#859900",
-    "yellow": "#b58900",
-    "blue": "#268bd2",
-    "purple": "#859900",
-    "cyan": "#88C0D0"
+    "question": "#268bd2",
+    "default": "#268bd2"
   },
   "styles": {
       "symfony": {

@@ -26,5 +26,4 @@ class TermwindStyle extends AbstractStyle
     {
         style($this->name)->apply($this->style);
     }
-
 }

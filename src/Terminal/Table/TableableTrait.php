@@ -100,7 +100,7 @@ trait TableableTrait
         $config->setPadding(1);
 
         return (new Table(data: $this->getTableData(), columns: [], config: $config))
-            ->addColumn(new TableColumn(name: '', key: 'key', color: 'default'))
+            ->addColumn(new TableColumn(name: '', key: 'key', color: 'notice'))
             ->addColumn((new TableColumn(name: '', key: 'value')));
     }
 

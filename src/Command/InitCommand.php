@@ -70,10 +70,10 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     public function __invoke(?string $name, ?string $path): int
     {
         UI::header(" Welcome to the <span class='text-gray700'>cosmic</span> application initializer");
-
-        Terminal::output()->writeln(" This utility will walk you through creating a new <info>cosmic</info> application.");
-        Terminal::output()->writeln(" Press <default>^C</default> at any time to quit.");
-        Terminal::output()->writeln("");
+        UI::p(
+            "This utility will walk you through creating a new <info>cosmic</info> application.
+                     Press <notice>^C</notice> at any time to quit."
+        );
 
         $this->askPackageName();
         $this->askApplicationPath();
@@ -200,8 +200,8 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         );
         [,$binary_name] = explode("/", $package_name);
 
-        self::$summary[] = ["key" => "📦 Package name", "value" => $package_name];
-        self::$summary[] = ["key" => "🚀 Binary name", "value" => $binary_name];
+        self::$summary[] = ["key" => "Package name", "value" => $package_name];
+        self::$summary[] = ["key" => "Binary name", "value" => $binary_name];
 
         self::$replacements["{app.name}"]     = $binary_name;
         self::$replacements["{app.root}"]     = ucfirst($binary_name);
@@ -213,7 +213,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         $default_path = getcwd();
         $path         = Question::ask(message: " 📁 <question>Application path</question>:", default: $default_path, decorated: false);
 
-        self::$summary[]                  = ["key" => "📁 Application path ", "value" => $path];
+        self::$summary[]                  = ["key" => "Application path ", "value" => $path];
         self::$replacements["{app.path}"] = $path;
     }
 
@@ -221,7 +221,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     {
         $description = Question::ask(message: " 📄 <question>Description</question>:", decorated: false);
 
-        self::$summary[]                         = ["key" => "📄 Description", "value" => $description ?? ""];
+        self::$summary[] = ["key" => "Description", "value" => $description ?? ""];
         self::$replacements["{app.description}"] = $description;
     }
 
@@ -230,7 +230,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         $author = Question::ask(message: " 🥷 <question>Author</question>:", default: git_config("user.name"), decorated: false);
         $email  = Question::ask(message: " 📧 <question>E-Mail</question>:", default: git_config("user.email"), decorated: false);
 
-        self::$summary[] = ["key" => "🥷 Author", "value" => sprintf("%s <%s>", $author, $email)];
+        self::$summary[] = ["key" => "Author", "value" => sprintf("%s <%s>", $author, $email)];
 
         self::$replacements["{author.name}"]  = $author;
         self::$replacements["{author.email}"] = $email;
@@ -240,7 +240,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     {
         $website = Question::ask(message: " 🌎 <question>Website</question>:", default: git_config("user.website"), decorated: false);
 
-        self::$summary[]                    = ["key" => "🌎 Website", "value" => $website];
+        self::$summary[] = ["key" => "Website", "value" => $website];
         self::$replacements["{author.url}"] = $website;
     }
 
@@ -254,7 +254,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             maxWidth: 90
         );
 
-        self::$summary[]                     = ["key" => "🔎 License", "value" => $license[0]];
+        self::$summary[] = ["key" => "License", "value" => $license[0]];
         self::$replacements["{app.license}"] = $license[0];
     }
 
@@ -267,20 +267,17 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             self::$replacements["{app.key}"]       = $key;
             self::$replacements["{sudo.password}"] = cypher($password, $key);
 
-            self::$summary[] = ["key" => "🔑 Sudo password", "value" => mask($password, 10)];
+            self::$summary[] = ["key" => "Sudo password", "value" => mask($password, 10)];
         }
     }
 
     private function displaySummary(): void
     {
-        $config = new TableConfig();
-        $config->setShowHeader(false);
-        $config->setPadding(1);
-
-        (new Table(data: self::$summary, columns: [], config: $config))
-            ->addColumn(new TableColumn(name: '', key: 'key', color: 'info'))
-            ->addColumn((new TableColumn(name: '', key: 'value')))
-            ->display(Terminal::output());
+        UI::p("Please review the following summary before generating the application:");
+        UI::summary(
+            data: self::$summary,
+            title: sprintf("%s Application summary", "📦")
+        );
     }
 
     public function getSuccessMessage(): string

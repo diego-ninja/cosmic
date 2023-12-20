@@ -11,6 +11,7 @@ class TableConfig extends Config
 {
     public const DEFAULT_TABLE_COLOR    = "white";
     public const DEFAULT_HEADER_COLOR   = "white";
+    public const DEFAULT_TITLE_COLOR    = "notice";
     public const DEFAULT_FIELD_COLOR    = "white";
     public const DEFAULT_SHOW_HEADER    = true;
     public const DEFAULT_ITEM_NAME      = "row";
@@ -81,6 +82,17 @@ class TableConfig extends Config
         return $this;
     }
 
+    public function getTitleColor(): string
+    {
+        return $this->get("title_color", self::DEFAULT_TITLE_COLOR);
+    }
+
+    public function setTitleColor(string $titleColor): self
+    {
+        $this->set("title_color", $titleColor);
+        return $this;
+    }
+
     public function getFieldColor(): string
     {
         return $this->get("field_color", self::DEFAULT_FIELD_COLOR);
@@ -128,10 +140,11 @@ class TableConfig extends Config
     private function getDefaultConfig(): array
     {
         return [
-            "charset"        => Terminal::getTheme()->getCharset("double") ?? self::DEFAULT_CHARSET,
+            "charset"        => Terminal::getTheme()->getCharset("double")->name ?? self::DEFAULT_CHARSET,
             "item_name"      => self::DEFAULT_ITEM_NAME,
             "table_color"    => self::DEFAULT_TABLE_COLOR,
             "header_color"   => self::DEFAULT_HEADER_COLOR,
+            "title_color"    => self::DEFAULT_TITLE_COLOR,
             "show_header"    => self::DEFAULT_SHOW_HEADER,
             "padding"        => self::DEFAULT_PADDING,
             "center_content" => self::DEFAULT_CENTER_CONTENT,
