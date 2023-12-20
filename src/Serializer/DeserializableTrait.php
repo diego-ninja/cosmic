@@ -21,29 +21,32 @@ trait DeserializableTrait
      * @throws ReflectionException
      * @throws UnexpectedValueException
      */
-    public function fromArray(array $data): void
+    public static function fromArray(array $data): static
     {
+        $object = new static();
         foreach ($data as $key => $value) {
-            if (property_exists($this, $key)) {
+            if (property_exists($object, $key)) {
                 $setter = "set" . ucfirst(camelize($key));
-                if (!$this->hasMethod($setter)) {
+                if (!$object->hasMethod($setter)) {
                     continue;
                 }
-                $type = $this->getPropertyType($key);
-                $is_nullable = $this->isPropertyNullable($key);
+                $type        = $object->getPropertyType($key);
+                $is_nullable = $object->isPropertyNullable($key);
                 if ($type !== null) {
                     $value = $is_nullable && is_null($value)
                         ? null
-                        : $this->getNormalizedValue($type, $value);
-                    if ((new ReflectionClass($this))->hasMethod($setter)) {
-                        $this->$setter($value);
+                        : $object->getNormalizedValue($type, $value);
+                    if ((new ReflectionClass($object))->hasMethod($setter)) {
+                        $object->{$setter}($value);
                         continue;
                     }
-                    $child_prop = (new ReflectionClass($this))->getProperty($key);
-                    $child_prop->getDeclaringClass()->getProperty($child_prop->getName())->setValue($this, $value);
+                    $child_prop = (new ReflectionClass($object))->getProperty($key);
+                    $child_prop->getDeclaringClass()->getProperty($child_prop->getName())->setValue($object, $value);
                 }
             }
         }
+
+        return $object;
     }
 
     /**
@@ -51,9 +54,9 @@ trait DeserializableTrait
      * @throws UnexpectedValueException
      * @throws \JsonException
      */
-    public function fromJson(string $json): void
+    public static function fromJson(string $json): static
     {
-        $this->fromArray(json_decode($json, true, 512, JSON_THROW_ON_ERROR));
+        return self::fromArray(json_decode($json, true, 512, JSON_THROW_ON_ERROR));
     }
 
     /**
@@ -107,8 +110,6 @@ trait DeserializableTrait
         return $class === DateTimeInterface::class;
     }
 
-
-
     protected function getNormalizedValue(string $type, mixed $value): mixed
     {
         if ($this->isDateTime($type)) {
@@ -121,7 +122,6 @@ trait DeserializableTrait
 
         throw new UnexpectedValueException();
     }
-
 
     private function getDateTimeObject(string $type, mixed $value): ?DateTimeInterface
     {

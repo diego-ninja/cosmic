@@ -45,10 +45,9 @@ final class ListCommand extends CosmicCommand
 
     private function getCommandHelperRenderer(): CommandHelpRenderer
     {
-        $renderer = new CommandHelpRenderer([Env::helpPath()], new MarkdownParser());
-        $renderer->loadStyles(Terminal::getTheme()->getStyles());
+        // $renderer->loadStyles(Terminal::getTheme()->getStyles()->toArray());
 
-        return $renderer;
+        return new CommandHelpRenderer([Env::helpPath()], new MarkdownParser());
     }
 
     public function getCommandHelp(): ?string

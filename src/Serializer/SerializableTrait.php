@@ -20,11 +20,11 @@ trait SerializableTrait
 
     public function toArray(): ?array
     {
-        $clone = (array) $this;
-        $ret = [];
+        $clone = (array)$this;
+        $ret   = [];
 
         foreach ($clone as $key => $value) {
-            $aux = explode("\0", $key);
+            $aux    = explode("\0", $key);
             $newKey = $aux[count($aux) - 1];
 
             if ($value instanceof DateTimeInterface) {

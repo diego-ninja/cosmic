@@ -20,18 +20,17 @@ use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
 use Ninja\Cosmic\Terminal\Table\Table;
 use Ninja\Cosmic\Terminal\Table\TableConfig;
 use Ninja\Cosmic\Terminal\Terminal;
+use Ninja\Cosmic\Terminal\UI\UI;
 use Phar;
 use ReflectionException;
 use Symfony\Component\Process\Process;
-use Termwind\Termwind;
 use ZipArchive;
 
 use function Cosmic\cypher;
+use function Cosmic\git_config;
+use function Cosmic\is_phar;
 use function Cosmic\mask;
 use function Cosmic\randomize;
-use function Termwind\render;
-use function Cosmic\is_phar;
-use function Cosmic\git_config;
 use function Cosmic\unzip;
 
 #[Icon("🛠️ ")]
@@ -70,15 +69,10 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
      */
     public function __invoke(?string $name, ?string $path): int
     {
-        render(
-            sprintf(
-                "<div class='m-1 bg-cyan p-4 w-80'>%s</div>",
-                " Welcome to the <span class='text-grey'>cosmic</span> application initializer"
-            )
-        );
+        UI::header(" Welcome to the <span class='text-gray700'>cosmic</span> application initializer");
 
         Terminal::output()->writeln(" This utility will walk you through creating a new <info>cosmic</info> application.");
-        Terminal::output()->writeln(" Press <comment>^C</comment> at any time to quit.");
+        Terminal::output()->writeln(" Press <default>^C</default> at any time to quit.");
         Terminal::output()->writeln("");
 
         $this->askPackageName();
@@ -94,9 +88,8 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         $this->displaySummary();
 
         if (Question::confirm("Do you confirm generation of the application?")) {
-            Terminal::body()->clear();
-            Terminal::body()->writeln("");
-            Terminal::body()->writeln(
+            Terminal::output()->writeln("");
+            Terminal::output()->writeln(
                 sprintf(
                     " %s Generating <info>cosmic</info> application",
                     Terminal::getTheme()->getAppIcon()
@@ -106,15 +99,14 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             $this->executionResult = $this->expandApplication() && $this->replacePlaceholders() && $this->installApplicationDependencies() && $this->renameApplication();
 
             if ($this->executionResult) {
-                Terminal::body()->writeln("");
-                Terminal::body()->writeln(
+                Terminal::output()->writeln("");
+                Terminal::output()->writeln(
                     sprintf(
                         " %s <info>%s</info> application generated. Happy coding!",
                         Terminal::getTheme()->getAppIcon(),
                         self::$replacements["{app.name}"]
                     )
                 );
-                Terminal::footer()->clear();
             }
         }
 
@@ -221,7 +213,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         $default_path = getcwd();
         $path         = Question::ask(message: " 📁 <question>Application path</question>:", default: $default_path, decorated: false);
 
-        self::$summary[] = ["key" => "📁 Application path ", "value" => $path];
+        self::$summary[]                  = ["key" => "📁 Application path ", "value" => $path];
         self::$replacements["{app.path}"] = $path;
     }
 
@@ -229,14 +221,14 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     {
         $description = Question::ask(message: " 📄 <question>Description</question>:", decorated: false);
 
-        self::$summary[] = ["key" => "📄 Description", "value" => $description ?? ""];
+        self::$summary[]                         = ["key" => "📄 Description", "value" => $description ?? ""];
         self::$replacements["{app.description}"] = $description;
     }
 
     private function askApplicationAuthor(): void
     {
         $author = Question::ask(message: " 🥷 <question>Author</question>:", default: git_config("user.name"), decorated: false);
-        $email = Question::ask(message: " 📧 <question>E-Mail</question>:", default: git_config("user.email"), decorated: false);
+        $email  = Question::ask(message: " 📧 <question>E-Mail</question>:", default: git_config("user.email"), decorated: false);
 
         self::$summary[] = ["key" => "🥷 Author", "value" => sprintf("%s <%s>", $author, $email)];
 
@@ -244,29 +236,25 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         self::$replacements["{author.email}"] = $email;
     }
 
-    /**
-     * @throws ReflectionException
-     */
     private function askApplicationWebsite(): void
     {
         $website = Question::ask(message: " 🌎 <question>Website</question>:", default: git_config("user.website"), decorated: false);
 
-        self::$summary[] = ["key" => "🌎 Website", "value" => $website];
+        self::$summary[]                    = ["key" => "🌎 Website", "value" => $website];
         self::$replacements["{author.url}"] = $website;
     }
 
     private function askApplicationLicense(): void
     {
-        $license = Terminal::select(
+        $license = Question::select(
             message: " 🔎 <question>License</question>: ",
             options: self::LICENSES,
             allowMultiple: false,
-            output: Terminal::output(),
             columns: 3,
             maxWidth: 90
         );
 
-        self::$summary[] = ["key" => "🔎 License", "value" => $license[0]];
+        self::$summary[]                     = ["key" => "🔎 License", "value" => $license[0]];
         self::$replacements["{app.license}"] = $license[0];
     }
 
@@ -290,25 +278,10 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         $config->setPadding(1);
 
         (new Table(data: self::$summary, columns: [], config: $config))
-            ->addColumn(new TableColumn(name: '', key: 'key', color: 'cyan'))
+            ->addColumn(new TableColumn(name: '', key: 'key', color: 'info'))
             ->addColumn((new TableColumn(name: '', key: 'value')))
             ->display(Terminal::output());
     }
-
-    private function clearForm(): void
-    {
-        Terminal::output()->write("\033[2A");
-        Terminal::output()->write("\033[2K");
-        Terminal::output()->write("\033[1A");
-        Terminal::output()->write("\033[2K");
-        Terminal::output()->write("\033[2A");
-        Terminal::output()->write("\033[2K");
-        Terminal::output()->write("\033[1A");
-        Terminal::output()->write("\033[2K");
-        Terminal::output()->write("\033[1A");
-        Terminal::output()->write("\033[2K");
-    }
-
 
     public function getSuccessMessage(): string
     {

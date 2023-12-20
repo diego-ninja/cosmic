@@ -34,7 +34,7 @@ final class InstallCommand extends CosmicCommand
      */
     public function __invoke(?string $path): int
     {
-        Terminal::body()->writeln("");
+        Terminal::output()->writeln("");
         $this->executionResult = $this->build() && $this->install($path);
 
         Lifecycle::dispatchLifecycleEvent(
@@ -60,7 +60,7 @@ final class InstallCommand extends CosmicCommand
         return SpinnerFactory::for(
             callable: (Process::fromShellCommandline($command))->setWorkingDirectory(Env::basePath()),
             message: sprintf(
-                'Building <info>%s</info> (<cyan>%s</cyan>) binary',
+                'Building <info>%s</info> (<info>%s</info>) binary',
                 Env::appName(),
                 Env::appVersion()
             )
@@ -85,7 +85,7 @@ final class InstallCommand extends CosmicCommand
         return SpinnerFactory::for(
             callable: (Process::fromShellCommandline($command))->setWorkingDirectory(Env::basePath()),
             message: sprintf(
-                'Installing <info>%s</info> (<cyan>%s</cyan>) binary into <comment>%s</comment>',
+                'Installing <info>%s</info> (<info>%s</info>) binary into <comment>%s</comment>',
                 Env::appName(),
                 Env::appVersion(),
                 $path

@@ -38,7 +38,7 @@ final class BuildCommand extends CosmicCommand implements NotifiableInterface
      */
     public function __invoke(?bool $sign): int
     {
-        Terminal::body()->writeln("");
+        Terminal::output()->writeln("");
         if (Env::env() === ALL_OPTION) {
             $environments          = $this->extractEnvironments();
             $this->executionResult = true;

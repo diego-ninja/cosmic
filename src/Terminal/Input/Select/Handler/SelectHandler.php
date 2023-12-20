@@ -9,6 +9,7 @@ use Ninja\Cosmic\Terminal\Input\Select\Input\ColumnAwareInterface;
 use Ninja\Cosmic\Terminal\Input\Select\Input\SelectInputInterface;
 use Ninja\Cosmic\Terminal\Terminal;
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function Termwind\terminal;
 
 class SelectHandler

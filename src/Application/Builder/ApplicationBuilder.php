@@ -38,7 +38,7 @@ readonly class ApplicationBuilder
             return SpinnerFactory::for(
                 callable: (Process::fromShellCommandline($command))->setWorkingDirectory(Env::basePath()),
                 message: sprintf(
-                    'Setting up the environment (<comment>%s</comment>) for building phar binary: <info>%s</info> (<cyan>%s</cyan>)',
+                    'Setting up the environment (<comment>%s</comment>) for building phar binary: <info>%s</info> (<info>%s</info>)',
                     $env,
                     Env::get("APP_NAME"),
                     Env::appVersion()

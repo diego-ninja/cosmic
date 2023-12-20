@@ -13,19 +13,19 @@ class SpinnerFactory extends Spinner
     /**
      * @throws Exception
      */
-    public static function for(Process | callable $callable, string $message): bool
+    public static function for(Process | callable $callable, string $message, ?string $style = null): bool
     {
         return $callable instanceof Process ?
-            self::forProcess($callable, $message) :
-            self::forCallable($callable, $message);
+            self::forProcess($callable, $message, $style) :
+            self::forCallable($callable, $message, $style);
     }
 
     /**
      * @throws Exception
      */
-    private static function forProcess(Process $process, string $message): bool
+    private static function forProcess(Process $process, string $message, ?string $style = null): bool
     {
-        $spinner = new self();
+        $spinner = new self(style: $style);
         $spinner->setMessage($message);
 
         return $spinner->callback(static function () use ($process): bool {
@@ -48,9 +48,9 @@ class SpinnerFactory extends Spinner
     /**
      * @throws Exception
      */
-    private static function forCallable(callable $callback, string $message): bool
+    private static function forCallable(callable $callback, string $message, ?string $style = Spinner::DEFAULT_SPINNER_STYLE): bool
     {
-        $spinner = new self();
+        $spinner = new self(style: $style);
         $spinner->setMessage($message);
 
         return $spinner->callback($callback);

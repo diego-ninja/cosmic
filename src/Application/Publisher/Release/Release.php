@@ -123,5 +123,4 @@ final class Release implements TableableInterface, SerializableInterface
         $this->asTable()->display($output);
     }
 
-
 }

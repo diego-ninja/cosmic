@@ -28,8 +28,8 @@ use function Cosmic\is_git;
 #[Argument("tag", description: "The tag to publish. It will create a new tag if it does not exist.")]
 #[Option("--name", description: "The name of the release. Cosmic will generate one by default if omitted.")]
 #[Option("--description", description: "The brief description of the release.")]
-#[Option("--prerelease", description: "Mark the release a pre-release release. (<cyan>Not ready for production</cyan>)")]
-#[Option("--draft", description: "Mark the release a draft release. (<cyan>Not ready for production</cyan>)")]
+#[Option("--prerelease", description: "Mark the release a pre-release release. (<info>Not ready for production</info>)")]
+#[Option("--draft", description: "Mark the release a draft release. (<info>Not ready for production</info>)")]
 #[Alias("app:publish")]
 final class PublishCommand extends CosmicCommand
 {
@@ -74,7 +74,7 @@ final class PublishCommand extends CosmicCommand
     private function displayRelease(Release $release): void
     {
         Terminal::output()->writeln("");
-        Terminal::output()->writeln(sprintf("  The following release will be published to GitHub: <cyan>%s</cyan>", $release->name));
+        Terminal::output()->writeln(sprintf("  The following release will be published to GitHub: <info>%s</info>", $release->name));
         Terminal::output()->writeln("");
 
         $release->render(Terminal::output());

@@ -30,28 +30,28 @@ trait TableableTrait
             throw MissingInterfaceException::withInterface(TableableInterface::class, static::class);
         }
 
-        $nonNullableNormal = [];
+        $nonNullableNormal   = [];
         $nonNullableBooleans = [];
-        $nonNullableDates = [];
-        $nullableNormal = [];
-        $nullableBooleans = [];
-        $nullableDates = [];
+        $nonNullableDates    = [];
+        $nullableNormal      = [];
+        $nullableBooleans    = [];
+        $nullableDates       = [];
         $arraysOrCollections = [];
-        $raw = $this->toArray();
+        $raw                 = $this->toArray();
 
         foreach ($raw as $key => $value) {
             $isCollection = false;
-            $icon = is_nullable($key, get_class($this)) ?
+            $icon         = is_nullable($key, get_class($this)) ?
                 Terminal::getTheme()->getIcon("nullable") :
                 Terminal::getTheme()->getIcon("mandatory");
 
             if (is_array($value) || $value instanceof AbstractCollection) {
-                $icon = Terminal::getTheme()->getIcon("collection");
+                $icon         = Terminal::getTheme()->getIcon("collection");
                 $isCollection = true;
             }
 
             $formattedValue = [
-                "key"   => $isCollection ?
+                "key" => $isCollection ?
                     sprintf("%s %s [%d] ", $icon, snakeize($key), count($value)) :
                     sprintf("%s %s ", $icon, snakeize($key)),
                 "value" => $this->extractValue($value),
@@ -100,10 +100,9 @@ trait TableableTrait
         $config->setPadding(1);
 
         return (new Table(data: $this->getTableData(), columns: [], config: $config))
-            ->addColumn(new TableColumn(name: '', key: 'key', color: 'cyan'))
+            ->addColumn(new TableColumn(name: '', key: 'key', color: 'default'))
             ->addColumn((new TableColumn(name: '', key: 'value')));
     }
-
 
     private function extractValue(mixed $value): string
     {
@@ -115,7 +114,7 @@ trait TableableTrait
             return implode(', ', $value);
         }
 
-        return $value ? (string) $value : '';
+        return $value ? (string)$value : '';
     }
 
 }

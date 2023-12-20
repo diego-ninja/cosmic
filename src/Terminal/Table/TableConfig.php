@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Table;
 
+use Ninja\Cosmic\Terminal\Terminal;
 use PHLAK\Config\Config;
 
 class TableConfig extends Config
@@ -15,23 +16,7 @@ class TableConfig extends Config
     public const DEFAULT_ITEM_NAME      = "row";
     public const DEFAULT_PADDING        = 1;
     public const DEFAULT_CENTER_CONTENT = false;
-    public const DEFAULT_CHARSET        = [
-        'top'          => '═',
-        'top-mid'      => '╤',
-        'top-left'     => '╔',
-        'top-right'    => '╗',
-        'bottom'       => '═',
-        'bottom-mid'   => '╧',
-        'bottom-left'  => '╚',
-        'bottom-right' => '╝',
-        'left'         => '║',
-        'left-mid'     => '╟',
-        'mid'          => '─',
-        'mid-mid'      => '┼',
-        'right'        => '║',
-        'right-mid'    => '╢',
-        'middle'       => '│ ',
-    ];
+    public const DEFAULT_CHARSET        = "double";
 
     public function __construct(array|string $context = null, string $prefix = null)
     {
@@ -44,7 +29,7 @@ class TableConfig extends Config
 
     public function getCharset(): array
     {
-        return $this->get("charset", self::DEFAULT_CHARSET);
+        return Terminal::getTheme()->getCharset($this->get("charset", self::DEFAULT_CHARSET))->chars;
     }
 
     public function getChar(string $char): ?string
@@ -143,7 +128,7 @@ class TableConfig extends Config
     private function getDefaultConfig(): array
     {
         return [
-            "charset"        => self::DEFAULT_CHARSET,
+            "charset"        => Terminal::getTheme()->getCharset("double") ?? self::DEFAULT_CHARSET,
             "item_name"      => self::DEFAULT_ITEM_NAME,
             "table_color"    => self::DEFAULT_TABLE_COLOR,
             "header_color"   => self::DEFAULT_HEADER_COLOR,

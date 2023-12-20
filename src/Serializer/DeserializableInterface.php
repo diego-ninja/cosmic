@@ -6,6 +6,6 @@ namespace Ninja\Cosmic\Serializer;
 
 interface DeserializableInterface
 {
-    public function fromArray(array $data): void;
-    public function fromJson(string $json): void;
+    public static function fromArray(array $data): static;
+    public static function fromJson(string $json): static;
 }

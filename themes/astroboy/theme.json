@@ -19,19 +19,23 @@
     "yellow": "#b58900",
     "blue": "#268bd2",
     "purple": "#859900",
-    "cyan": "#88C0D0",
-    "critical": {
-      "fg": "#dc322f",
-      "options": ["blink"]
-    },
-    "warn": {
-      "fg": "#cb4b16",
-      "options": ["blink"]
-    },
-    "hl": {
-      "fg": "#fdf6e3",
-      "bg": "#657b83"
-    }
+    "cyan": "#88C0D0"
+  },
+  "styles": {
+      "symfony": {
+          "critical": {
+              "fg": "#dc322f",
+              "options": ["blink"]
+          },
+          "warn": {
+              "fg": "#cb4b16",
+              "options": ["blink"]
+          },
+          "hl": {
+              "fg": "#fdf6e3",
+              "bg": "#657b83"
+          }
+      }
   },
   "icons": {
       "application": "\uD83D\uDEF8"

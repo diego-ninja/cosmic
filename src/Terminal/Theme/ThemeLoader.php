@@ -6,22 +6,13 @@ namespace Ninja\Cosmic\Terminal\Theme;
 
 use InvalidArgumentException;
 use JsonException;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function Termwind\style;
-
-final class ThemeLoader implements ThemeLoaderInterface, ThemeInterface
+final class ThemeLoader implements ThemeLoaderInterface
 {
     private ThemeInterface $theme;
 
     public function __construct(private array $themes, private readonly OutputInterface $output) {}
-    public function load(OutputInterface $output): void
-    {
-        $this->loadColors($output);
-        $this->loadStyles($output);
-    }
-
     /**
      * @throws JsonException
      */
@@ -63,114 +54,8 @@ final class ThemeLoader implements ThemeLoaderInterface, ThemeInterface
         }
 
         $this->theme = $this->themes[$themeName];
-        $this->load($this->output);
+        $this->theme->load($this->output);
 
         return $this;
-    }
-
-    private function loadColors(OutputInterface $output): void
-    {
-        foreach ($this->theme->getColors() as $name => $color) {
-            if (is_array($color)) {
-                style($name)->color($color["fg"] ?? null);
-                $color = new OutputFormatterStyle(
-                    foreground: $color["fg"]   ?? null,
-                    background: $color["bg"]   ?? null,
-                    options: $color["options"] ?? []
-                );
-            } else {
-                style($name)->color($color);
-                $color = new OutputFormatterStyle($color);
-            }
-
-            $output->getFormatter()->setStyle($name, $color);
-        }
-    }
-
-    private function loadStyles(OutputInterface $output): void
-    {
-        foreach ($this->theme->getStyles() as $name => $style) {
-            style($name)->apply($style);
-        }
-    }
-
-    public function getLogo(): ?string
-    {
-        return $this->theme->getLogo();
-    }
-
-    public function getIcons(): array
-    {
-        return $this->theme->getIcons();
-    }
-
-    public function getIcon(string $iconName): ?string
-    {
-        return $this->theme->getIcon($iconName);
-    }
-
-    public function getAppIcon(): ?string
-    {
-        return $this->theme->getAppIcon();
-    }
-
-    public function getConfig(?string $key = null): mixed
-    {
-        return $this->theme->getConfig($key);
-    }
-
-    public function getColors(): array
-    {
-        return $this->theme->getColors();
-    }
-
-    public function getColor(string $colorName): ?string
-    {
-        return $this->theme->getColor($colorName);
-    }
-
-    public function getStyles(): array
-    {
-        return $this->theme->getStyles();
-    }
-
-    public function getStyle(string $styleName): ?string
-    {
-        return $this->theme->getStyle($styleName);
-    }
-
-    public function getName(): string
-    {
-        return $this->theme->getName();
-    }
-
-    public function jsonSerialize(): array
-    {
-        return $this->theme->jsonSerialize();
-    }
-
-    public function getNotificationIcon(): ?string
-    {
-        return $this->theme->getNotificationIcon();
-    }
-
-    public function setNotificationIcon(string $icon): void
-    {
-        $this->theme->setNotificationIcon($icon);
-    }
-
-    public function setLogo(string $logo): void
-    {
-        $this->theme->setLogo($logo);
-    }
-
-    public function getParent(): ?ThemeInterface
-    {
-        return $this->theme->getParent();
-    }
-
-    public function setParent(ThemeInterface $theme): void
-    {
-        $this->theme->setParent($theme);
     }
 }
