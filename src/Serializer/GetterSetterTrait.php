@@ -20,14 +20,14 @@ trait GetterSetterTrait
         if ($this->isSetter($method)) {
             $property = $this->getProperty($method);
             if (property_exists($this, $this->getProperty($method))) {
-                $this->$property = $args[0];
+                $this->{$property} = $args[0];
             }
         }
 
         if ($this->isGetter($method)) {
             $property = $this->getProperty($method);
             if (property_exists($this, $this->getProperty($method))) {
-                return $this->isScalarOrValidObject($this, $property) ? ($this->$property ?? null) : null;
+                return $this->isScalarOrValidObject($this, $property) ? ($this->{$property} ?? null) : null;
             }
         }
 
@@ -56,20 +56,20 @@ trait GetterSetterTrait
     {
         $reflection_property = new ReflectionProperty($object, $property);
 
-        $is_object = isset($object->$property) && is_object($object->$property);
+        $is_object   = isset($object->{$property}) && is_object($object->{$property});
         $is_nullable = $reflection_property->getType()?->allowsNull() ?? false;
 
         if (!$is_object || !$is_nullable) {
             return true;
         }
 
-        return !$this->isUninitialized($object->$property);
+        return !$this->isUninitialized($object->{$property});
     }
 
     protected function isUninitialized(object $object): bool
     {
-        $reflection = new ReflectionClass($object);
-        $has_mandatory_properties = false;
+        $reflection                           = new ReflectionClass($object);
+        $has_mandatory_properties             = false;
         $has_initialized_mandatory_properties = false;
         foreach ($reflection->getProperties() as $reflected_property) {
             if (!($reflected_property->getType()?->allowsNull() ?? true)) {

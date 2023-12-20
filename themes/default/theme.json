@@ -2,97 +2,27 @@
     "name": "default",
     "version": "1.0.0",
     "description": "Default Cosmic Terminal Theme",
-    "colors": {
-        "text": "#E5E9F0",
-        "comment": "#EBCB8B",
-        "info": "#88C0D0",
-        "notice": "#8FBCBB",
-        "warning": "#D08770",
-        "error": "#BF616A",
-        "success": "#A3BE8C",
-        "white": "#FFFFFF",
-        "black": "#000000",
-        "grey": "#4C566A",
-        "red": "#BF616A",
-        "green": "#A3BE8C",
-        "yellow": "#EBCB8B",
-        "blue": "#81A1C1",
-        "purple": "#B48EAD",
-        "cyan": "#88C0D0",
-        "question": "#88C0D0",
-        "default": "#88C0D0",
-        "hl": {
-            "fg": "#E5E9F0",
-            "bg": "#4C566A"
-        },
-        "critical": {
-            "fg": "#BF616A",
-            "options": [
-                "blink"
-            ]
-        },
-        "warn": {
-            "fg": "#D08770",
-            "options": [
-                "blink"
-            ]
-        }
-    },
-    "icons": {
-        "application": "🚀",
-        "bullet": "⬢",
-        "success": "⬡",
-        "failure": "⬡",
-        "radio_selected": "⬢",
-        "radio": "⬡",
-        "checkbox": "☐",
-        "checkbox_selected": "✔",
-        "mandatory": "\uD83D\uDD39",
-        "nullable": "\uD83D\uDD38",
-        "collection": "\uD83D\uDD32"
-    },
-    "styles": {
-        "container": "w-120 ml-2",
-        "footer": "w-120 pt-2 ml-2",
-        "emphasis": "font-bold text-yellow italic",
-        "strong": "font-bold text-blue",
-        "strike": "line-through",
-        "hr": "text-blue",
-        "h1": "invisible",
-        "heading": "text-blue pt-1",
-        "language-sh": "w-120",
-        "language-php": "w-120",
-        "language-js": "w-120",
-        "language-sql": "w-120",
-        "language": "w-120",
-        "link": "text-blue underline",
-        "app-icon": "mr-1",
-        "question": "text-blue",
-        "default-option": "font-bold text-yellow"
-    },
     "config": {
+        "width": 80,
+        "spacing": 1,
         "icons_enabled": true,
+        "spinner": {
+            "style": "dots2",
+            "color": "cyan"
+        },
         "table": {
-            "charset": {
-                "top": "═",
-                "top-mid": "╤",
-                "top-left": "╔",
-                "top-right": "╗",
-                "bottom": "═",
-                "bottom-mid": "╧",
-                "bottom-left": "╚",
-                "bottom-right": "╝",
-                "left": "║",
-                "left-mid": "╟",
-                "mid": "─",
-                "mid-mid": "┼",
-                "right": "║",
-                "right-mid": "╢",
-                "middle": "│"
-            },
+            "charset": "double",
             "table_color": "white",
-            "header_color": "cyan",
-            "field_color": "white"
+            "header_color": "notice",
+            "field_color": "text"
+        },
+        "summary": {
+            "charset": "double",
+            "table_color": "white",
+            "header_color": "notice",
+            "title_color": "info",
+            "field_color": "text",
+            "show_header": false
         }
     }
 }

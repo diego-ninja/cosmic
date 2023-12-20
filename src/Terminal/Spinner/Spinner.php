@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Terminal\Spinner;
 
 use Exception;
-use JsonException;
-use Ninja\Cosmic\Terminal\Spinner\Exception\SpinnerStyleFileNotFoundException;
-use Ninja\Cosmic\Terminal\Spinner\Exception\SpinnerStyleFileParsingException;
 use Ninja\Cosmic\Terminal\Terminal;
 use RuntimeException;
 
 class Spinner
 {
-    public const DEFAULT_SPINNER_STYLE    = 'dots13';
+    public const DEFAULT_SPINNER_STYLE    = 'dots8Bit';
     public const DEFAULT_SPINNER_INTERVAL = 1000;
     public const DEFAULT_SPINNER_PADDING  = 2;
     public const BLINK_OFF                = "\e[?25l";
@@ -22,21 +19,18 @@ class Spinner
     public const RETURN_TO_LEFT           = "\r";
 
     private int $child_pid = 0;
-
-    private array $styles;
     private array $spinner;
 
     private int $padding = self::DEFAULT_SPINNER_PADDING;
     private string $message;
 
-    /**
-     * @throws JsonException
-     */
     public function __construct(
-        private readonly string $style = self::DEFAULT_SPINNER_STYLE
+        private readonly ?string $style = null
     ) {
-        $this->loadStyles();
-        $this->spinner = $this->styles[$this->style];
+        $config = Terminal::getTheme()->getConfig("spinner");
+        $style  = $this->style ?? $config["style"] ?? self::DEFAULT_SPINNER_STYLE;
+
+        $this->spinner = Terminal::getTheme()->getSpinners()->spinner($style)?->toArray();
     }
 
     public function setMessage(string $message): self
@@ -49,25 +43,6 @@ class Spinner
     {
         $this->padding = $padding;
         return $this;
-    }
-
-    private function loadStyles(): void
-    {
-        $this->styles = $this->getStylesFromJsonFile(__DIR__ . '/spinners.json');
-    }
-
-    private function getStylesFromJsonFile(string $file): array
-    {
-        if (!file_exists($file)) {
-            throw SpinnerStyleFileNotFoundException::withFile($file);
-        }
-
-        try {
-            $json = file_get_contents($file);
-            return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
-            throw SpinnerStyleFileParsingException::withFile($file, $e);
-        }
     }
 
     /**
@@ -172,7 +147,7 @@ class Spinner
         $this->reset();
         Terminal::output()->writeln(
             sprintf(
-                "%s<green>%s</green> %s",
+                "%s<success>%s</success> %s",
                 $this->addPadding(),
                 Terminal::getTheme()->getIcon("success"),
                 $this->message
