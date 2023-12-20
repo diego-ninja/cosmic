@@ -24,7 +24,7 @@ class CollectionFactory
             Theme::THEME_SECTION_STYLES   => StyleCollection::fromFile($file),
             Theme::THEME_SECTION_ICONS    => IconCollection::fromFile($file),
             Theme::THEME_SECTION_SPINNERS => SpinnerCollection::fromFile($file),
-            default                   => throw new \RuntimeException(sprintf('Unknown collection type: %s', $type)),
+            default                       => throw new \RuntimeException(sprintf('Unknown collection type: %s', $type)),
         };
     }
 }

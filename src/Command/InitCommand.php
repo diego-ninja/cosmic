@@ -16,9 +16,6 @@ use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Notifier\NotifiableInterface;
 use Ninja\Cosmic\Terminal\Input\Question;
 use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
-use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
-use Ninja\Cosmic\Terminal\Table\Table;
-use Ninja\Cosmic\Terminal\Table\TableConfig;
 use Ninja\Cosmic\Terminal\Terminal;
 use Ninja\Cosmic\Terminal\UI\UI;
 use Phar;
@@ -221,7 +218,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     {
         $description = Question::ask(message: " 📄 <question>Description</question>:", decorated: false);
 
-        self::$summary[] = ["key" => "Description", "value" => $description ?? ""];
+        self::$summary[]                         = ["key" => "Description", "value" => $description ?? ""];
         self::$replacements["{app.description}"] = $description;
     }
 
@@ -240,7 +237,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     {
         $website = Question::ask(message: " 🌎 <question>Website</question>:", default: git_config("user.website"), decorated: false);
 
-        self::$summary[] = ["key" => "Website", "value" => $website];
+        self::$summary[]                    = ["key" => "Website", "value" => $website];
         self::$replacements["{author.url}"] = $website;
     }
 
@@ -254,7 +251,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             maxWidth: 90
         );
 
-        self::$summary[] = ["key" => "License", "value" => $license[0]];
+        self::$summary[]                     = ["key" => "License", "value" => $license[0]];
         self::$replacements["{app.license}"] = $license[0];
     }
 

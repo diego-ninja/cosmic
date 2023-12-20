@@ -70,6 +70,11 @@ final class Release implements TableableInterface, SerializableInterface
         return sprintf("%s [%s]", $this->name, $this->tagName);
     }
 
+    public function getTableTitle(): ?string
+    {
+        return sprintf("📦 Release: %s", $this);
+    }
+
     public function getCreatedAt(): CarbonImmutable
     {
         return $this->createdAt;

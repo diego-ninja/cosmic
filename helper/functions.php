@@ -288,7 +288,7 @@ if (!function_exists('Cosmic\termwindize')) {
         return preg_replace_callback(
             '/<(\w+)>(.*?)<\/\1>/s',
             static function ($matches) {
-                $tag = $matches[1];
+                $tag     = $matches[1];
                 $content = $matches[2];
                 return sprintf('<span class="text-%s">%s</span>', $tag, $content);
             },

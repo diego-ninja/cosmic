@@ -21,6 +21,8 @@ use Ninja\Cosmic\Terminal\Input\Question;
 use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
 use Ninja\Cosmic\Terminal\Terminal;
 
+use Ninja\Cosmic\Terminal\UI\UI;
+
 use function Cosmic\find_binary;
 
 #[Icon("🔑")]
@@ -111,10 +113,7 @@ class SignCommand extends CosmicCommand
             $user_key = $keyring->all()->getById($keyId);
         }
 
-        Terminal::output()->writeln("");
-        Terminal::output()->writeln("Using the following GPG key to sign the selected file:");
-        Terminal::output()->writeln("");
-
+        UI::p("Using the following GPG key to sign the selected file:");
         $user_key->render(Terminal::output());
 
         if (Question::confirm("Do you want to use this key to sign the binary?")) {

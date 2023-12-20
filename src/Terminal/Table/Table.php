@@ -207,7 +207,7 @@ class Table
 
     protected function formatTitleRow(string $title, array $columnLengths): string
     {
-        $tableColor = $this->config->getTableColor();
+        $tableColor  = $this->config->getTableColor();
         $headerColor = $this->config->getTitleColor();
 
         $total = array_sum($columnLengths) + count($columnLengths) + 1;

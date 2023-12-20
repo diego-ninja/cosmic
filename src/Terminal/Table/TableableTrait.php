@@ -99,11 +99,15 @@ trait TableableTrait
         $config->setShowHeader(false);
         $config->setPadding(1);
 
-        return (new Table(data: $this->getTableData(), columns: [], config: $config))
+        return (new Table(data: $this->getTableData(), columns: [], config: $config, title: $this->getTableTitle()))
             ->addColumn(new TableColumn(name: '', key: 'key', color: 'notice'))
             ->addColumn((new TableColumn(name: '', key: 'value')));
     }
 
+    public function getTableTitle(): ?string
+    {
+        return null;
+    }
     private function extractValue(mixed $value): string
     {
         if (is_bool($value)) {

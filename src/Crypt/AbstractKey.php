@@ -6,6 +6,7 @@ namespace Ninja\Cosmic\Crypt;
 
 use Carbon\CarbonImmutable;
 use Ninja\Cosmic\Exception\MissingInterfaceException;
+use Ninja\Cosmic\Exception\UnexpectedValueException;
 use Ninja\Cosmic\Serializer\SerializableInterface;
 use Ninja\Cosmic\Serializer\SerializableTrait;
 use Ninja\Cosmic\Terminal\Table\TableableInterface;
@@ -97,6 +98,7 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
 
     /**
      * @throws MissingInterfaceException
+     * @throws UnexpectedValueException
      */
     public function render(OutputInterface $output): void
     {

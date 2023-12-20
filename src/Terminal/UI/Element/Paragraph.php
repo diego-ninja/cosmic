@@ -11,7 +11,7 @@ readonly class Paragraph extends AbstractElement
 {
     public function __invoke(string $message, int $width): void
     {
-        $lines = explode("\n", $message);
+        $lines     = explode("\n", $message);
         $paragraph = "";
 
         foreach ($lines as $line) {
