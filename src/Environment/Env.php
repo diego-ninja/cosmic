@@ -16,24 +16,50 @@ use function Cosmic\mask;
 use function Cosmic\value;
 use function Cosmic\git_version;
 
+/**
+ * Class Env
+ *
+ * Provides utility methods for interacting with environment variables.
+ */
 class Env
 {
+    /**
+     * Whether to use putenv for setting environment variables.
+     *
+     * @var bool
+     */
     protected static bool $putenv = true;
 
+    /**
+     * The Dotenv repository instance.
+     *
+     * @var RepositoryInterface|null
+     */
     protected static ?RepositoryInterface $repository = null;
 
+    /**
+     * Enable the use of putenv for setting environment variables.
+     */
     public static function enablePutenv(): void
     {
         static::$putenv     = true;
         static::$repository = null;
     }
 
+    /**
+     * Disable the use of putenv for setting environment variables.
+     */
     public static function disablePutenv(): void
     {
         static::$putenv     = false;
         static::$repository = null;
     }
 
+    /**
+     * Get the Dotenv repository instance.
+     *
+     * @return RepositoryInterface
+     */
     public static function getRepository(): RepositoryInterface
     {
         if (static::$repository === null) {
@@ -49,12 +75,26 @@ class Env
         return static::$repository;
     }
 
+    /**
+     * Get the base path, optionally with a subdirectory appended.
+     *
+     * @param string|null $dir Subdirectory (optional)
+     *
+     * @return string|null
+     */
     public static function basePath(?string $dir = null): ?string
     {
         $base_path = is_phar() ? Phar::running() : self::get("BASE_PATH", getcwd());
         return $dir ? sprintf("%s/%s", $base_path, $dir) : $base_path;
     }
 
+    /**
+     * Get the build path, optionally with a subdirectory appended.
+     *
+     * @param string|null $dir Subdirectory (optional)
+     *
+     * @return string|null
+     */
     public static function buildPath(?string $dir = null): ?string
     {
         $default    = self::basePath("builds");
@@ -62,6 +102,13 @@ class Env
         return $dir ? sprintf("%s/%s", $build_path, $dir) : $build_path;
     }
 
+    /**
+     * Get the help path for commands, optionally with a subdirectory appended.
+     *
+     * @param string|null $dir Subdirectory (optional)
+     *
+     * @return string|null
+     */
     public static function helpPath(?string $dir = null): ?string
     {
         $default   = self::basePath("docs/commands");
@@ -69,6 +116,11 @@ class Env
         return $dir ? sprintf("%s/%s", $help_path, $dir) : $help_path;
     }
 
+    /**
+     * Check if the application is in debug mode.
+     *
+     * @return bool
+     */
     public static function isDebug(): bool
     {
         if (Terminal::input()->hasOption("debug")) {
@@ -80,6 +132,11 @@ class Env
         return self::get("APP_DEBUG", false);
     }
 
+    /**
+     * Get the current environment.
+     *
+     * @return string
+     */
     public static function env(): string
     {
         if (Terminal::input()->hasOption("env")) {
@@ -89,16 +146,33 @@ class Env
         return self::get("APP_ENV", ENV_LOCAL);
     }
 
+    /**
+     * Get the application version.
+     *
+     * @return string
+     */
     public static function appVersion(): string
     {
         return git_version(self::basePath()) ?? self::get("APP_VERSION", "unreleased");
     }
 
+    /**
+     * Get the application name.
+     *
+     * @return string
+     */
     public static function appName(): string
     {
         return self::get("APP_NAME", "cosmic");
     }
 
+    /**
+     * Get the shell executable, optionally with an icon.
+     *
+     * @param string|null $icon Shell icon (optional)
+     *
+     * @return string
+     */
     public static function shell(?string $icon = null): string
     {
         if ($icon) {
@@ -108,6 +182,11 @@ class Env
         return basename(self::get("SHELL"));
     }
 
+    /**
+     * Dump the environment variables along with some additional information.
+     *
+     * @return array
+     */
     public static function dump(): array
     {
         $ret = [];
@@ -142,6 +221,14 @@ class Env
         return $ret;
     }
 
+    /**
+     * Get the value for a given key from the environment, with a default value if not set.
+     *
+     * @param string $key     The key to retrieve
+     * @param mixed  $default Default value if the key is not set
+     *
+     * @return mixed
+     */
     public static function get(string $key, mixed $default = null): mixed
     {
         /** @psalm-suppress UndefinedFunction */

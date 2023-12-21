@@ -7,12 +7,23 @@ namespace Ninja\Cosmic\Event;
 use InvalidArgumentException;
 use Ninja\Cosmic\Event\Dto\LifecycleEventArgs;
 
+/**
+ * Trait LifecycleTrait
+ *
+ * Provides methods to register and dispatch lifecycle events.
+ */
 trait LifecycleTrait
 {
-    public static function registerListener(
-        string | array $event_name,
-        callable | LifecycleEventListenerInterface $listener
-    ): void {
+    /**
+     * Register a listener for one or multiple lifecycle events.
+     *
+     * @param string|array $event_name The name or names of the lifecycle event(s).
+     * @param callable|LifecycleEventListenerInterface $listener The listener to be registered.
+     *
+     * @throws InvalidArgumentException If the event name is not registered as a valid lifecycle event.
+     */
+    public static function registerListener(string|array $event_name, callable|LifecycleEventListenerInterface $listener): void
+    {
         if (is_array($event_name)) {
             foreach ($event_name as $name) {
                 self::getInstance()->register($name, $listener);
@@ -24,22 +35,41 @@ trait LifecycleTrait
         self::getInstance()->register($event_name, $listener);
     }
 
-    private function register(string $event_name, callable | LifecycleEventListenerInterface $listener): void
+    /**
+     * Register a listener for a specific lifecycle event.
+     *
+     * @param string $event_name The name of the lifecycle event.
+     * @param callable|LifecycleEventListenerInterface $listener The listener to be registered.
+     *
+     * @throws InvalidArgumentException If the event name is not registered as a valid lifecycle event.
+     */
+    private function register(string $event_name, callable|LifecycleEventListenerInterface $listener): void
     {
         if (!in_array($event_name, self::$lifecycle_events, true)) {
             throw new InvalidArgumentException(
-                sprintf("Event name '%s' is not registered as valid lifecycle event.", $event_name)
+                sprintf("Event name '%s' is not registered as a valid lifecycle event.", $event_name)
             );
         }
 
         self::$event_listeners[$event_name][] = $listener;
     }
 
+    /**
+     * Register multiple lifecycle events.
+     *
+     * @param array $lifecycle_events The array of lifecycle events to register.
+     */
     public static function registerLifecycleEvents(array $lifecycle_events): void
     {
         self::$lifecycle_events = array_merge($lifecycle_events, self::$lifecycle_events);
     }
 
+    /**
+     * Dispatch a lifecycle event to its registered listeners.
+     *
+     * @param string $event_name The name of the lifecycle event to dispatch.
+     * @param array $event_args The arguments to pass to the event listeners.
+     */
     public static function dispatchLifecycleEvent(string $event_name, array $event_args): void
     {
         if (isset(self::$event_listeners[$event_name])) {

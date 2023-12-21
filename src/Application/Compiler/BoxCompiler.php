@@ -18,10 +18,19 @@ use Throwable;
 
 use function Cosmic\find_binary;
 
+/**
+ * Class BoxCompiler
+ *
+ * Responsible for compiling the application into a Phar binary using Box.
+ */
 class BoxCompiler implements CompilerInterface
 {
     /**
+     * Compile the application into a Phar binary using Box.
+     *
+     * @return bool True if the compilation process is successful, false otherwise.
      * @throws ReflectionException
+     * @throws RuntimeException|BinaryNotFoundException If unable to install or find the Box binary.
      */
     public function compile(): bool
     {
@@ -54,6 +63,12 @@ class BoxCompiler implements CompilerInterface
         }
     }
 
+    /**
+     * Install the Box binary using Phive.
+     *
+     * @return bool True if the installation process is successful, false otherwise.
+     * @throws BinaryNotFoundException
+     */
     private function installBoxBinary(): bool
     {
         if (Question::confirm('Do you want to install box binary?')) {

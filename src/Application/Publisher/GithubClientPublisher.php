@@ -11,8 +11,23 @@ use Symfony\Component\Process\Process;
 
 use function Cosmic\find_binary;
 
+/**
+ * Class GithubClientPublisher
+ *
+ * Implementation of the PublisherInterface that uses the GitHub CLI to publish releases and assets.
+ */
 class GithubClientPublisher implements PublisherInterface
 {
+    /**
+     * Publish a release on GitHub.
+     *
+     * @param Release $release The release to publish.
+     *
+     * @return Release|null The published release, or null if the operation fails.
+     *
+     * @throws BinaryNotFoundException
+     * @throws \JsonException
+     */
     public function publish(Release $release): ?Release
     {
         try {
@@ -58,9 +73,17 @@ class GithubClientPublisher implements PublisherInterface
                 previous: $e
             );
         }
-
     }
 
+    /**
+     * Get information about a release on GitHub.
+     *
+     * @param string $tag The tag of the release.
+     *
+     * @return Release|null The release information, or null if the operation fails.
+     *
+     * @throws \JsonException If the GitHub CLI binary is not found.
+     */
     public function get(string $tag): ?Release
     {
         try {
@@ -85,6 +108,15 @@ class GithubClientPublisher implements PublisherInterface
         }
     }
 
+    /**
+     * Update an existing release on GitHub.
+     *
+     * @param Release $release The release to update.
+     *
+     * @return Release|null The updated release, or null if the operation fails.
+     *
+     * @throws \JsonException
+     */
     public function update(Release $release): ?Release
     {
         try {
@@ -111,9 +143,17 @@ class GithubClientPublisher implements PublisherInterface
                 previous: $e
             );
         }
-
     }
 
+    /**
+     * Delete a release on GitHub.
+     *
+     * @param string $tag The tag of the release to delete.
+     *
+     * @return bool True if the deletion is successful, false otherwise.
+     *
+     * @throws \JsonException
+     */
     public function delete(string $tag): bool
     {
         try {
@@ -139,6 +179,16 @@ class GithubClientPublisher implements PublisherInterface
         }
     }
 
+    /**
+     * Upload an asset to a GitHub release.
+     *
+     * @param string $name      The name of the release.
+     * @param Asset  $asset     The asset to upload.
+     * @param bool   $overwrite Whether to overwrite the asset if it already exists.
+     *
+     * @return bool True if the upload is successful, false otherwise.
+     *
+     */
     private function uploadAsset(string $name, Asset $asset, bool $overwrite): bool
     {
         try {

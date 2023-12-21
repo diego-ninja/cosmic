@@ -6,13 +6,40 @@ namespace Ninja\Cosmic\Event;
 
 use Ramsey\Uuid\UuidInterface;
 
+/**
+ * Interface LifecycleAwareInterface
+ *
+ * Defines the contract for an object that is aware of its lifecycle events.
+ */
 interface LifecycleAwareInterface
 {
-    public static function registerListener(
-        string|array $event_name,
-        callable|LifecycleEventListenerInterface $listener
-    ): void;
+    /**
+     * Register a listener for one or multiple lifecycle events.
+     *
+     * @param string|array $event_name The name or names of the lifecycle event(s).
+     * @param callable|LifecycleEventListenerInterface $listener The listener to be registered.
+     */
+    public static function registerListener(string|array $event_name, callable|LifecycleEventListenerInterface $listener): void;
+
+    /**
+     * Dispatch a lifecycle event to its registered listeners.
+     *
+     * @param string $event_name The name of the lifecycle event to dispatch.
+     * @param array $event_args The arguments to pass to the event listeners.
+     */
     public static function dispatchLifecycleEvent(string $event_name, array $event_args): void;
+
+    /**
+     * Register multiple lifecycle events.
+     *
+     * @param array $lifecycle_events The array of lifecycle events to register.
+     */
     public static function registerLifecycleEvents(array $lifecycle_events): void;
+
+    /**
+     * Get the unique identifier associated with the object's lifecycle.
+     *
+     * @return UuidInterface|null The UUID representing the lifecycle, or null if not set.
+     */
     public function getLifecycleId(): ?UuidInterface;
 }

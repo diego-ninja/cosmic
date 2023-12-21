@@ -11,8 +11,25 @@ use Ninja\Cosmic\Terminal\Terminal;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Question\Question as SymfonyQuestion;
 
+/**
+ * Class Question
+ *
+ * A utility class for handling user input through the terminal.
+ *
+ * @package Ninja\Cosmic\Terminal\Input
+ */
 class Question
 {
+    /**
+     * Ask a question and get the user's input.
+     *
+     * @param string      $message      The message to display as the question.
+     * @param string|null $default      The default value for the input (optional).
+     * @param array       $autoComplete An array of values for autocompletion (optional).
+     * @param bool        $decorated    Whether to use decorated output (default is true).
+     *
+     * @return string|null The user's input or null if no input is provided.
+     */
     public static function ask(string $message, ?string $default = null, array $autoComplete = [], bool $decorated = true): ?string
     {
         $defaultOption = $default ?? '';
@@ -29,6 +46,15 @@ class Question
 
     }
 
+    /**
+     * Confirm a question with a yes or no answer.
+     *
+     * @param string $message   The message to display as the confirmation question.
+     * @param bool   $default   The default answer (true for yes, false for no, default is true).
+     * @param bool   $decorated Whether to use decorated output (default is true).
+     *
+     * @return bool The user's confirmation (true for yes, false for no).
+     */
     public static function confirm(string $message, bool $default = true, bool $decorated = true): bool
     {
         $autoComplete = ['yes', 'no'];
@@ -45,6 +71,14 @@ class Question
         return in_array($response, ['yes', 'y']);
     }
 
+    /**
+     * Get hidden input from the user.
+     *
+     * @param string $message   The message to display as the hidden input prompt.
+     * @param bool   $decorated Whether to use decorated output (default is true).
+     *
+     * @return string|null The hidden input or null if no input is provided.
+     */
     public static function hidden(string $message, bool $decorated = true): ?string
     {
         $message = $decorated ?
@@ -58,6 +92,17 @@ class Question
         return $helper->ask(Terminal::input(), Terminal::output(), $question);
     }
 
+    /**
+     * Present a selection question to the user.
+     *
+     * @param string $message       The message to display as the selection question.
+     * @param array  $options       The available options for selection.
+     * @param bool   $allowMultiple Whether to allow multiple selections (default is true).
+     * @param int|null $columns     The number of columns to use for displaying options (optional).
+     * @param int|null $maxWidth    The maximum width for displaying options (optional).
+     *
+     * @return array The selected options.
+     */
     public static function select(
         string $message,
         array $options,
@@ -78,6 +123,14 @@ class Question
         )->handle();
     }
 
+    /**
+     * Get autocomplete options with formatting for default value.
+     *
+     * @param array  $autocomplete An array of values for autocompletion.
+     * @param string $default      The default value to highlight.
+     *
+     * @return string Formatted autocomplete options string.
+     */
     private static function getAutocompleteOptions(array $autocomplete, string $default): string
     {
         $autocomplete_options = $autocomplete;
