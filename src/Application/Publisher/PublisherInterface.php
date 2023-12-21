@@ -9,7 +9,7 @@ use Ninja\Cosmic\Application\Publisher\Release\Release;
 /**
  * Interface PublisherInterface
  *
- * @package Ninja\Cosmic\Application\Publisher
+ * @package Ninja\Cosmic\Application
  */
 interface PublisherInterface
 {

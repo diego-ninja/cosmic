@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Application\Publisher\Release;
 
 use Carbon\CarbonImmutable;
+use JsonException;
 use Ninja\Cosmic\Application\Publisher\Asset\Asset;
 use Ninja\Cosmic\Application\Publisher\Asset\AssetCollection;
 use Ninja\Cosmic\Exception\MissingInterfaceException;
@@ -90,7 +91,7 @@ final class Release implements TableableInterface, SerializableInterface
      * @param string $json
      * @return self
      *
-     * @throws \JsonException
+     * @throws JsonException
      */
     public static function fromJson(string $json): self
     {
@@ -185,6 +186,26 @@ final class Release implements TableableInterface, SerializableInterface
     public function removeAsset(Asset $asset): void
     {
         $this->assets->remove($asset);
+    }
+
+    /**
+     * Check if the release is in draft state.
+     *
+     * @return bool
+     */
+    public function isDraft(): bool
+    {
+        return $this->isDraft;
+    }
+
+    /**
+     * Check if the release is a pre-release.
+     *
+     * @return bool
+     */
+    public function isPrerelease(): bool
+    {
+        return $this->isPrerelease;
     }
 
     /**

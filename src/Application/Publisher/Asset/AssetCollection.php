@@ -8,19 +8,33 @@ use JsonException;
 use Ninja\Cosmic\Serializer\SerializableInterface;
 use Ramsey\Collection\AbstractCollection;
 
+/**
+ * Class AssetCollection
+ *
+ * @package Ninja\Cosmic\Application
+ */
 class AssetCollection extends AbstractCollection implements SerializableInterface
 {
+    /**
+     * @inheritDoc
+     */
     public function getType(): string
     {
         return Asset::class;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function jsonSerialize(): array
     {
         return $this->toArray();
     }
 
     /**
+     * Return a JSON representation of the collection.
+     *
+     * @return string
      * @throws JsonException
      */
     public function toJson(): string

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cosmic;
 
 use Closure;
+use Exception;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Environment\EnvironmentBuilder;
 use Ninja\Cosmic\Environment\Exception\EnvironmentNotFoundException;
@@ -20,6 +21,12 @@ use ReflectionProperty;
 use Symfony\Component\Process\Process;
 
 if (!function_exists('Cosmic\snakeize')) {
+    /**
+     * Convert a string to snake case.
+     *
+     * @param string $input
+     * @return string
+     */
     function snakeize(string $input): string
     {
         $pattern = '!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!';
@@ -35,6 +42,12 @@ if (!function_exists('Cosmic\snakeize')) {
 }
 
 if (!function_exists('Cosmic\camelize')) {
+    /**
+     * Convert a string to camel case.
+     *
+     * @param string $input
+     * @return string
+     */
     function camelize(string $input): string
     {
         $input = str_replace(' ', '', ucwords(str_replace('_', ' ', $input)));
@@ -43,6 +56,13 @@ if (!function_exists('Cosmic\camelize')) {
 }
 
 if (!function_exists('Cosmic\value')) {
+    /**
+     * Return the default value of the given value.
+     *
+     * @param mixed $value
+     * @param mixed ...$args
+     * @return mixed
+     */
     function value(mixed $value, mixed ...$args): mixed
     {
         return $value instanceof Closure ? $value(...$args) : $value;
@@ -50,6 +70,11 @@ if (!function_exists('Cosmic\value')) {
 }
 
 if (!function_exists('Cosmic\is_phar')) {
+    /**
+     * Check if the application is running as a Phar.
+     *
+     * @return bool
+     */
     function is_phar(): bool
     {
         if (is_cosmic()) {
@@ -61,10 +86,21 @@ if (!function_exists('Cosmic\is_phar')) {
 }
 
 if (!function_exists('Cosmic\is_git')) {
-    function is_git(): bool
+    /**
+     * Check if the current directory is a Git repository.
+     * If path is provided, check if the path is a Git repository.
+     *
+     * @param string|null $path
+     * @return bool
+     * @throws BinaryNotFoundException
+     */
+    function is_git(?string $path = null): bool
     {
         $command = sprintf("%s rev-parse --is-inside-work-tree", find_binary("git"));
         $process = Process::fromShellCommandline($command);
+        if (!is_null($path)) {
+            $process->setWorkingDirectory($path);
+        }
         $process->run();
 
         return $process->isSuccessful();
@@ -72,6 +108,13 @@ if (!function_exists('Cosmic\is_git')) {
 }
 
 if (!function_exists('Cosmic\find_binary')) {
+    /**
+     * Find a binary in the system.
+     *
+     * @param string $binary
+     * @return string
+     * @throws BinaryNotFoundException
+     */
     function find_binary(string $binary): string
     {
         $command = sprintf("which %s", $binary);
@@ -90,6 +133,12 @@ if (!function_exists('Cosmic\find_binary')) {
 }
 
 if (!function_exists("Cosmic\get_namespace_from_file")) {
+    /**
+     * Get the namespace from a file.
+     *
+     * @param string $file
+     * @return string|null
+     */
     function get_namespace_from_file(string $file): ?string
     {
         $ns     = null;
@@ -109,6 +158,12 @@ if (!function_exists("Cosmic\get_namespace_from_file")) {
 }
 
 if (!function_exists("Cosmic\get_class_from_file")) {
+    /**
+     * Get the class name from a file.
+     *
+     * @param string $file
+     * @return string
+     */
     function get_class_from_file(string $file): string
     {
         $class_name = basename($file, ".php");
@@ -119,6 +174,13 @@ if (!function_exists("Cosmic\get_class_from_file")) {
 }
 
 if (!function_exists("Cosmic\git_version")) {
+    /**
+     * Get the current Git version for a given path
+     *
+     * @param string $path
+     * @return string|null
+     * @throws BinaryNotFoundException
+     */
     function git_version(string $path): ?string
     {
         $command = sprintf("cd %s && %s describe --tags --abbrev=0", $path, find_binary("git"));
@@ -134,6 +196,11 @@ if (!function_exists("Cosmic\git_version")) {
 }
 
 if (!function_exists("Cosmic\is_root")) {
+    /**
+     * Check if the current user is root.
+     *
+     * @return bool
+     */
     function is_root(): bool
     {
         return posix_getuid() === 0;
@@ -142,6 +209,12 @@ if (!function_exists("Cosmic\is_root")) {
 
 if (!function_exists("Cosmic\is_nullable")) {
     /**
+     * Check if a property is nullable.
+     *
+     * @param string $property
+     * @param string|null $classname
+     *
+     * @return bool
      * @throws UnexpectedValueException
      */
     function is_nullable(string $property, string $classname = null): bool
@@ -161,6 +234,14 @@ if (!function_exists("Cosmic\is_nullable")) {
 }
 
 if (!function_exists('Cosmic\sudo')) {
+    /**
+     * Run a command with sudo.
+     * If a password is provided, use it, if not, ask for it.
+     *
+     * @param string $command
+     * @param string|null $sudo_passwd
+     * @return string
+     */
     function sudo(string $command, ?string $sudo_passwd = null): string
     {
         if (!is_root()) {
@@ -178,6 +259,13 @@ if (!function_exists('Cosmic\sudo')) {
 }
 
 if (!function_exists('Cosmic\mask')) {
+    /**
+     * Mask a string.
+     *
+     * @param string $string
+     * @param int|null $length
+     * @return string
+     */
     function mask(string $string, ?int $length = null): string
     {
         $length = $length ?? strlen($string);
@@ -186,6 +274,12 @@ if (!function_exists('Cosmic\mask')) {
 }
 
 if (!function_exists('Cosmic\pluralize')) {
+    /**
+     * Pluralize a string.
+     *
+     * @param string $item
+     * @return string
+     */
     function pluralize(string $item): string
     {
         $lastChar = strtolower($item[strlen($item) - 1]);
@@ -202,6 +296,13 @@ if (!function_exists('Cosmic\pluralize')) {
 }
 
 if (!function_exists('Cosmic\git_config')) {
+    /**
+     * Get a Git config value.
+     *
+     * @param string $key
+     * @return string|null
+     * @throws BinaryNotFoundException
+     */
     function git_config(string $key): ?string
     {
         $command = sprintf("%s config --global --get %s", find_binary("git"), $key);
@@ -217,6 +318,16 @@ if (!function_exists('Cosmic\git_config')) {
 }
 
 if (!function_exists('Cosmic\unzip')) {
+    /**
+     * Unzip a file.
+     * If a destination path is provided, unzip the file there.
+     * Otherwise, unzip the file in the current directory.
+     *
+     * @param string $file
+     * @param string|null $destination_path
+     * @return bool
+     * @throws BinaryNotFoundException
+     */
     function unzip(string $file, ?string $destination_path = null): bool
     {
         $command = sprintf("%s %s", find_binary("unzip"), $file);
@@ -232,6 +343,13 @@ if (!function_exists('Cosmic\unzip')) {
 }
 
 if (!function_exists('Cosmic\find_env')) {
+    /**
+     * Find the environment file.
+     * If the file is not found, ask the user if he wants to create it.
+     *
+     * @return string
+     * @throws EnvironmentNotFoundException
+     */
     function find_env(): string
     {
         $env_file = Terminal::input()->hasParameterOption(["--env", "-e"]) ?
@@ -257,6 +375,12 @@ if (!function_exists('Cosmic\find_env')) {
 }
 
 if (!function_exists('Cosmic\replace')) {
+    /**
+     * Replace a string with the current environment variables.
+     *
+     * @param string $string
+     * @return string
+     */
     function replace(string $string): string
     {
         return ReplacerFactory::r($string);
@@ -264,6 +388,11 @@ if (!function_exists('Cosmic\replace')) {
 }
 
 if (!function_exists('Cosmic\is_cosmic')) {
+    /**
+     * Check if the current directory is a Cosmic project.
+     *
+     * @return bool
+     */
     function is_cosmic(): bool
     {
         $check = sprintf("%s/vendor/diego-ninja/cosmic", getcwd());
@@ -272,6 +401,13 @@ if (!function_exists('Cosmic\is_cosmic')) {
 }
 
 if (!function_exists('Cosmic\randomize')) {
+    /**
+     * Generate a random string.
+     *
+     * @param int $length
+     * @return string
+     * @throws Exception
+     */
     function randomize(int $length): string
     {
         if (extension_loaded('openssl')) {
@@ -283,6 +419,12 @@ if (!function_exists('Cosmic\randomize')) {
 }
 
 if (!function_exists('Cosmic\termwindize')) {
+    /**
+     * Convert a symfony style string to termwind css.
+     *
+     * @param string $message
+     * @return string
+     */
     function termwindize(string $message): string
     {
         return preg_replace_callback(
@@ -298,13 +440,19 @@ if (!function_exists('Cosmic\termwindize')) {
 }
 
 if (!function_exists('Cosmic\cypher')) {
-    function cypher(string $plain, string $key): string
+    /**
+     * Cypher a string using a key and an algorithm.
+     *
+     * @param string $plain
+     * @param string $key
+     * @param string $algo
+     * @return string
+     */
+    function cypher(string $plain, string $key, string $algo = "AES-128-CBC"): string
     {
-        $cipher = "AES-128-CBC";
-
-        $iv_length      = openssl_cipher_iv_length($cipher);
+        $iv_length      = openssl_cipher_iv_length($algo);
         $iv             = openssl_random_pseudo_bytes($iv_length);
-        $ciphertext_raw = openssl_encrypt($plain, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+        $ciphertext_raw = openssl_encrypt($plain, $algo, $key, OPENSSL_RAW_DATA, $iv);
         $hmac           = hash_hmac('sha256', $ciphertext_raw, $key, true);
 
         return base64_encode($iv . $hmac . $ciphertext_raw);
@@ -312,21 +460,35 @@ if (!function_exists('Cosmic\cypher')) {
 }
 
 if (!function_exists('Cosmic\decipher')) {
-    function decipher(string $cipher_text, string $key): string
+    /**
+     * Decipher a string using a key and an algorithm.
+     *
+     * @param string $cipher_text
+     * @param string $key
+     * @param string $algo
+     * @return string
+     */
+    function decipher(string $cipher_text, string $key, string $algo = "AES-128-CBC"): string
     {
-        $cipher  = "AES-128-CBC";
         $sha2len = 32;
 
         $c              = base64_decode($cipher_text);
-        $iv_length      = openssl_cipher_iv_length($cipher);
+        $iv_length      = openssl_cipher_iv_length($algo);
         $iv             = substr($c, 0, $iv_length);
         $ciphertext_raw = substr($c, $iv_length + $sha2len);
 
-        return openssl_decrypt($ciphertext_raw, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+        return openssl_decrypt($ciphertext_raw, $algo, $key, OPENSSL_RAW_DATA, $iv);
     }
 }
 
 if (!function_exists('Cosmic\human_filesize')) {
+    /**
+     * Convert bytes to human-readable format.
+     *
+     * @param int $bytes
+     * @param int $precision
+     * @return string
+     */
     function human_filesize(int $bytes, int $precision = 2): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];

@@ -8,6 +8,7 @@ namespace Ninja\Cosmic\Application\Compiler;
  * Interface CompilerInterface
  *
  * Represents the interface for application compilers that generate Phar binaries.
+ * @package Ninja\Cosmic\Application
  */
 interface CompilerInterface
 {

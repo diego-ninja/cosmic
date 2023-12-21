@@ -15,6 +15,7 @@ use Symfony\Component\Process\Process;
  * Class ApplicationBuilder
  *
  * Responsible for building the application, including setting up the environment, compiling, and restoring.
+ * @package Ninja\Cosmic\Application
  */
 final readonly class ApplicationBuilder
 {

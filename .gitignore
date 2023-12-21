@@ -13,3 +13,4 @@ tester.php
 node_modules
 .temp
 .cache
+.phpdoc

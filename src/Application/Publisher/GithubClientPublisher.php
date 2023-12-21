@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Application\Publisher;
 
+use JsonException;
 use Ninja\Cosmic\Application\Publisher\Asset\Asset;
 use Ninja\Cosmic\Application\Publisher\Release\Release;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
@@ -15,6 +16,7 @@ use function Cosmic\find_binary;
  * Class GithubClientPublisher
  *
  * Implementation of the PublisherInterface that uses the GitHub CLI to publish releases and assets.
+ * @package Ninja\Cosmic\Application
  */
 class GithubClientPublisher implements PublisherInterface
 {
@@ -26,7 +28,7 @@ class GithubClientPublisher implements PublisherInterface
      * @return Release|null The published release, or null if the operation fails.
      *
      * @throws BinaryNotFoundException
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function publish(Release $release): ?Release
     {
@@ -82,7 +84,7 @@ class GithubClientPublisher implements PublisherInterface
      *
      * @return Release|null The release information, or null if the operation fails.
      *
-     * @throws \JsonException If the GitHub CLI binary is not found.
+     * @throws JsonException If the GitHub CLI binary is not found.
      */
     public function get(string $tag): ?Release
     {
@@ -115,7 +117,7 @@ class GithubClientPublisher implements PublisherInterface
      *
      * @return Release|null The updated release, or null if the operation fails.
      *
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function update(Release $release): ?Release
     {
@@ -152,7 +154,7 @@ class GithubClientPublisher implements PublisherInterface
      *
      * @return bool True if the deletion is successful, false otherwise.
      *
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function delete(string $tag): bool
     {

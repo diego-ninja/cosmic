@@ -31,5 +31,6 @@ This is a work in progress, and it is not ready for production use. However, you
   - [Building from source](./docs/installation.md#building-from-source)
 - 🧰 [Basic usage](./docs/usage.md)
   - [Bundled Commands](./docs/usage.md#bundled-commands)
+- 🥷 [Developer docs](./docs/dev/README.md)
 - 🤝 [Contributing](./docs/contributing.md)
 - 🙏 [Credits](./docs/credits.md)

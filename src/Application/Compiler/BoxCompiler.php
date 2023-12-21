@@ -22,6 +22,7 @@ use function Cosmic\find_binary;
  * Class BoxCompiler
  *
  * Responsible for compiling the application into a Phar binary using Box.
+ * @package Ninja\Cosmic\Application
  */
 class BoxCompiler implements CompilerInterface
 {
