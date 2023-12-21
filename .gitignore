@@ -10,3 +10,6 @@ box.json
 .php-cs-fixer.cache
 tester.php
 
+node_modules
+.temp
+.cache

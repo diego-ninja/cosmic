@@ -44,8 +44,7 @@ class EnvironmentBuilder
     public function buildFrom(string $example_file): bool
     {
         return
-            $this->buildEnvFile($example_file, sprintf("%s/.env", dirname($example_file))) &&
-            $this->buildEnvFile($example_file, sprintf("%s/.env.local", dirname($example_file)));
+            $this->buildEnvFile($example_file, sprintf("%s/.env", dirname($example_file))) && $this->buildEnvFile($example_file, sprintf("%s/.env.local", dirname($example_file)));
     }
 
     /**

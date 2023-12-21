@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Crypt;
 
 /**
+ * Interface KeyInterface
+ *
+ * Provides methods for handling cryptographic keys.
+ *
  * @property string $type
  * @property string $id
  * @property string $createdAt
@@ -35,11 +39,53 @@ interface KeyInterface
     public const GPG_TRUST_LEVEL_FULLY    = 'fully';
     public const GPG_TRUST_LEVEL_ULTIMATE = 'ultimate';
 
+    /**
+     * Check if the key is able to perform a specific usage.
+     *
+     * @param string $usage The usage to check.
+     *
+     * @return bool True if the key is able to perform the usage, false otherwise.
+     */
     public function isAbleTo(string $usage): bool;
-    public function isAbleToSign(): bool;
-    public function __toString(): string;
-    public static function fromArray(array $data): static;
-    public static function fromString(string $string): static;
-    public function addSubKey(KeyInterface $key): void;
 
+    /**
+     * Check if the key is able to sign.
+     *
+     * @return bool True if the key is able to sign, false otherwise.
+     */
+    public function isAbleToSign(): bool;
+
+    /**
+     * Get the string representation of the key.
+     *
+     * @return string The string representation of the key.
+     */
+    public function __toString(): string;
+
+    /**
+     * Create a new instance of the key from an array of data.
+     *
+     * @param array $data The data to create the key from.
+     *
+     * @return static The new instance of the key.
+     */
+    public static function fromArray(array $data): static;
+
+    /**
+     * Create a new instance of the key from a string.
+     *
+     * @param string $string The string to create the key from.
+     *
+     * @return static The new instance of the key.
+     */
+    public static function fromString(string $string): static;
+
+    /**
+     * Add a subkey to the key.
+     *
+     * @param KeyInterface $key The subkey to add.
+     *
+     * @return void
+     */
+    public function addSubKey(KeyInterface $key): void;
 }
