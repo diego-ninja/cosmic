@@ -12,8 +12,8 @@ use Ninja\Cosmic\Exception\MissingInterfaceException;
 use Ninja\Cosmic\Exception\UnexpectedValueException;
 use Ninja\Cosmic\Serializer\SerializableInterface;
 use Ninja\Cosmic\Serializer\SerializableTrait;
-use Ninja\Cosmic\Terminal\Table\TableableInterface;
-use Ninja\Cosmic\Terminal\Table\TableableTrait;
+use Ninja\Cosmic\Terminal\UI\Table\TableableInterface;
+use Ninja\Cosmic\Terminal\UI\Table\TableableTrait;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**

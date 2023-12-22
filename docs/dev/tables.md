@@ -9,8 +9,7 @@ The `Ninja\Cosmic\Terminal\Table` namespace provides a set of classes for creati
 To create a table, you first need to instantiate the `Table` class. The constructor of the `Table` class accepts an instance of `ColumnCollection`, which represents the columns of the table.
 
 ```php
-use Ninja\Cosmic\Terminal\Table\Table;
-use Ninja\Cosmic\Terminal\Table\Column\ColumnCollection;
+use Ninja\Cosmic\Terminal\UI\Table\Column\ColumnCollection;use Ninja\Cosmic\Terminal\UI\Table\Table;
 
 $columns = new ColumnCollection();
 $table = new Table($columns);
@@ -21,7 +20,7 @@ $table = new Table($columns);
 Columns are defined using the `TableColumn` class. The constructor of this class accepts the name of the column, the key (which is used to fetch the data from the row), and an optional color.
 
 ```php
-use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
+use Ninja\Cosmic\Terminal\UI\Table\Column\TableColumn;
 
 $column = new TableColumn('Name', 'name', 'green');
 ```
@@ -39,7 +38,7 @@ You can manipulate the data of a column using a manipulator. A manipulator is an
 For example, the `DateManipulator` class converts a timestamp into a formatted date string.
 
 ```php
-use Ninja\Cosmic\Terminal\Table\Manipulator\DateManipulator;
+use Ninja\Cosmic\Terminal\UI\Table\Manipulator\DateManipulator;
 
 $dateManipulator = new DateManipulator();
 ```
@@ -84,9 +83,7 @@ At the time of writing, the following settings and their defaults values are ava
 Here's an example of how you can customize the appearance of the table headers:
 
 ```php
-use Ninja\Cosmic\Terminal\Table\Table;
-use Ninja\Cosmic\Terminal\Table\TableConfig;
-use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
+use Ninja\Cosmic\Terminal\UI\Table\Column\TableColumn;use Ninja\Cosmic\Terminal\UI\Table\Table;use Ninja\Cosmic\Terminal\UI\Table\TableConfig;
 
 // Create a new TableConfig object with custom settings
 $config = new TableConfig([

@@ -20,38 +20,41 @@ The colors are loaded into the default OutputInterface in the application and th
 You can define as many colors as you want, but at least, the following set of colors must be present in every terminal theme.
 
 ```json
-"colors": {  
-    "text": "#E5E9F0",  
-    "comment": "#EBCB8B",  
-    "info": "#81A1C1",  
-    "notice": "#8FBCBB",  
-    "warning": "#D08770",  
-    "error": "#BF616A",  
-    "success": "#A3BE8C",  
-    "white": "#FFFFFF",  
-    "black": "#000000",  
-    "grey": "#4C566A",  
-    "red": "#BF616A",  
-    "green": "#A3BE8C",  
-    "yellow": "#EBCB8B",  
-    "blue": "#81A1C1",  
-    "purple": "#B48EAD",  
-    "cyan": "#88C0D0",  
-    "hl": {  
-        "fg": "#E5E9F0",  
-        "bg": "#4C566A"  
-    },  
-    "critical": {  
-        "fg": "#BF616A",  
-        "options": [  
-            "blink"  
-        ]  
-    },    "warn": {  
-        "fg": "#D08770",  
-        "options": [  
-            "blink"  
-        ]  
+{
+  "colors": {
+    "text": "#E5E9F0",
+    "comment": "#EBCB8B",
+    "info": "#81A1C1",
+    "notice": "#8FBCBB",
+    "warning": "#D08770",
+    "error": "#BF616A",
+    "success": "#A3BE8C",
+    "white": "#FFFFFF",
+    "black": "#000000",
+    "grey": "#4C566A",
+    "red": "#BF616A",
+    "green": "#A3BE8C",
+    "yellow": "#EBCB8B",
+    "blue": "#81A1C1",
+    "purple": "#B48EAD",
+    "cyan": "#88C0D0",
+    "hl": {
+      "fg": "#E5E9F0",
+      "bg": "#4C566A"
+    },
+    "critical": {
+      "fg": "#BF616A",
+      "options": [
+        "blink"
+      ]
+    },
+    "warn": {
+      "fg": "#D08770",
+      "options": [
+        "blink"
+      ]
     }
+  }
 }
 ```
 

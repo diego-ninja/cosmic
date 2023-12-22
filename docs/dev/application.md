@@ -1,2 +1,0 @@
-# 🛸 Bootstrapping a new application
-

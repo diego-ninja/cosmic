@@ -6,9 +6,8 @@ namespace Ninja\Cosmic\Installer;
 
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
-use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
+use Ninja\Cosmic\Terminal\UI\Spinner\SpinnerFactory;
 use Symfony\Component\Process\Process;
-
 use function Cosmic\find_binary;
 use function Cosmic\sudo;
 

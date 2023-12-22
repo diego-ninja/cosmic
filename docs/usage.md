@@ -2,6 +2,8 @@
 
 Once installed you can use the `cosmic` command to generate, build and install your own application.
 
+## 🛠️ Generation
+
 To generate a new application you can use the `app:init` command:
 
 ```bash
@@ -20,32 +22,32 @@ The generated application includes an example command, the `quote` command,  tha
 
 The cosmic binary is able to detect if it is executed inside a cosmic application and will use the application environment instead of the bundled environment. This allows you to use the cosmic binary to build and install your application.
 
-## Bundled Commands
 
-Cosmic comes with a set of commands that you can use to generate, build and install your own application, this default set of commands is called the `core` commands and are available in every Cosmic application.
+## 📦 Building
 
-The cosmic core commands are:
+Once you have generated your application you can use the `app:build` command to build your application into a single PHAR file:
 
-### 🛠️ init
-The init command is used to generate a new application boilerplate. After executing this command you will have a fully functional PHP application that you can use right away to start coding your own commands.
+```bash
+cosmic build
+```
+this will generate a PHAR file in the `builds` directory of your application. This binary is usable in your local system, but is not signed and cannot be distributed to other users. 
 
-### 📦 build
-The build command is used to build your application into a single PHAR file. This file can be used to distribute your application to other users.
+## 🔑 Signing
+In order to distribute this binary using phar.io and make it installable with phive you need to sign it with a GPG key. You can use the `sign` command to sign the PHAR file, before signing binaries you need to generate a GPG key pair, please refer to GPG documentation to know how to do it.
 
-### 🔑 sign
-The sign command is used to sign the application PHAR file using GPG. This command requires the GPG key ID to sign the PHAR file. You can use the `--key` or `--user` options to specify the key ID or you can set the `APP_SIGNING_KEY` environment variable to the key ID.
+```bash
+cosmic sign builds/cosmic-app.phar --user yosoy@diego.ninja
+```
 
-### 🚀 publish
-The publish command is used to publish a new release of your application to GitHub. At the moment this command uses the GitHub CLI under the hood to create the release, so you need to have the GitHub CLI installed and configured to use this command.
+## 🚀 Publishing 
 
-### 🚚 install
-The install command is used to install your application in the system. This command will copy the PHAR file to the `/usr/local/bin` directory and will make the file executable system-wide . This command requires sudo privileges.
+once you have a signed binary you can publish it to GitHub using the `publish` command:
 
-### ❤️ about
-The about command is used to display information about the application.
+```bash
+cosmic publish v1.2.0-beta --prerelease
+```
 
-### 🔮 help
-The help command is used to display information about the available commands. Cosmic gives you the choice of store the command help in a file using a subset of markdown syntax. This file is located in the `docs/commands` directory and is named after the command name. For example, the help for the `quote` command is stored in the `docs/commands/quote.md` file.
+the publish command just creates a release in the GitHub repo of your application, so you need to have an initialized GitHub repo for your application before using this command. 
 
-### 🐚 completion
-The completion command is used to generate the shell completion script for the application. This command detects the shell you are using and generates the completion script for that shell. The completion script is output to the standard output and you can redirect it to a file to use it later.
+
+And that's it, you have a fully functional PHP application that you can distribute to your users. Just keep coding and adding new commands and functionality to your application.
