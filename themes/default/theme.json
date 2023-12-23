@@ -13,12 +13,12 @@
         "progress": {
             "bar_color": "cyan",
             "text_color": "white",
-            "apply_gradient": true,
-            "apply_segments": true,
+            "apply_gradient": false,
+            "use_segments": true,
             "char_empty": "░",
             "char_full": "█",
             "length": 40,
-            "format": "{detail}{nl}{bar} {percentage}% {steps}{nl} ETC: {remaining} - Elapsed: {elapsed}",
+            "format": " {detail}{nl} {bar} {percentage} {steps}{nl} ETC: {remaining} - Elapsed: {elapsed}",
             "spacing": 1
         },
         "table": {

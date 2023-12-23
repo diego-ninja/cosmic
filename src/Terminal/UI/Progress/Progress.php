@@ -138,11 +138,10 @@ class Progress
         $emptyValue = $this->config->getLength() - $fullValue;
         $percent = ($this->getCurrentStep() / $this->getSteps()) * 100;
 
-
-        $color = $this->getColorIntensity($this->config->getBarColor(), $percent);
+        $color = $this->getBarColor($percent);
 
         return sprintf(
-            " <%3\$s>%1\$s%2\$s</%3\$s> ",
+            "<%3\$s>%1\$s%2\$s</%3\$s>",
             str_repeat($this->config->getCharFull(), (int) $fullValue),
             str_repeat($this->config->getCharEmpty(), (int) $emptyValue),
             $color
@@ -155,18 +154,19 @@ class Progress
         $formatted_percent = number_format($percent, 1, '.', ' ');
 
         return sprintf(
-            " <%2\$s>%1\$.1f%%</%2\$s> ",
+            "<%2\$s>%1\$.1f%%</%2\$s>",
             $formatted_percent,
-            $this->getColorIntensity($this->config->getBarColor(), $percent)
+            $this->getBarColor($percent)
         );
     }
 
     private function drawSteps(): string
     {
         return sprintf(
-            " <cyan300>(%1\$d/%2\$d)</cyan300> ",
+            "<%3\$s>(%1\$d/%2\$d)</%3\$s>",
             $this->getCurrentStep(),
-            $this->getSteps()
+            $this->getSteps(),
+            $this->config->getTextColor()
         );
     }
 
@@ -174,19 +174,41 @@ class Progress
     {
         return $this->details ?
             sprintf(
-                " <%2\$s>%1\$s</%2\$s>",
+                "<%2\$s>%1\$s</%2\$s>",
                 $this->getDetails(),
                 $this->config->getTextColor()
             ) : "";
     }
 
-    private function getColorIntensity(string $color, float $percent): string
+    private function getIntensity(float $percent): int
     {
 
         $intensities = array_reverse([100, 100, 200, 300, 400, 500, 600, 700, 800, 900, 900]);
-        $intensity = $intensities[(int) floor($percent / 10)];
+        return $intensities[(int) floor($percent / 10)];
+    }
 
-        return sprintf('%s%d', $color, $intensity);
+    private function getBarColor(float $percent): string
+    {
+        if ($this->config->getUseSegments()) {
+            match (true) {
+                $percent < 25 => $color = 'red',
+                $percent < 50 => $color = 'orange',
+                $percent < 75 => $color = 'yellow',
+                default => $color = 'green',
+            };
+        } else {
+            $color = $this->config->getBarColor();
+        }
+
+        if ($this->config->getApplyGradient()) {
+            return sprintf(
+                '%s%d',
+                $color,
+                $this->getIntensity($percent)
+            );
+        }
+
+        return $color;
     }
 
     private function getTimeElapsed(): int
@@ -244,12 +266,7 @@ class Progress
 
     public function end(): void
     {
-        $this->nl();
+        $this->section->writeln("");
         Terminal::restoreCursor();
-    }
-
-    public function nl(): void
-    {
-        print "\n";
     }
 }
