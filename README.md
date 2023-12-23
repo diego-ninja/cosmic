@@ -9,7 +9,9 @@
 Cosmic is, in one hand a PHP framework for building CLI applications, and in the other hand a CLI application for building PHP applications. Using Cosmic you can
 generate a fully functional PHP application and start coding right away using the Cosmic framework. 
 
-Cosmic is focused on eye-candy rapid application development and ease of use. In your commands you can use nice spinners and tables, send os based notifications or develop your own themes to customize the look and feel of your application.
+Cosmic is focused on eye-candy, rapid application development and ease of use. In your commands you can use nice spinners and tables, send os based notifications or develop your own themes to customize the look and feel of your application. 
+
+Cosmic needs an ANSI compatible terminal to work properly and is tested and fully working on 🐧 Linux.
 
 This is a work in progress, and it is not ready for production use. However, you can use it to build your own CLI applications. Help is needed to improve the project, so if you are interested in contributing, please read the [contributing guide](./docs/contributing.md).
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6d2653d088461899b4ad9640ecb758bd",
+    "content-hash": "9bba33d352a40dfed7e67c557356210f",
     "packages": [
         {
             "name": "brick/math",
@@ -420,6 +420,68 @@
                 "source": "https://github.com/jolicode/php-os-helper/tree/v0.1.0"
             },
             "time": "2023-12-03T12:46:03+00:00"
+        },
+        {
+            "name": "khill/php-duration",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kevinkhill/php-duration.git",
+                "reference": "dcb222fd0c9eb459676c9eef6fb9f9d2baf749b1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kevinkhill/php-duration/zipball/dcb222fd0c9eb459676c9eef6fb9f9d2baf749b1",
+                "reference": "dcb222fd0c9eb459676c9eef6fb9f9d2baf749b1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "doctrine/instantiator": "1.0.4",
+                "phpstan/phpstan": "^0.12.81",
+                "phpunit/phpunit": "~4.8|~5.0",
+                "satooshi/php-coveralls": "~1.0",
+                "symfony/config": "~2.0",
+                "symfony/console": "~2.0",
+                "symfony/filesystem": "~2.0",
+                "symfony/stopwatch": "~2.0",
+                "symfony/yaml": "~2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Khill\\Duration\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kevin Hill",
+                    "email": "kevinkhill@gmail.com",
+                    "role": "Creator"
+                },
+                {
+                    "name": "Duration Community",
+                    "homepage": "https://github.com/kevinkhill/php-duration/contributors"
+                }
+            ],
+            "description": "Converts between colon formatted time, human-readable time and seconds",
+            "keywords": [
+                "convert",
+                "duration",
+                "seconds",
+                "time"
+            ],
+            "support": {
+                "issues": "https://github.com/kevinkhill/php-duration/issues",
+                "source": "https://github.com/kevinkhill/php-duration/tree/1.1.0"
+            },
+            "time": "2021-03-17T11:34:55+00:00"
         },
         {
             "name": "laravel/serializable-closure",

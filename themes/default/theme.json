@@ -10,6 +10,17 @@
             "style": "dots2",
             "color": "cyan"
         },
+        "progress": {
+            "bar_color": "cyan",
+            "text_color": "white",
+            "apply_gradient": true,
+            "apply_segments": true,
+            "char_empty": "░",
+            "char_full": "█",
+            "length": 40,
+            "format": "{detail}{nl}{bar} {percentage}% {steps}{nl} ETC: {remaining} - Elapsed: {elapsed}",
+            "spacing": 1
+        },
         "table": {
             "charset": "double",
             "table_color": "white",

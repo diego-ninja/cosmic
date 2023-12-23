@@ -55,6 +55,21 @@ if (!function_exists('Cosmic\camelize')) {
     }
 }
 
+if (!function_exists('Cosmic\colorize')) {
+    /**
+     * Colorize a string.
+     *
+     * @param string $text
+     * @param string $color default: white
+     * @return string
+     */
+    function colorize(string $text, string $color = "white"): string
+    {
+        return Terminal::color($color)->apply($text);
+    }
+}
+
+
 if (!function_exists('Cosmic\value')) {
     /**
      * Return the default value of the given value.

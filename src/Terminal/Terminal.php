@@ -189,6 +189,25 @@ final class Terminal
     }
 
     /**
+     * Hide the cursor.
+     */
+    public static function hideCursor($stream = STDOUT): void
+    {
+        fprintf($stream, "\033[?25l"); // hide cursor
+        register_shutdown_function(static function () use ($stream) {
+            self::restoreCursor($stream = STDOUT);
+        });
+    }
+
+    /**
+     * Restore the cursor to its original position.
+     */
+    public static function restoreCursor($stream = STDOUT): void
+    {
+        self::output()->write("\033[?25h");
+    }
+
+    /**
      * Get the stream associated with the terminal input.
      *
      * @return mixed The input stream or STDIN if not available.
