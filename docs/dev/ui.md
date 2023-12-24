@@ -126,25 +126,3 @@ rule(int $width = self::DEFAULT_OUTPUT_WIDTH, string $color = self::DEFAULT_RULE
 ```php
 UI::rule(100, 'red');
 ```
-
-## Progress
-
-This method creates a progress bar with a given progress, width, and color. It delegates the work to the `Progress` class.
-
-```php
-progress(int $steps, int $initialStep = 0, , ?string $message = null, int $width = self::DEFAULT_OUTPUT_WIDTH): void
-```
-
-**Parameters:**
-- `$steps`: The number of steps in the progress bar.
-- `$current`: The current step of the progress bar. Defaults to 0.
-- `$message`: The message to be displayed in the progress bar.
-
-- **Example:**
-```php
-UI::progress(steps: 100, message: "Loading ...");
-```
-<pre> <font color="#FFFFFF">Loading...</font>
- <font color="#28A745">████████████████████████████████░░░░░░░░</font> <font color="#28A745">81.0%</font> <font color="#FFFFFF">(81/100)</font>
- ETC: 4s - Elapsed: 17s
-</pre>
