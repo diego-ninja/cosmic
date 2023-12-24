@@ -35,8 +35,12 @@ sudo mv cosmic /usr/local/bin/cosmic
 ```bash
 git clone git@github.com:diego-ninja/cosmic.git
 cd cosmic
+cp .env.example .env
 composer install
 php cosmic app:install
 ```
+
 this will install the cosmic application in `/usr/local/bin` directory.
 Cosmic will ask you for your sudo password to install the application. If you prefer installing the application in another directory you can use the `--path` option.
+
+Before calling the `install` command you can tweak the `.env` file to your needs.

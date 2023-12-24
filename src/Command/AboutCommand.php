@@ -11,12 +11,11 @@ use Ninja\Cosmic\Command\Attribute\Icon;
 use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Environment\Env;
-use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
-use Ninja\Cosmic\Terminal\Table\Manipulator\BoolManipulator;
-use Ninja\Cosmic\Terminal\Table\Table;
-use Ninja\Cosmic\Terminal\Table\TableConfig;
 use Ninja\Cosmic\Terminal\Terminal;
-
+use Ninja\Cosmic\Terminal\UI\Table\Column\TableColumn;
+use Ninja\Cosmic\Terminal\UI\Table\Manipulator\BoolManipulator;
+use Ninja\Cosmic\Terminal\UI\Table\Table;
+use Ninja\Cosmic\Terminal\UI\Table\TableConfig;
 use function Termwind\render;
 
 #[Icon("❤️ ")]

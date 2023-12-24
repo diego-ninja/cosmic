@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\UI\Element;
 
-use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
-use Ninja\Cosmic\Terminal\Table\TableConfig;
 use Ninja\Cosmic\Terminal\Terminal;
+use Ninja\Cosmic\Terminal\UI\Table\Column\TableColumn;
+use Ninja\Cosmic\Terminal\UI\Table\TableConfig;
 
 readonly class Summary extends AbstractElement
 {
@@ -15,7 +15,7 @@ readonly class Summary extends AbstractElement
         $headers = $this->normalizeHeaders(array_keys($data[0]));
         $data    = $this->normalizeData($data, $headers);
 
-        $table = new \Ninja\Cosmic\Terminal\Table\Table(
+        $table = new \Ninja\Cosmic\Terminal\UI\Table\Table(
             data: $data,
             columns: [],
             config: new TableConfig(Terminal::getTheme()->getConfig("summary")),
