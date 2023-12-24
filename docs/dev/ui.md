@@ -37,6 +37,24 @@ p(string $message, int $width = self::DEFAULT_OUTPUT_WIDTH): void
 UI::p('This is a sample paragraph.', 80);
 ```
 
+## Title
+
+This method creates a title with a given message, subtitle, and width. A title is a combination of the both texts and a horizontal rule. Under the hood this function uses Termwind to render the element.
+
+```php
+title(string $message, ?string $subtitle = null, int $width = self::DEFAULT_OUTPUT_WIDTH): void
+```
+
+**Parameters:**
+- `$message`: The message to be displayed in the title.
+- `$subtitle`: The subtitle of the title.
+- `$width`: The width of the title. Defaults to `self::DEFAULT_OUTPUT_WIDTH`.
+
+**Example:**
+```php
+UI::title('Welcome', 'This is a subtitle', 100);
+```
+
 
 ## List
 
@@ -109,20 +127,24 @@ rule(int $width = self::DEFAULT_OUTPUT_WIDTH, string $color = self::DEFAULT_RULE
 UI::rule(100, 'red');
 ```
 
-## Title
+## Progress
 
-This method creates a title with a given message, subtitle, and width. A title is a combination of the both texts and a horizontal rule. Under the hood this function uses Termwind to render the element.
+This method creates a progress bar with a given progress, width, and color. It delegates the work to the `Progress` class.
 
 ```php
-title(string $message, ?string $subtitle = null, int $width = self::DEFAULT_OUTPUT_WIDTH): void
+progress(int $steps, int $initialStep = 0, , ?string $message = null, int $width = self::DEFAULT_OUTPUT_WIDTH): void
 ```
 
 **Parameters:**
-- `$message`: The message to be displayed in the title.
-- `$subtitle`: The subtitle of the title.
-- `$width`: The width of the title. Defaults to `self::DEFAULT_OUTPUT_WIDTH`.
+- `$steps`: The number of steps in the progress bar.
+- `$current`: The current step of the progress bar. Defaults to 0.
+- `$message`: The message to be displayed in the progress bar.
 
-**Example:**
+- **Example:**
 ```php
-UI::title('Welcome', 'This is a subtitle', 100);
+UI::progress(steps: 100, message: "Loading ...");
 ```
+<pre> <font color="#FFFFFF">Loading...</font>
+ <font color="#28A745">████████████████████████████████░░░░░░░░</font> <font color="#28A745">81.0%</font> <font color="#FFFFFF">(81/100)</font>
+ ETC: 4s - Elapsed: 17s
+</pre>

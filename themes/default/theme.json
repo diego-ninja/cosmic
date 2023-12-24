@@ -17,7 +17,7 @@
             "use_segments": true,
             "char_empty": "░",
             "char_full": "█",
-            "length": 40,
+            "width": 40,
             "format": " {detail}{nl} {bar} {percentage} {steps}{nl} ETC: {remaining} - Elapsed: {elapsed}",
             "spacing": 1
         },

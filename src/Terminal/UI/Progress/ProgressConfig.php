@@ -15,7 +15,7 @@ class ProgressConfig extends Config
     public const DEFAULT_USE_SEGMENTS = false;
     public const DEFAULT_CHAR_EMPTY = '░';
     public const DEFAULT_CHAR_FULL = '█';
-    public const DEFAULT_LENGTH = 40;
+    public const DEFAULT_WIDTH = 40;
     public const DEFAULT_FORMAT = "{detail}{nl}{bar} {percentage}% {steps}";
 
     public function __construct(array|string $context = null, string $prefix = null)
@@ -93,14 +93,14 @@ class ProgressConfig extends Config
         return $this;
     }
 
-    public function getLength(): int
+    public function getWidth(): int
     {
-        return $this->get('length', self::DEFAULT_LENGTH);
+        return $this->get('width', self::DEFAULT_WIDTH);
     }
 
-    public function setLength(int $length): self
+    public function setWidth(int $width): self
     {
-        $this->set('length', $length);
+        $this->set('width', $width);
         return $this;
     }
 
@@ -124,7 +124,7 @@ class ProgressConfig extends Config
             "use_segments" => self::DEFAULT_USE_SEGMENTS,
             "char_empty" => self::DEFAULT_CHAR_EMPTY,
             "char_full" => self::DEFAULT_CHAR_FULL,
-            "length" => self::DEFAULT_LENGTH,
+            "width" => self::DEFAULT_WIDTH,
             "format" => self::DEFAULT_FORMAT,
             "spacing" => Terminal::getTheme()->getConfig("spacing"),
         ];
