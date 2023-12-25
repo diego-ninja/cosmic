@@ -15,10 +15,9 @@ use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Environment\Env;
-use Ninja\Cosmic\Terminal\Input\Question;
-use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
 use Ninja\Cosmic\Terminal\Terminal;
-
+use Ninja\Cosmic\Terminal\UI\Input\Question;
+use Ninja\Cosmic\Terminal\UI\Spinner\SpinnerFactory;
 use function Cosmic\is_git;
 
 #[Icon("🚀")]

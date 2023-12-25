@@ -9,17 +9,35 @@ use Ninja\Cosmic\Exception\MissingInterfaceException;
 use Ninja\Cosmic\Exception\UnexpectedValueException;
 use Ninja\Cosmic\Serializer\SerializableInterface;
 use Ninja\Cosmic\Serializer\SerializableTrait;
-use Ninja\Cosmic\Terminal\Table\TableableInterface;
-use Ninja\Cosmic\Terminal\Table\TableableTrait;
+use Ninja\Cosmic\Terminal\UI\Table\TableableInterface;
+use Ninja\Cosmic\Terminal\UI\Table\TableableTrait;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/** @phpstan-consistent-constructor */
+/**
+ * Class AbstractKey
+ *
+ * @package Ninja\Cosmic\Crypt
+ *
+ * @phpstan-consistent-constructor
+ */
 abstract class AbstractKey implements KeyInterface, SerializableInterface, TableableInterface
 {
     use SerializableTrait;
     use TableableTrait;
 
     protected KeyCollection $subKeys;
+
+    /**
+     * AbstractKey constructor.
+     *
+     * @param string              $id
+     * @param string              $method
+     * @param string              $usage
+     * @param CarbonImmutable     $createdAt
+     * @param CarbonImmutable|null $expiresAt
+     * @param Uid|null            $uid
+     * @param string|null         $fingerprint
+     */
     public function __construct(
         public readonly string $id,
         public readonly string $method,
@@ -32,11 +50,23 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
         $this->subKeys = new KeyCollection([]);
     }
 
+    /**
+     * Check if the key is able to perform a specific usage.
+     *
+     * @param string $usage
+     *
+     * @return bool
+     */
     public function isAbleTo(string $usage): bool
     {
         return str_contains($this->usage, $usage);
     }
 
+    /**
+     * Get a string representation of the key.
+     *
+     * @return string
+     */
     public function __toString(): string
     {
         return sprintf(
@@ -48,6 +78,13 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
         );
     }
 
+    /**
+     * Create an instance of AbstractKey from an array of data.
+     *
+     * @param array $data
+     *
+     * @return static
+     */
     public static function fromArray(array $data): static
     {
         return new static(
@@ -61,6 +98,13 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
         );
     }
 
+    /**
+     * Create an instance of AbstractKey from a string.
+     *
+     * @param string $string
+     *
+     * @return static
+     */
     public static function fromString(string $string): static
     {
         preg_match(
@@ -80,30 +124,49 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
         ]);
     }
 
+    /**
+     * Add a sub key to the key.
+     *
+     * @param KeyInterface $key
+     */
     public function addSubKey(KeyInterface $key): void
     {
         $this->subKeys->add($key);
     }
 
+    /**
+     * Check if the key is able to sign.
+     *
+     * @return bool
+     */
     public function isAbleToSign(): bool
     {
         return
             is_subclass_of($this, SignerInterface::class) && $this->isAbleTo(KeyInterface::GPG_USAGE_SIGN);
     }
 
+    /**
+     * Get the signature file path for a given file path.
+     *
+     * @param string $file_path
+     *
+     * @return string
+     */
     public static function getSignatureFilePath(string $file_path): string
     {
         return sprintf("%s.%s", $file_path, SignerInterface::SIGNATURE_SUFFIX);
     }
 
     /**
+     * Render the key information to the output.
+     *
+     * @param OutputInterface $output
+     *
      * @throws MissingInterfaceException
      * @throws UnexpectedValueException
      */
     public function render(OutputInterface $output): void
     {
-
         $this->asTable()->display($output);
-
     }
 }

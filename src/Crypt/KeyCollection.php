@@ -9,15 +9,31 @@ use JsonException;
 use Ninja\Cosmic\Serializer\SerializableInterface;
 use Ramsey\Collection\AbstractCollection;
 
+/**
+ * Class KeyCollection
+ *
+ * A collection of AbstractKey objects.
+ */
 class KeyCollection extends AbstractCollection implements SerializableInterface
 {
+    /**
+     * Get the type of elements in the collection.
+     *
+     * @return string The type of elements in the collection.
+     */
     public function getType(): string
     {
         return AbstractKey::class;
     }
 
     /**
-     * @throws Exception
+     * Get an AbstractKey object by its ID.
+     *
+     * @param string $id The ID of the AbstractKey object.
+     *
+     * @return AbstractKey|null The AbstractKey object if found, null otherwise.
+     *
+     * @throws Exception If an error occurs.
      */
     public function getById(string $id): ?AbstractKey
     {
@@ -30,6 +46,15 @@ class KeyCollection extends AbstractCollection implements SerializableInterface
         return null;
     }
 
+    /**
+     * Get an AbstractKey object(s) by the associated email.
+     *
+     * @param string $email The email associated with the AbstractKey object(s).
+     *
+     * @return array|AbstractKey The AbstractKey object(s) if found.
+     *
+     * @throws Exception If an error occurs.
+     */
     public function getByEmail(string $email): array | AbstractKey
     {
         $keys = [];
@@ -43,13 +68,22 @@ class KeyCollection extends AbstractCollection implements SerializableInterface
     }
 
     /**
-     * @throws JsonException
+     * Convert the collection to a JSON string.
+     *
+     * @return string The JSON string representation of the collection.
+     *
+     * @throws JsonException If an error occurs during JSON encoding.
      */
     public function toJson(): string
     {
         return json_encode($this->toArray(), JSON_THROW_ON_ERROR);
     }
 
+    /**
+     * Specify data which should be serialized to JSON.
+     *
+     * @return array The data to be serialized to JSON.
+     */
     public function jsonSerialize(): array
     {
         return $this->toArray();
