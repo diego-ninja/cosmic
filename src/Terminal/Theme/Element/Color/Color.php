@@ -22,16 +22,6 @@ class Color extends AbstractThemeElement
         return $this->gradient;
     }
 
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function getColor(): string
-    {
-        return $this->color;
-    }
-
     public function setGradient(Gradient $gradient): void
     {
         $this->gradient = $gradient;
@@ -39,7 +29,12 @@ class Color extends AbstractThemeElement
 
     public static function fromArray(array $input): Color
     {
-        return new Color($input["name"], $input["color"]);
+        $color = new Color($input["name"], $input["color"]);
+        if (isset($input["gradient"])) {
+            $color->setGradient(Gradient::fromArray($input["gradient"]));
+        }
+
+        return $color;
     }
 
     public function load(OutputInterface $output): void
@@ -75,7 +70,7 @@ class Color extends AbstractThemeElement
                 $this->name,
                 $this->name,
                 "▓",
-                $this->gradient->render()
+                $this->gradient?->render()
             );
     }
 }

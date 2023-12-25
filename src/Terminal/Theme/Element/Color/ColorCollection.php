@@ -9,6 +9,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ColorCollection extends AbstractElementCollection
 {
+    private const GRADIENT_EXCLUDED = ["black", "white"];
+
     public function getType(): string
     {
         return Color::class;
@@ -34,7 +36,12 @@ class ColorCollection extends AbstractElementCollection
     {
         $collection = new ColorCollection();
         foreach ($input as $name => $color) {
-            $collection->add(Color::fromArray(["name" => $name, "color" => $color]));
+            $color = Color::fromArray(["name" => $name, "color" => $color]);
+            if (!in_array($color->name, self::GRADIENT_EXCLUDED, true)) {
+                $color->setGradient(Gradient::withSeed($color));
+            }
+
+            $collection->add($color);
         }
 
         return $collection;
@@ -67,7 +74,12 @@ class ColorCollection extends AbstractElementCollection
         $collection = new ColorCollection();
         $data       = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
         foreach ($data["colors"] as $name => $color) {
-            $collection->add(Color::fromArray(["name" => $name, "color" => $color]));
+            $color = Color::fromArray(["name" => $name, "color" => $color]);
+            if (!in_array($color->name, self::GRADIENT_EXCLUDED, true)) {
+                $color->setGradient(Gradient::withSeed($color));
+            }
+
+            $collection->add($color);
         }
 
         return $collection;

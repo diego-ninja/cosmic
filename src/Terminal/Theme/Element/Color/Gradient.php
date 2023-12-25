@@ -28,6 +28,16 @@ class Gradient extends AbstractThemeElement
 
     }
 
+    public static function fromArray(array $input): Gradient
+    {
+        $colors = new ColorCollection();
+        foreach ($input["colors"] as $color) {
+            $colors->add(Color::fromArray($color));
+        }
+
+        return new Gradient($input["name"], $colors);
+    }
+
     public function load(OutputInterface $output): void
     {
         foreach ($this->colors as $color) {
@@ -38,7 +48,8 @@ class Gradient extends AbstractThemeElement
 
     private static function light(Color $color): array
     {
-        $light_gradient = gradient("#ffffff", $color->color, 7);
+        $light_gradient = gradient("#ffffff", $color->color, 8);
+        array_shift($light_gradient);
         array_shift($light_gradient);
         array_shift($light_gradient);
 
@@ -47,7 +58,8 @@ class Gradient extends AbstractThemeElement
 
     private static function dark(Color $color): array
     {
-        $dark_gradient = gradient($color->color, "#000000", 7);
+        $dark_gradient = gradient($color->color, "#000000", 8);
+        array_pop($dark_gradient);
         array_pop($dark_gradient);
         array_pop($dark_gradient);
 
