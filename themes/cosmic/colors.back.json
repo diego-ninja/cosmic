@@ -1,6 +1,6 @@
 {
     "colors": {
-        "white": "#ffffff",
+        "gray": "#adb5bd",
         "gray100": "#f8f9fa",
         "gray200": "#e9ecef",
         "gray300": "#dee2e6",
@@ -10,7 +10,6 @@
         "gray700": "#495057",
         "gray800": "#343a40",
         "gray900": "#212529",
-        "black": "#000000",
 
         "blue": "#007bff",
         "blue100": "#a8cbfe",
@@ -121,6 +120,9 @@
         "cyan700": "#106e7d",
         "cyan800": "#0c5460",
         "cyan900": "#083a42",
+
+        "white": "#ffffff",
+        "black": "#000000",
 
         "text": "#E5E9F0",
         "comment": "#EBCB8B",

@@ -517,3 +517,39 @@ if (!function_exists('Cosmic\human_filesize')) {
         return sprintf('%s %s', round($bytes, $precision), $units[$pow]);
     }
 }
+
+if (!function_exists('Cosmic\gradient')) {
+    function gradient(string $from, string $to, int $variations = 10): array
+    {
+        $ret = [];
+
+        $variations--;
+        $start = str_replace("#", "", $from);
+        $end = str_replace("#", "", $to);
+
+        $red = hexdec(substr($start, 0, 2));
+        $green = hexdec(substr($start, 2, 2));
+        $blue = hexdec(substr($start, 4, 2));
+
+        if ($variations >= 2) { // for at least 3 colors
+            $GradientSizeRed = (hexdec(substr($end, 0, 2)) - $red) / $variations; //Graduation Size Red
+            $GradientSizeGrn = (hexdec(substr($end, 2, 2)) - $green) / $variations;
+            $GradientSizeBlu = (hexdec(substr($end, 4, 2)) - $blue) / $variations;
+            for ($i = 0; $i <= $variations; $i++) {
+                $grad_red = (int) ($red + ($GradientSizeRed * $i));
+                $grad_green = (int) ($green + ($GradientSizeGrn * $i));
+                $grad_blue = (int) ($blue + ($GradientSizeBlu * $i));
+
+                $ret[$i] = strtoupper("#" . str_pad(dechex($grad_red), 2, '0', STR_PAD_LEFT) .
+                    str_pad(dechex($grad_green), 2, '0', STR_PAD_LEFT) .
+                    str_pad(dechex($grad_blue), 2, '0', STR_PAD_LEFT));
+            }
+        } elseif ($variations === 1) {
+            $ret[] = $from;
+            $ret[] = $to;
+        } else { // one color
+            $ret[] = $from;
+        }
+        return $ret;
+    }
+}

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Theme\Element;
 
+use JsonException;
 use Ninja\Cosmic\Terminal\Theme\Element\Charset\CharsetCollection;
 use Ninja\Cosmic\Terminal\Theme\Element\Color\ColorCollection;
 use Ninja\Cosmic\Terminal\Theme\Element\Icon\IconCollection;
@@ -13,6 +14,9 @@ use Ninja\Cosmic\Terminal\Theme\Theme;
 
 class CollectionFactory
 {
+    /**
+     * @throws JsonException
+     */
     public static function loadFile(string $file): AbstractElementCollection
     {
         $data = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);

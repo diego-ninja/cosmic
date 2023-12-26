@@ -1,7 +1,8 @@
 {
-    "name": "default",
+    "name": "nord",
     "version": "1.0.0",
-    "description": "Default Cosmic Terminal Theme",
+    "description": "Nord Theme for Cosmic Applications",
+    "extends": "cosmic",
     "config": {
         "width": 80,
         "spacing": 1,
@@ -22,7 +23,7 @@
             "spacing": 1
         },
         "table": {
-            "charset": "double",
+            "charset": "rounded",
             "table_color": "white",
             "header_color": "notice",
             "field_color": "text"

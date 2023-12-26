@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9bba33d352a40dfed7e67c557356210f",
+    "content-hash": "f86378a1fa6320cda6c790a33c3b433a",
     "packages": [
         {
             "name": "brick/math",
@@ -307,6 +307,121 @@
                 }
             ],
             "time": "2023-11-12T22:16:48+00:00"
+        },
+        {
+            "name": "innmind/immutable",
+            "version": "5.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Innmind/Immutable.git",
+                "reference": "08558e51ea7c8d375ceb097f32bcbab2d7f1dfcb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Innmind/Immutable/zipball/08558e51ea7c8d375ceb097f32bcbab2d7f1dfcb",
+                "reference": "08558e51ea7c8d375ceb097f32bcbab2d7f1dfcb",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.2"
+            },
+            "conflict": {
+                "innmind/black-box": "<5.0|~6.0"
+            },
+            "provide": {
+                "innmind/black-box-sets": "5.0"
+            },
+            "require-dev": {
+                "innmind/black-box": "^5.5.1",
+                "innmind/coding-standard": "~2.0",
+                "vimeo/psalm": "~5.6"
+            },
+            "suggest": {
+                "innmind/black-box": "For property based testing"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Innmind\\Immutable\\": "src/",
+                    "Fixtures\\Innmind\\Immutable\\": "fixtures/",
+                    "Properties\\Innmind\\Immutable\\": "properties/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Baptiste Langlade",
+                    "email": "baptiste.langlade@hey.com"
+                }
+            ],
+            "description": "Immutable PHP primitive wrappers",
+            "homepage": "http://github.com/Innmind/Immutable",
+            "keywords": [
+                "immutable",
+                "wrapper"
+            ],
+            "support": {
+                "issues": "http://github.com/Innmind/Immutable/issues",
+                "source": "https://github.com/Innmind/Immutable/tree/5.3.0"
+            },
+            "time": "2023-11-06T18:04:03+00:00"
+        },
+        {
+            "name": "innmind/signals",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Innmind/Signals.git",
+                "reference": "7367715ad93a4353ad2c13ad41a4ebdc924eb421"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Innmind/Signals/zipball/7367715ad93a4353ad2c13ad41a4ebdc924eb421",
+                "reference": "7367715ad93a4353ad2c13ad41a4ebdc924eb421",
+                "shasum": ""
+            },
+            "require": {
+                "innmind/immutable": "~4.0|~5.0",
+                "php": "~8.2"
+            },
+            "require-dev": {
+                "innmind/black-box": "~5.5",
+                "innmind/coding-standard": "~2.0",
+                "nikic/php-parser": "^4.13.2",
+                "phpunit/phpunit": "~10.2",
+                "vimeo/psalm": "~5.12"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Innmind\\Signals\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Baptiste Langlade",
+                    "email": "baptiste.langlade@hey.com"
+                }
+            ],
+            "description": "Manage multiple callbacks per signal",
+            "homepage": "http://github.com/Innmind/Signals",
+            "keywords": [
+                "cli",
+                "handler",
+                "signal"
+            ],
+            "support": {
+                "issues": "http://github.com/Innmind/Signals/issues",
+                "source": "https://github.com/Innmind/Signals/tree/3.1.0"
+            },
+            "time": "2023-09-23T12:21:48+00:00"
         },
         {
             "name": "jolicode/jolinotif",

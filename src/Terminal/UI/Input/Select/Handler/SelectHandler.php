@@ -56,6 +56,8 @@ class SelectHandler
         $sttyMode = shell_exec('stty -g');
         shell_exec('stty -icanon -echo');
 
+        Terminal::hideCursor();
+
         // Read a keypress
         while (!feof($this->stream)) {
             $char = fread($this->stream, 1);
@@ -76,6 +78,8 @@ class SelectHandler
         shell_exec(sprintf('stty %s', $sttyMode));
         $this->output->writeln(' ');
         $this->finalClear();
+
+        Terminal::restoreCursor();
 
         return $this->question->getSelections();
     }

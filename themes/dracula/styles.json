@@ -19,17 +19,16 @@
         },
         "symfony": {
             "hl": {
-                "fg": "#E5E9F0",
-                "bg": "#4C566A"
+                "fg": "#f8f8f2"
             },
             "critical": {
-                "fg": "#BF616A",
+                "fg": "#ff5555",
                 "options": [
                     "blink"
                 ]
             },
             "warn": {
-                "fg": "#D08770",
+                "fg": "#ffb86c",
                 "options": [
                     "blink"
                 ]

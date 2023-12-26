@@ -1,204 +1,273 @@
-# 🌈 Terminal Themes (DRAFT)
+# 🌈 Terminal Themes
 
 ## Overview
+Themes are used to customize the appearance of the terminal output. A theme is a set of files that define the colors, styles, and icons used by the terminal. Cosmic can load themes from a directory or a zipped theme file (`.zth`). By default, themes are stored in the `themes` directory of the application but can be stored anywhere.
 
-Themes are used to customize the appearance of the terminal output. A theme is an object that implements the `ThemeInterface` and provides a set of styles that are used by the `Terminal` class to format its output.
+Cosmic comes with a set of default themes that can be used out of the box, but you can create your own themes or customize the default themes to fit your needs. 
 
-## Creating a theme
-A theme is a set of files inside a folder, at the time of writing this document, a theme is composed by three files, the default theme folder is /themes, but you can load themes from any folder. The applications generated with the cosmic binary loads all themes inside the /themes folders automatically.
+The three default themes are: 
+- 🛸 cosmic, an outer-space theme with a vibrant palette. 
+- 🧝‍ nord based in the world-famous top-notch [nord palette](https://www.nordtheme.com/). 
+- 🧛 dracula, based in the popular [dracula theme](https://draculatheme.com/).
 
-This three files must reside inside a folder named as the theme, so, for example, the included theme alien, is inside the folder /themes/alien
-### theme.json
+## Theme structure
+Nevertheless, the theme is loaded from a directory or a zipped theme file, the structure of the theme is the same. The theme directory or zipped theme file must contain the following files:
 
-This is the real theme definition file, it is a free json file, and free means that it has no schema to conform to, schema enforcement is in the roadmap for the next versions of Cosmic, but for now at least you need to define the following sections, in addition to the name, description and other metadata values defined in the root of the json object:
-
-#### colors
-This section defines the color scheme for the theme. Each key-value pair represents a specific text type (such as `text`, `comment`, `info`, etc.) and its corresponding color in hexadecimal format. The regular definition is in the form key-value, where the key is the name of the color and the value is its hexadecimal representation, but you can use an extended notation that instead of the hexadecimal color representation uses an array consisting of three elements, fg for foreground color, bg for background color, and options for additional attributes that define the color style such as bold or blink.
-
-The colors are loaded into the default OutputInterface in the application and they are defined as termwind custom styles too. (Termwind style just load the simple notation colors)
-
-You can define as many colors as you want, but at least, the following set of colors must be present in every terminal theme.
+### Colors
+Cosmic uses a ten color palette with gradient variations, plus black and white colors that doesn't have variations. 
+The colors are defined in the `colors.json` file.
 
 ```json
 {
-  "colors": {
-    "text": "#E5E9F0",
-    "comment": "#EBCB8B",
-    "info": "#81A1C1",
-    "notice": "#8FBCBB",
-    "warning": "#D08770",
-    "error": "#BF616A",
-    "success": "#A3BE8C",
-    "white": "#FFFFFF",
-    "black": "#000000",
-    "grey": "#4C566A",
-    "red": "#BF616A",
-    "green": "#A3BE8C",
-    "yellow": "#EBCB8B",
-    "blue": "#81A1C1",
-    "purple": "#B48EAD",
-    "cyan": "#88C0D0",
-    "hl": {
-      "fg": "#E5E9F0",
-      "bg": "#4C566A"
-    },
-    "critical": {
-      "fg": "#BF616A",
-      "options": [
-        "blink"
-      ]
-    },
-    "warn": {
-      "fg": "#D08770",
-      "options": [
-        "blink"
-      ]
+    "colors": {
+        "white": "#f8f8f2",
+        "black": "#282a36",
+        "gray": "#adb5bd",
+        "blue": "#6272a4",
+        "indigo": "#6610f2",
+        "purple": "#bd93f9",
+        "pink": "#ff79c6",
+        "red": "#ff5555",
+        "orange": "#ffb86c",
+        "yellow": "#f1fa8c",
+        "green": "#50fa7b",
+        "teal": "#20c997",
+        "cyan": "#8be9fd",
+
+        "text": "@white",
+        "comment": "@yellow",
+        "info": "@cyan",
+        "notice": "@blue",
+        "warning": "@orange",
+        "error": "@red",
+        "success": "@green",
+        "question": "@cyan",
+        "default": "@cyan"
     }
-  }
 }
 ```
 
-#### icons
-This section defines various icons used in the terminal. Each key-value pair represents a specific type of icon (like `application`, `bullet`, `success`, etc.) and its corresponding character representation. You can define as many icons as you want, but at least the following set of icons must be present in every theme, directly or extending another theme.
+#### Mandatory colors
+The following colors are mandatory and must be defined in the colors file to assure the correct behavior of the application. You can define directly the color value or use an alias to another color, but this colors must be present in the colors file.
 
 ```json
-"icons": {  
-    "application": "🚀",  
-    "bullet": "⬢",  
-    "success": "⬡",  
-    "failure": "⬡",  
-    "radio_selected": "⬢",  
-    "radio": "⬡",  
-    "checkbox": "☐",  
-    "checkbox_selected": "✔"  
+{
+    "colors": {
+        // Other color definitions...
+
+        "text": "@white",
+        "comment": "@yellow",
+        "info": "@cyan",
+        "notice": "@blue",
+        "warning": "@orange",
+        "error": "@red",
+        "success": "@green",
+        "question": "@cyan",
+        "default": "@cyan"
+    }
 }
 ```
 
-#### styles
-This section defines various styles used in the terminal. Each key-value pair represents a specific type of style (like `container`, `footer`, `emphasis`, etc.) and its corresponding CSS class names. This styles are just only loaded as Termwind styles and are mainly used to render the command help markdown files using the console.
+#### Gradients
+For each color defined in the colors object, Cosmic will generate nine variations of the color to build a gradient with the seed color in the middle of the gradient.
+The gradient variations are named like the seed color with a three digit suffix that represents the gradient variation. The suffix is a number between 100 and 900 with a step of 100. The suffix 500 represents the seed color.
 
-As in prior sections, you can define as many Termwind styles as you want, but the minimal set of styles required to properly render the command help files is as follows:
+For example, the color `blue` in the previous set of colors will generate the following gradient variations:
+```json
+{
+    "blue100": "#a4b0e0",
+    "blue200": "#8e9cd9",
+    "blue300": "#7888d2",
+    "blue400": "#6274cb",
+    "blue500": "#4c60c4",
+    "blue600": "#3d4ea0",
+    "blue700": "#2e3c7c",
+    "blue800": "#1f2a58",
+    "blue900": "#101834"
+}
+```
+
+along the code you can use this color variations like any other color. For example, to use the `blue200` color you can use the following code:
+```php
+$colored = Terminal::render(sprintf('<blue200>%s</>', $text));
+```
+
+#### Aliases
+The colors object can contain aliases to other colors. The alias is defined with the `@` character followed by the name of the color to alias. For example, the `text` color is an alias to the `yellow` color. The following code is equivalent:
+```json
+{
+    "colors": {
+        "yellow": "#f1fa8c",
+        "comment": "@yellow"
+    }
+}
+```
+
+later in your code you can use both names to reference the same color. For example, the following code is equivalent:
+
+```php
+$yellow = Terminal::render(sprintf('<yellow>%s</>', $text));
+$comment = Terminal::render(sprintf('<comment>%s</>', $text));
+```
+
+you can alias gradient colors too:
 
 ```json
-"styles": {  
-    "container": "w-120 ml-2",  
-    "footer": "w-120 pt-2 ml-2",  
-    "emphasis": "font-bold text-yellow italic",  
-    "strong": "font-bold text-blue",  
-    "strike": "line-through",  
-    "hr": "text-blue",  
-    "h1": "invisible",  
-    "heading": "text-blue pt-1",  
-    "language-sh": "w-120",  
-    "language-php": "w-120",  
-    "language-js": "w-120",  
-    "language-sql": "w-120",  
-    "language": "w-120",  
-    "link": "text-blue underline",  
-    "app-icon": "mr-1",  
-    "question": "text-blue",  
-    "default-option": "font-bold text-yellow"  
+{
+    "colors": {
+        "blue": "#6272a4",
+        "notice": "@blue200"
+    }
 }
 ```
 
-#### config
-This section holds miscellaneous configuration used along the application, at the time of writing this document,  you can define here as many config values as you want,  the only required configuration is the one exposed in the following code excerpt:
+### Styles
+Styles are used to format the text output, styles goes a step forwarder than colors, and it let you customize the terminal output in more ways that just the font color. The styles are defined in the `styles.json` file.
+Cosmic supports two different styles formats: [Symfony based styles](https://symfony.com/doc/current/console/coloring.html) and [Termwind based styles]().
+
+#### Symfony based styles
+Symfony based styles are built on top of [OutputFormatterStyle](https://github.com/symfony/symfony/blob/7.0/src/Symfony/Component/Console/Formatter/OutputFormatterStyle.php) class, this type of styles
+supports the following attributes:
+
+- `fg` - Foreground color
+- `bg` - Background color
+- `options` - Text options [bold, underscore, blink, reverse]
+
+to define a Symfony based style you must use the following format:
 
 ```json
-"config": {  
-    "icons_enabled": true,  
-    "table": {  
-        "charset": {  
-            "top": "═",  
-            "top-mid": "╤",  
-            "top-left": "╔",  
-            "top-right": "╗",  
-            "bottom": "═",  
-            "bottom-mid": "╧",  
-            "bottom-left": "╚",  
-            "bottom-right": "╝",  
-            "left": "║",  
-            "left-mid": "╟",  
-            "mid": "─",  
-            "mid-mid": "┼",  
-            "right": "║",  
-            "right-mid": "╢",  
-            "middle": "│"  
-        },  
-        "table_color": "white",  
-        "header_color": "cyan",  
-        "field_color": "white"  
-    }  
+{
+    "styles": {
+        "critical": {
+            "fg": "#f8f8f2",
+            "bg": "#ff5555",
+            "options": [
+                "bold"
+            ]
+        }
+    }
 }
 ```
 
-
-You can use the default theme as guide when you need to define a new theme,
-
-### notification.png
-This file is used when displaying an os-based notification using the Notifier class, the recomended settings for this file is an PNG image of width and height of 512px and transparent background.
-
-### logo.php
-This file is a PHP script that returns a string containing ANSI escape codes. These codes are used to format text in a terminal, allowing for things like color changes and cursor movements. It represents the colorful banner with the app logo that is displayed when the about command is executed
-
-To generate a file like this, you would need to design your logo or banner using characters and spaces, then add ANSI escape codes to colorize it. There are online tools available that can help you design ANSI art and generate the corresponding escape codes.
-
-The recommended way for generating application ANSI logos is to use the following site with the Unicode + True Color options enabled:
-
-[Image to ANSI](https://dom111.github.io/image-to-ansi/)
-
-🤓 PRO TIP: If you convert your notification icon into an ANSI logo using the above site, you can use the same image for both the logo and the notification icon, giving your application a consistent look.
-
-## Extending a theme
-
-TBA
-
-## Enabling a Theme at Runtime
-
-To enable a theme at runtime, you can use the `Terminal::withTheme` method and pass an instance of your theme. This will set the theme for the current `Terminal` instance.
+later in the code you can apply the style to a text using the following code:
 
 ```php
-Terminal::withTheme(new MyTheme());
+
+$styled = Terminal::render(sprintf('<critical>%s</>', $text));
 ```
 
-## The `--theme` Global Parameter
+#### Termwind based styles
+Termwind based styles are built on top of [Termwind](https://github.com/nunomaduro/termwind), you can define a Termwind based style using the following format:
 
-The `--theme` global parameter allows you to specify the theme to use when running the application from the command line. This overrides the theme set in the environment variable.
-
-To use this parameter, pass it to the application with the name of your theme:
-
-```bash
-php my-app.php --theme=my-theme
+```json
+{
+    "styles": {
+        "critical": "bg-red-500 text-white font-bold"
+    }
+}
 ```
 
-The application will then use the specified theme for its output. If the theme does not exist, the application will fall back to the default theme.
-
-## ThemeLoader
-
-The `ThemeLoader` class is responsible for managing the themes in the application. It provides methods to add a theme (`addTheme`), enable a theme (`enableTheme`), and get the currently enabled theme (`getEnabledTheme`). It also provides a method to load all themes from a directory (`loadDirectory`), which can be useful if you have multiple theme classes in your project.
-
-To add a theme to the `ThemeLoader`, you can use the `addTheme` method and pass an instance of your theme:
+and for example, you can apply the style to a text using the following code:
 
 ```php
-ThemeLoader::addTheme(new MyTheme());
+\Termwind\render(sprintf("<span class='critical'>%s</span>", $text));
 ```
 
-To enable a theme, you can use the `enableTheme` method and pass the name of your theme:
+please, refer to the [Termwind documentation](https://github.com/nunomaduro/termwind) to learn more about the Termwind styles.
+
+At the time of writing this documentation there is a way to translate some Symfony based styles to Termwind based styles using the `termwindize` function from the helpers, but there is no way to translate Termwind based styles to Symfony based styles. But a full two-way translation is planned for the future. 
+
+### Icons
+Icons are used to customize the terminal output, icons are defined in the `icons.json` file. At the time of writing this documentation, Cosmic just supports [ANSI](https://www.alt-codes.net/) and [Unicode](https://apps.timwhitlock.info/emoji/tables/unicode) icons, but more icon types are planned for the future detecting and using hacked fonts.
+
+Icons are used mainly to decorate the terminal output when requesting input or displaying information. At the time of writing this documentation, Cosmic uses the following icons:
+
+```json
+{
+    "icons": {
+        "application": "🛸",
+        "bullet": "🔸",
+        "success": "⬡",
+        "failure": "⬡",
+        "radio_selected": "⬢",
+        "radio": "⬡",
+        "checkbox": "☐",
+        "checkbox_selected": "✔",
+        "mandatory": "🔸",
+        "nullable": "🔹",
+        "collection": "🔲"
+    }
+}
+```
+
+you can add as many icons as you want to the icons file, and use them in your code using the following code:
 
 ```php
-ThemeLoader::enableTheme('my-theme');
+
+$bullet = Terminal::getTheme()->getIcon('bullet');
+$anotherIcon = Terminal::getTheme()->getIcon('anotherIcon');
 ```
 
-The `getEnabledTheme` method returns the currently enabled theme:
+### Charsets
 
-```php
-$theme = ThemeLoader::getEnabledTheme();
+A charset, short for character set, is a specific set of characters that are used to display tables and frames in the application. 
+
+Charsets are defined in the charsets.json file, all three Cosmic themes has four different charsets: square, rounded, double, and heavy. 
+
+Each charset has a unique set of characters for different parts of a layout, such as the top, bottom, left, right, and middle sections. These characters are used to create borders and intersections in the layout.  
+
+#### Square
+This charset uses simple line characters to create a clean, square-edged layout.
+
+#### Rounded
+The rounded charset is similar to the square charset, but it uses rounded characters for the top-left and top-right corners, giving the layout a softer appearance.
+
+#### Double
+This charset uses double line characters, creating a more pronounced and bold layout.
+
+#### Heavy
+This last charset uses thicker line characters, giving the layout a heavier and more substantial appearance.  Each charset is unique and can be used to create a different visual effect in the layout. 
+
+The choice of charset can significantly impact the overall look and feel of the theme.
+
+Probably you will not need to create your own charsets, but if you want to do it, you can use the following format:
+
+```json
+{
+    "charsets": {
+        "new-charset" : {
+            "top": "─",
+            "top-mid": "┬",
+            "top-left": "╭",
+            "top-right": "╮",
+            "bottom": "─",
+            "bottom-mid": "┴",
+            "bottom-left": "╰",
+            "bottom-right": "╯",
+            "left": "│",
+            "left-mid": "├",
+            "mid": "─",
+            "mid-mid": "┼",
+            "right": "│",
+            "right-mid": "┤",
+            "middle": "│"
+        }
+    }
+}
 ```
 
-The `loadDirectory` method loads all theme classes from a specified directory:
+### Spinners
 
-```php
-ThemeLoader::loadDirectory('/path/to/themes');
-```
+### Theme file
 
-This method uses the PHP `glob` function to find all PHP files in the specified directory, and then it includes each file and adds the theme to the `ThemeLoader`. The theme classes in the directory should be defined in the global namespace and their names should match their file names.
+### Notification icon
+The notification icon is used as part of the os-based notifications. The notification icon should be a png image with a transparent background. The notification icon is stored in the notification.png file.
+The recommended size for the notification icon is **512x512** pixels.
+
+### Theme logo
+
+The theme logo is a piece of ANSI art that is displayed as part of the about command. The theme logo is stored in the logo.php file. The logo is a PHP file that returns a string with the ANSI art.
+
+By the time of writing this documentation, there are not a local tool or mechanism to generate ANSI logos from images. But you can use online resources like [image2ansi](https://dom111.github.io/image-to-ansi/) to generate your own logos. In a near future, Cosmic will include a local tool to generate ANSI logos from images.
+
+**🤓 PRO TIP**: You can convert your notification icon to ANSI art using the [image2ansi](https://dom111.github.io/image-to-ansi/) tool and use it as your logo. This way you will have a consistent look and feel in your application.
