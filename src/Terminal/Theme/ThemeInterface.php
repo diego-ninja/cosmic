@@ -21,6 +21,8 @@ interface ThemeInterface extends JsonSerializable
 {
     public function load(OutputInterface $output): void;
     public function getName(): string;
+    public function getVersion(): string;
+    public function getDescription(): ?string;
     public function getLogo(): ?string;
     public function getIcons(): IconCollection;
     public function getIcon(string $iconName): ?Icon;

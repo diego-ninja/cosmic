@@ -7,10 +7,14 @@ namespace Ninja\Cosmic\Terminal\Theme\Element\Color;
 use Ninja\Cosmic\Terminal\Theme\Element\AbstractThemeElement;
 
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function Cosmic\gradient;
 
 class Gradient extends AbstractThemeElement
 {
+    public const GRADIENT_DEFAULT_VARIATIONS = 10;
+    public const GRADIENT_DEFAULT_DEVIATION = 2;
+
     public function __construct(public readonly string $name, public readonly ColorCollection $colors) {}
 
     public static function withSeed(Color $color): Gradient
@@ -20,7 +24,7 @@ class Gradient extends AbstractThemeElement
         $gradient = array_unique(array_merge(self::light($color), self::dark($color)));
         $starting_variation = 100;
         foreach ($gradient as $variation) {
-            $colors->add(new Color(sprintf("%s%d", $color->name, $starting_variation), $variation));
+            $colors->add(new Color(sprintf("%s%d", $color->name, $starting_variation), $variation, false));
             $starting_variation += 100;
         }
 
@@ -48,20 +52,24 @@ class Gradient extends AbstractThemeElement
 
     private static function light(Color $color): array
     {
-        $light_gradient = gradient("#ffffff", $color->color, 8);
-        array_shift($light_gradient);
-        array_shift($light_gradient);
-        array_shift($light_gradient);
+        $gradient_variations = (self::GRADIENT_DEFAULT_VARIATIONS / 2) + self::GRADIENT_DEFAULT_DEVIATION;
+        $light_gradient = gradient("#ffffff", $color->color, $gradient_variations);
+
+        for($i = 0; $i < self::GRADIENT_DEFAULT_DEVIATION; $i++) {
+            array_shift($light_gradient);
+        }
 
         return $light_gradient;
     }
 
     private static function dark(Color $color): array
     {
-        $dark_gradient = gradient($color->color, "#000000", 8);
-        array_pop($dark_gradient);
-        array_pop($dark_gradient);
-        array_pop($dark_gradient);
+        $gradient_variations = (self::GRADIENT_DEFAULT_VARIATIONS / 2) + self::GRADIENT_DEFAULT_DEVIATION;
+        $dark_gradient = gradient($color->color, "#000000", $gradient_variations);
+
+        for($i = 0; $i < self::GRADIENT_DEFAULT_DEVIATION; $i++) {
+            array_pop($dark_gradient);
+        }
 
         return $dark_gradient;
     }

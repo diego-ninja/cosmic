@@ -35,13 +35,15 @@ class Theme implements ThemeInterface
     ];
 
     public function __construct(
-        private string $name,
+        private readonly string $name,
+        private readonly string $version,
         private ColorCollection $colors,
         private StyleCollection $styles,
         private IconCollection $icons,
         private CharsetCollection $charsets,
         private SpinnerCollection $spinners,
         private array $config,
+        private readonly ?string $description = null,
         private ?string $logo = null,
         private ?string $notification = null,
         private ?ThemeInterface $parent = null
@@ -111,12 +113,14 @@ class Theme implements ThemeInterface
     {
         return new self(
             name: $data["name"],
+            version: $data["version"],
             colors: ColorCollection::fromArray($data["colors"] ?? []),
             styles: StyleCollection::fromArray($data["styles"] ?? []),
             icons: IconCollection::fromArray($data["icons"] ?? []),
             charsets: CharsetCollection::fromArray($data["charsets"] ?? []),
             spinners: SpinnerCollection::fromArray($data["spinners"] ?? []),
-            config: $data["config"] ?? []
+            config: $data["config"] ?? [],
+            description: $data["description"]
         );
     }
 
@@ -128,7 +132,9 @@ class Theme implements ThemeInterface
     public function toArray(): array
     {
         return [
-            "name"     => $this->getName(),
+            "name"     => $this->name,
+            "version"  => $this->version,
+            "description" => $this->description,
             "colors"   => $this->getColors()->toArray(),
             "styles"   => $this->getStyles()->toArray(),
             "icons"    => $this->getIcons()->toArray(),
@@ -141,6 +147,16 @@ class Theme implements ThemeInterface
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
     }
 
     public function getLogo(): ?string

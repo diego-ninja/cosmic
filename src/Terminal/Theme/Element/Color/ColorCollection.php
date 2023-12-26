@@ -21,6 +21,17 @@ class ColorCollection extends AbstractElementCollection
         return __CLASS__;
     }
 
+    public function getByName(string $name): ?Color
+    {
+        foreach ($this->getIterator() as $item) {
+            if ($item->name === $name) {
+                return $item;
+            }
+        }
+
+        return null;
+    }
+
     public function toArray(): array
     {
         $elements = parent::toArray();
@@ -36,6 +47,10 @@ class ColorCollection extends AbstractElementCollection
     {
         $collection = new ColorCollection();
         foreach ($input as $name => $color) {
+            if (Color::isAlias($color)) {
+                $color = $collection->getByName(substr($color, 1))->color;
+            }
+
             $color = Color::fromArray(["name" => $name, "color" => $color]);
             if (!in_array($color->name, self::GRADIENT_EXCLUDED, true)) {
                 $color->setGradient(Gradient::withSeed($color));
@@ -74,6 +89,10 @@ class ColorCollection extends AbstractElementCollection
         $collection = new ColorCollection();
         $data       = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
         foreach ($data["colors"] as $name => $color) {
+            if (Color::isAlias($color)) {
+                $color = $collection->getByName(substr($color, 1))->color;
+            }
+
             $color = Color::fromArray(["name" => $name, "color" => $color]);
             if (!in_array($color->name, self::GRADIENT_EXCLUDED, true)) {
                 $color->setGradient(Gradient::withSeed($color));
@@ -85,5 +104,4 @@ class ColorCollection extends AbstractElementCollection
         return $collection;
 
     }
-
 }

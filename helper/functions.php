@@ -519,11 +519,11 @@ if (!function_exists('Cosmic\human_filesize')) {
 }
 
 if (!function_exists('Cosmic\gradient')) {
-    function gradient(string $from, string $to, $graduations = 10): array
+    function gradient(string $from, string $to, int $variations = 10): array
     {
         $ret = [];
 
-        $graduations--;
+        $variations--;
         $start = str_replace("#", "", $from);
         $end = str_replace("#", "", $to);
 
@@ -531,11 +531,11 @@ if (!function_exists('Cosmic\gradient')) {
         $green = hexdec(substr($start, 2, 2));
         $blue = hexdec(substr($start, 4, 2));
 
-        if ($graduations >= 2) { // for at least 3 colors
-            $GradientSizeRed = (hexdec(substr($end, 0, 2)) - $red) / $graduations; //Graduation Size Red
-            $GradientSizeGrn = (hexdec(substr($end, 2, 2)) - $green) / $graduations;
-            $GradientSizeBlu = (hexdec(substr($end, 4, 2)) - $blue) / $graduations;
-            for ($i = 0; $i <= $graduations; $i++) {
+        if ($variations >= 2) { // for at least 3 colors
+            $GradientSizeRed = (hexdec(substr($end, 0, 2)) - $red) / $variations; //Graduation Size Red
+            $GradientSizeGrn = (hexdec(substr($end, 2, 2)) - $green) / $variations;
+            $GradientSizeBlu = (hexdec(substr($end, 4, 2)) - $blue) / $variations;
+            for ($i = 0; $i <= $variations; $i++) {
                 $grad_red = (int) ($red + ($GradientSizeRed * $i));
                 $grad_green = (int) ($green + ($GradientSizeGrn * $i));
                 $grad_blue = (int) ($blue + ($GradientSizeBlu * $i));
@@ -544,7 +544,7 @@ if (!function_exists('Cosmic\gradient')) {
                     str_pad(dechex($grad_green), 2, '0', STR_PAD_LEFT) .
                     str_pad(dechex($grad_blue), 2, '0', STR_PAD_LEFT));
             }
-        } elseif ($graduations === 1) {
+        } elseif ($variations === 1) {
             $ret[] = $from;
             $ret[] = $to;
         } else { // one color

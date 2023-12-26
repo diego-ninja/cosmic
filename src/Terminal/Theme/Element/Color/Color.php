@@ -15,7 +15,7 @@ class Color extends AbstractThemeElement
 {
     private ?Gradient $gradient = null;
 
-    public function __construct(public readonly string $name, public readonly string $color) {}
+    public function __construct(public readonly string $name, public readonly string $color, public readonly bool $allowGradient) {}
 
     public function getGradient(): ?Gradient
     {
@@ -27,9 +27,14 @@ class Color extends AbstractThemeElement
         $this->gradient = $gradient;
     }
 
+    public function allowGradient(): bool
+    {
+        return $this->gradient !== null;
+    }
+
     public static function fromArray(array $input): Color
     {
-        $color = new Color($input["name"], $input["color"]);
+        $color = new Color($input["name"], $input["color"], $input["allowGradient"] ?? false);
         if (isset($input["gradient"])) {
             $color->setGradient(Gradient::fromArray($input["gradient"]));
         }
@@ -63,14 +68,23 @@ class Color extends AbstractThemeElement
 
     public function render(): string
     {
+        $notGradient = sprintf("<%s>%s</>", $this->name, "▓▓▓▓▓▓▓▓▓");
+
         return
             sprintf(
-                "Color: <%s>%s</> <%s>%s</> - Variations: %s",
-                $this->name,
-                $this->name,
+                "<%s>%s</> %s <%s>%s</>",
                 $this->name,
                 "▓",
-                $this->gradient?->render()
+                $this->gradient?->render() ?? $notGradient,
+                $this->name,
+                $this->name
             );
+
     }
+
+    public static function isAlias(string $name): bool
+    {
+        return str_starts_with($name, "@");
+    }
+
 }
