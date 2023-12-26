@@ -6,6 +6,8 @@ namespace Ninja\Cosmic\Application;
 
 use Closure;
 use DI\Container;
+use Innmind\Signals\Info;
+use Innmind\Signals\Signal;
 use InvalidArgumentException;
 use Invoker\Exception\InvocationException;
 use Invoker\Exception\NotCallableException;
@@ -46,12 +48,19 @@ use Throwable;
 
 use function Cosmic\get_class_from_file;
 
+/**
+ * Class Application
+ *
+ * @package Ninja\Cosmic\Application
+ */
 final class Application extends \Symfony\Component\Console\Application
 {
     public const LIFECYCLE_APP_BOOT     = 'app.boot';
     public const LIFECYCLE_APP_SHUTDOWN = 'app.shutdown';
     public const LIFECYCLE_APP_BUILD    = 'app.build';
     public const LIFECYCLE_APP_INSTALL  = 'app.install';
+    public const LIFECYCLE_APP_INTERRUPTED = 'app.interrupt';
+    public const LIFECYCLE_APP_TERMINATED = 'app.terminate';
 
     private ExpressionParser $parser;
 
@@ -60,6 +69,14 @@ final class Application extends \Symfony\Component\Console\Application
     private ?ContainerInterface $container;
 
     /**
+     * Application constructor.
+     *
+     * @param string $name
+     * @param string $version
+     * @param Container|null $container
+     *
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      * @throws InvocationException
      * @throws NotCallableException
      * @throws ReflectionException
@@ -82,9 +99,25 @@ final class Application extends \Symfony\Component\Console\Application
 
         $this->withContainer($container ?? new Container(), true, true);
         $this->registerCommands([__DIR__ . "/../Command"]);
+        $this->setupSignals();
 
     }
 
+    /**
+     * Run the application. This is the entry point of the application.
+     *
+     * @param InputInterface|null $input
+     * @param OutputInterface|null $output
+
+     * @return int
+
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     * @throws InvocationException
+     * @throws NotCallableException
+     * @throws ReflectionException
+     * @throws Throwable
+     */
     public function run(?InputInterface $input = null, ?OutputInterface $output = null): int
     {
         if ($output === null) {
@@ -102,9 +135,20 @@ final class Application extends \Symfony\Component\Console\Application
             event_args: ["app" => $this, "execution_result" => $execution_result]
         );
 
+        Terminal::restoreCursor();
+
         return $execution_result;
     }
 
+    /**
+     * Creates an InputDefinition with the default arguments and options.
+     *
+     * @return InputDefinition
+     *
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     * @throws Throwable
+     */
     public function getDefaultInputDefinition(): InputDefinition
     {
         $definition = parent::getDefaultInputDefinition();
@@ -135,6 +179,14 @@ final class Application extends \Symfony\Component\Console\Application
     }
 
     /**
+     * Runs the current command.
+     *
+     * @param SymfonyCommand $command
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     *
      * @throws Throwable
      */
     public function doRunCommand(SymfonyCommand $command, InputInterface $input, OutputInterface $output): int
@@ -170,6 +222,12 @@ final class Application extends \Symfony\Component\Console\Application
     }
 
     /**
+     * Register a command into the application.
+     *
+     * @param CommandInterface $command
+     * @return Application
+     *
+     * @throws InvalidArgumentException
      * @throws InvocationException
      * @throws ReflectionException
      * @throws NotCallableException
@@ -197,6 +255,13 @@ final class Application extends \Symfony\Component\Console\Application
     }
 
     /**
+     * Register a command into the application if the command is available in the specified environment.
+     *
+     * @param CommandInterface & EnvironmentAwareInterface $command
+     * @param string $environment
+     *
+     * @return Application
+     *
      * @throws NotCallableException
      * @throws InvocationException
      * @throws ReflectionException
@@ -222,6 +287,11 @@ final class Application extends \Symfony\Component\Console\Application
     }
 
     /**
+     * Register commands from the specified paths.
+     *
+     * @param array $command_paths
+     * @return Application
+     *
      * @throws NotCallableException
      * @throws NotFoundExceptionInterface
      * @throws InvocationException
@@ -241,6 +311,15 @@ final class Application extends \Symfony\Component\Console\Application
         return $this;
     }
 
+    /**
+     * Set the container to use for resolving command dependencies.
+     *
+     * @param ContainerInterface $container
+     * @param bool $byTypeHint
+     * @param bool $byParameterName
+     *
+     * @throws InvalidArgumentException
+     */
     public function withContainer(
         ContainerInterface $container,
         bool $byTypeHint = false,
@@ -260,11 +339,17 @@ final class Application extends \Symfony\Component\Console\Application
     }
 
     /**
+     * Creates a new command from a callable.
+     *
+     * @param string $expression
+     * @param callable|string $callable
+     * @param array $aliases
+     *
+     * @return Command
      * @throws NotCallableException
-     * @throws InvocationException
      * @throws ReflectionException
      */
-    public function command(string $expression, $callable, array $aliases = []): Command
+    public function command(string $expression, callable|string $callable, array $aliases = []): Command
     {
         $this->assertCallableIsValid($callable);
 
@@ -442,6 +527,27 @@ final class Application extends \Symfony\Component\Console\Application
     {
         Terminal::enableTheme($theme);
         $this->setName(sprintf("%s %s", Terminal::getTheme()->getAppIcon(), Env::get("APP_NAME")));
+    }
+
+    private function setupSignals(): void
+    {
+        $handler = new \Innmind\Signals\Handler();
+        $handler->listen(Signal::interrupt, function (Signal $signal, Info $info): void {
+            Lifecycle::dispatchLifecycleEvent(self::LIFECYCLE_APP_INTERRUPTED, ["signal" => $signal, "info" => $info]);
+            Terminal::output()->writeln("\n\n 💔 <error>Interrupted by user.</error>");
+            Terminal::restoreCursor();
+
+            exit(0);
+        });
+
+        $handler->listen(Signal::terminate, function (Signal $signal, Info $info): void {
+            Lifecycle::dispatchLifecycleEvent(self::LIFECYCLE_APP_TERMINATED, ["signal" => $signal, "info" => $info]);
+            Terminal::output()->writeln("\n\n 💔 <error>Terminated by user.</error>");
+            Terminal::restoreCursor();
+
+            exit(0);
+        });
+
     }
 
 }

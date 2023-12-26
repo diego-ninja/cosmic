@@ -7,15 +7,31 @@ namespace Ninja\Cosmic\Application\Builder;
 use Exception;
 use Ninja\Cosmic\Application\Compiler\BoxCompiler;
 use Ninja\Cosmic\Environment\Env;
-use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
+use Ninja\Cosmic\Terminal\UI\Spinner\SpinnerFactory;
 use ReflectionException;
 use Symfony\Component\Process\Process;
 
-readonly class ApplicationBuilder
+/**
+ * Class ApplicationBuilder
+ *
+ * Responsible for building the application, including setting up the environment, compiling, and restoring.
+ * @package Ninja\Cosmic\Application
+ */
+final readonly class ApplicationBuilder
 {
+    /**
+     * ApplicationBuilder constructor.
+     *
+     * @param BoxCompiler $compiler The BoxCompiler instance for compiling the application.
+     */
     public function __construct(private BoxCompiler $compiler) {}
 
     /**
+     * Build the application for the specified environment.
+     *
+     * @param string $environment The environment for which to build the application.
+     *
+     * @return bool True if the build process is successful, false otherwise.
      * @throws ReflectionException
      * @throws Exception
      */
@@ -26,6 +42,11 @@ readonly class ApplicationBuilder
     }
 
     /**
+     * Set up the environment for building the application.
+     *
+     * @param string $env The environment for which to set up.
+     *
+     * @return bool True if the setup process is successful, false otherwise.
      * @throws Exception
      */
     private function setup(string $env): bool
@@ -50,6 +71,9 @@ readonly class ApplicationBuilder
     }
 
     /**
+     * Restore the initial environment after building the application.
+     *
+     * @return bool True if the restore process is successful, false otherwise.
      * @throws Exception
      */
     private function restore(): bool

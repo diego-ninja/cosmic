@@ -6,14 +6,19 @@ namespace Ninja\Cosmic\Installer;
 
 use Exception;
 use Ninja\Cosmic\Environment\Env;
-use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
+use Ninja\Cosmic\Exception\BinaryNotFoundException;
+use Ninja\Cosmic\Terminal\UI\Spinner\SpinnerFactory;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
-
 use function Cosmic\find_binary;
 use function Cosmic\sudo;
 
+/**
+ * Class PhiveInstaller
+ *
+ * An installer for PHP tools using Phive.
+ */
 class PhiveInstaller extends AbstractInstaller
 {
     public const PHIVE_INSTALLATION_PATH = "/usr/local/bin/phive";
@@ -23,6 +28,11 @@ class PhiveInstaller extends AbstractInstaller
         "033E5F8D801A2F8D",
     ];
 
+    /**
+     * PhiveInstaller constructor.
+     *
+     * @param OutputInterface $output The output interface.
+     */
     public function __construct(OutputInterface $output)
     {
         parent::__construct($output);
@@ -32,6 +42,12 @@ class PhiveInstaller extends AbstractInstaller
         });
     }
 
+    /**
+     * Installs the specified packages using Phive.
+     *
+     * @return bool True if the installation is successful, false otherwise.
+     * @throws BinaryNotFoundException
+     */
     public function install(): bool
     {
         if ($this->pre_install) {
@@ -45,6 +61,12 @@ class PhiveInstaller extends AbstractInstaller
         return true;
     }
 
+    /**
+     * Installs the specified packages using Phive.
+     *
+     * @return bool True if the installation is successful, false otherwise.
+     * @throws BinaryNotFoundException
+     */
     public function installPackages(): bool
     {
         $package_set = implode(" ", array_keys($this->packages));
@@ -55,7 +77,7 @@ class PhiveInstaller extends AbstractInstaller
                 find_binary("phive"),
                 $package_set,
                 $keys
-            ), //phpcs:ignore
+            ),
             sudo_passwd: Env::get("SUDO_PASSWORD")
         );
 
@@ -69,6 +91,13 @@ class PhiveInstaller extends AbstractInstaller
         return $result;
     }
 
+    /**
+     * Checks if a package is installed using Phive.
+     *
+     * @param string $package The name of the package to check.
+     *
+     * @return bool True if the package is installed, false otherwise.
+     */
     public function isPackageInstalled(string $package): bool
     {
         $package_namespace_and_name = explode("/", $package);
@@ -81,7 +110,11 @@ class PhiveInstaller extends AbstractInstaller
     }
 
     /**
+     * Installs Phive.
+     *
      * @throws Exception
+     *
+     * @return bool True if the installation is successful, false otherwise.
      */
     public function installPhive(): bool
     {
@@ -115,7 +148,11 @@ class PhiveInstaller extends AbstractInstaller
     }
 
     /**
+     * Downloads Phive binary.
+     *
      * @throws Exception
+     *
+     * @return bool True if the download is successful, false otherwise.
      */
     public function downloadPhive(): bool
     {
@@ -136,7 +173,11 @@ class PhiveInstaller extends AbstractInstaller
     }
 
     /**
+     * Adds Phive GPG key.
+     *
      * @throws Exception
+     *
+     * @return bool True if the key is added successfully, false otherwise.
      */
     public function addPhiveGpgKey(): bool
     {
@@ -173,7 +214,11 @@ class PhiveInstaller extends AbstractInstaller
     }
 
     /**
+     * Verifies Phive binary.
+     *
      * @throws RuntimeException
+     *
+     * @return bool True if the verification is successful, false otherwise.
      */
     private function verifyPhive(): bool
     {
@@ -191,5 +236,4 @@ class PhiveInstaller extends AbstractInstaller
             throw new RuntimeException("Unable to verify phive binary", 0, $e);
         }
     }
-
 }

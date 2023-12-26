@@ -1,0 +1,40 @@
+{
+    "name": "nord",
+    "version": "1.0.0",
+    "description": "Nord Theme for Cosmic Applications",
+    "extends": "cosmic",
+    "config": {
+        "width": 80,
+        "spacing": 1,
+        "icons_enabled": true,
+        "spinner": {
+            "style": "dots2",
+            "color": "cyan"
+        },
+        "progress": {
+            "bar_color": "cyan",
+            "text_color": "white",
+            "apply_gradient": false,
+            "use_segments": true,
+            "char_empty": "░",
+            "char_full": "█",
+            "width": 40,
+            "format": " {detail}{nl} {bar} {percentage} {steps}{nl} ETC: {remaining} - Elapsed: {elapsed}",
+            "spacing": 1
+        },
+        "table": {
+            "charset": "rounded",
+            "table_color": "white",
+            "header_color": "notice",
+            "field_color": "text"
+        },
+        "summary": {
+            "charset": "double",
+            "table_color": "white",
+            "header_color": "notice",
+            "title_color": "info",
+            "field_color": "text",
+            "show_header": false
+        }
+    }
+}

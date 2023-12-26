@@ -11,12 +11,11 @@ use Ninja\Cosmic\Command\Attribute\Icon;
 use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Environment\Env;
-use Ninja\Cosmic\Terminal\Table\Column\TableColumn;
-use Ninja\Cosmic\Terminal\Table\Manipulator\BoolManipulator;
-use Ninja\Cosmic\Terminal\Table\Table;
-use Ninja\Cosmic\Terminal\Table\TableConfig;
 use Ninja\Cosmic\Terminal\Terminal;
-
+use Ninja\Cosmic\Terminal\UI\Table\Column\TableColumn;
+use Ninja\Cosmic\Terminal\UI\Table\Manipulator\BoolManipulator;
+use Ninja\Cosmic\Terminal\UI\Table\Table;
+use Ninja\Cosmic\Terminal\UI\Table\TableConfig;
 use function Termwind\render;
 
 #[Icon("❤️ ")]
@@ -83,7 +82,7 @@ final class AboutCommand extends CosmicCommand
         $tableConfig = new TableConfig(Terminal::getTheme()->getConfig("table"));
 
         $table = (new Table(data: Env::dump(), columns: [], config: $tableConfig))
-            ->addColumn(new TableColumn(name: 'ENV VAR', key: 'key', color: 'gray500'))
+            ->addColumn(new TableColumn(name: 'ENV VAR', key: 'key', color: 'cyan'))
             ->addColumn((new TableColumn(name: 'VALUE', key: 'value'))->addManipulator(new BoolManipulator()));
 
         Terminal::output()->writeln("");

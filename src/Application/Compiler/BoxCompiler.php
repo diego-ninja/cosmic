@@ -8,20 +8,29 @@ use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Exception\ConfigFileNotFound;
 use Ninja\Cosmic\Installer\PhiveInstaller;
-use Ninja\Cosmic\Terminal\Input\Question;
-use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
 use Ninja\Cosmic\Terminal\Terminal;
+use Ninja\Cosmic\Terminal\UI\Input\Question;
+use Ninja\Cosmic\Terminal\UI\Spinner\SpinnerFactory;
 use ReflectionException;
 use RuntimeException;
 use Symfony\Component\Process\Process;
 use Throwable;
-
 use function Cosmic\find_binary;
 
+/**
+ * Class BoxCompiler
+ *
+ * Responsible for compiling the application into a Phar binary using Box.
+ * @package Ninja\Cosmic\Application
+ */
 class BoxCompiler implements CompilerInterface
 {
     /**
+     * Compile the application into a Phar binary using Box.
+     *
+     * @return bool True if the compilation process is successful, false otherwise.
      * @throws ReflectionException
+     * @throws RuntimeException|BinaryNotFoundException If unable to install or find the Box binary.
      */
     public function compile(): bool
     {
@@ -54,6 +63,12 @@ class BoxCompiler implements CompilerInterface
         }
     }
 
+    /**
+     * Install the Box binary using Phive.
+     *
+     * @return bool True if the installation process is successful, false otherwise.
+     * @throws BinaryNotFoundException
+     */
     private function installBoxBinary(): bool
     {
         if (Question::confirm('Do you want to install box binary?')) {

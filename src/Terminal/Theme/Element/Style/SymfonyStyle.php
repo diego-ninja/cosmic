@@ -10,15 +10,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SymfonyStyle extends AbstractStyle
 {
     public function __construct(
-        public readonly string $name,
-        public readonly ?string $fg,
-        public readonly ?string $bg,
-        public readonly ?array $options
+        public readonly string  $name,
+        public readonly ?string $foreground,
+        public readonly ?string $background,
+        public readonly ?array  $options
     ) {}
 
     public static function fromArray(array $input): SymfonyStyle
     {
-        return new SymfonyStyle($input["name"], $input["fg"], $input["bg"], $input["options"]);
+        return new SymfonyStyle(
+            name: $input["name"],
+            foreground: $input["fg"],
+            background: $input["bg"],
+            options: $input["options"]
+        );
     }
 
     public function __toString(): string
@@ -29,8 +34,8 @@ class SymfonyStyle extends AbstractStyle
     public function load(OutputInterface $output): void
     {
         $style = new OutputFormatterStyle(
-            foreground: $this->fg,
-            background: $this->fg,
+            foreground: $this->foreground,
+            background: $this->background,
             options: $this->options
         );
 

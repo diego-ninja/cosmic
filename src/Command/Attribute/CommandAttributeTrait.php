@@ -7,6 +7,13 @@ namespace Ninja\Cosmic\Command\Attribute;
 use Ninja\Cosmic\Terminal\Terminal;
 use ReflectionAttribute;
 
+/**
+ * Trait CommandAttributeTrait
+ *
+ * Provides methods for handling command attributes.
+ *
+ * @package Ninja\Cosmic\Command\Attribute
+ */
 trait CommandAttributeTrait
 {
     public function getCommandName(): string

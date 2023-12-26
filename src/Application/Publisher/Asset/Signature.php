@@ -7,8 +7,18 @@ namespace Ninja\Cosmic\Application\Publisher\Asset;
 use Ninja\Cosmic\Crypt\Verifier;
 use Ninja\Cosmic\Environment\Env;
 
+/**
+ * Class Signature
+ *
+ * @package Ninja\Cosmic\Application
+ */
 class Signature extends Asset
 {
+    /**
+     * Signature constructor.
+     *
+     * @param string $signed_file The file that is signed.
+     */
     public function __construct(private readonly string $signed_file)
     {
         $name = sprintf('%s GPG Signature', ucfirst(Env::get('APP_NAME')));
@@ -16,11 +26,23 @@ class Signature extends Asset
         parent::__construct($name, $path);
     }
 
+    /**
+     * Create a Signature instance for the specified file.
+     *
+     * @param string $file The file for which to create a Signature instance.
+     *
+     * @return self
+     */
     public static function for(string $file): self
     {
         return new self($file);
     }
 
+    /**
+     * Verify the file using the guessed signature.
+     *
+     * @return bool
+     */
     public function verify(): bool
     {
         return Verifier::verify($this->signed_file);

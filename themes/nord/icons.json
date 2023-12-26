@@ -1,0 +1,15 @@
+{
+    "icons": {
+        "application": "\uD83E\uDDDD\u200D",
+        "bullet": "\uD83D\uDD38",
+        "success": "⬡",
+        "failure": "⬡",
+        "radio_selected": "⬢",
+        "radio": "⬡",
+        "checkbox": "☐",
+        "checkbox_selected": "✔",
+        "mandatory": "\uD83D\uDD39",
+        "nullable": "\uD83D\uDD38",
+        "collection": "\uD83D\uDD32"
+    }
+}

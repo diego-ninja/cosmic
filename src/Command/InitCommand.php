@@ -14,15 +14,14 @@ use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Notifier\NotifiableInterface;
-use Ninja\Cosmic\Terminal\Input\Question;
-use Ninja\Cosmic\Terminal\Spinner\SpinnerFactory;
 use Ninja\Cosmic\Terminal\Terminal;
+use Ninja\Cosmic\Terminal\UI\Input\Question;
+use Ninja\Cosmic\Terminal\UI\Spinner\SpinnerFactory;
 use Ninja\Cosmic\Terminal\UI\UI;
 use Phar;
 use ReflectionException;
 use Symfony\Component\Process\Process;
 use ZipArchive;
-
 use function Cosmic\cypher;
 use function Cosmic\git_config;
 use function Cosmic\is_phar;

@@ -10,6 +10,11 @@ use Ninja\Cosmic\Crypt\SignerInterface;
 
 use function Cosmic\human_filesize;
 
+/**
+ * Class Asset
+ *
+ * @package Ninja\Cosmic\Application
+ */
 class Asset
 {
     public const STATE_UPLOADED  = 'uploaded';
