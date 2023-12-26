@@ -6,6 +6,7 @@ namespace Ninja\Cosmic\Terminal\Theme;
 
 use InvalidArgumentException;
 use JsonException;
+use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class ThemeLoader implements ThemeLoaderInterface
@@ -15,12 +16,18 @@ final class ThemeLoader implements ThemeLoaderInterface
     public function __construct(private array $themes, private readonly OutputInterface $output) {}
     /**
      * @throws JsonException
+     * @throws BinaryNotFoundException
      */
     public function loadDirectory(string $directory): ThemeLoaderInterface
     {
         foreach (new \DirectoryIterator($directory) as $fileInfo) {
             if ($fileInfo->isDot()) {
                 continue;
+            }
+
+            if ($fileInfo->isFile() && $fileInfo->getExtension() === "zth") {
+                $theme = Theme::fromZippedTheme($fileInfo->getPathname());
+                $this->addTheme($theme);
             }
 
             if ($fileInfo->isDir()) {

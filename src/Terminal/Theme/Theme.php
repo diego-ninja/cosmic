@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Theme;
 
+use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Terminal\Theme\Element\Charset\Charset;
 use Ninja\Cosmic\Terminal\Theme\Element\Charset\CharsetCollection;
 use Ninja\Cosmic\Terminal\Theme\Element\CollectionFactory;
@@ -17,6 +18,7 @@ use Ninja\Cosmic\Terminal\Theme\Element\Style\AbstractStyle;
 use Ninja\Cosmic\Terminal\Theme\Element\Style\StyleCollection;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
+use function Cosmic\unzip;
 
 class Theme implements ThemeInterface
 {
@@ -101,6 +103,28 @@ class Theme implements ThemeInterface
     public static function fromFile(string $filename): self
     {
         return self::fromJson(file_get_contents($filename));
+    }
+
+    /**
+     * @throws \JsonException
+     * @throws BinaryNotFoundException
+     */
+    public static function fromZippedTheme(string $filename): self
+    {
+        $fingerprint = md5(file_get_contents($filename));
+        $themeTempDir = sprintf("%s/.cosmic/themes/%s", sys_get_temp_dir(), $fingerprint);
+
+        if (is_dir($themeTempDir)) {
+            return self::fromThemeFolder($themeTempDir);
+        }
+
+        if (!mkdir($themeTempDir, 0777, true) && !is_dir($themeTempDir)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $themeTempDir));
+        }
+
+        unzip($filename, $themeTempDir);
+        return self::fromThemeFolder($themeTempDir);
+
     }
 
     public static function fromJson(string $json): self
