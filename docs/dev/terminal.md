@@ -31,7 +31,7 @@ You can load themes from a directory using the `loadThemes` method, add individu
 Terminal::loadThemes('/path/to/themes');
 
 // Add an individual theme
-$theme = new MyTheme();
+$theme = Theme::fromThemeFolder('/path/to/theme');
 Terminal::addTheme($theme);
 
 // Enable a theme

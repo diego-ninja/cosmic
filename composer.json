@@ -48,7 +48,8 @@
         "vlucas/phpdotenv": "^5",
         "seld/cli-prompt": "^1.0",
         "dariuszp/cli-progress-bar": "^1.0",
-        "khill/php-duration": "^1.1"
+        "khill/php-duration": "^1.1",
+        "innmind/signals": "^3.1"
     },
     "require-dev": {
         "captainhook/captainhook": "^5.10",
