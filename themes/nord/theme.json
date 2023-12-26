@@ -2,6 +2,7 @@
     "name": "nord",
     "version": "1.0.0",
     "description": "Nord Theme for Cosmic Applications",
+    "extends": "cosmic",
     "config": {
         "width": 80,
         "spacing": 1,

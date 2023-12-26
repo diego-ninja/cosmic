@@ -38,7 +38,7 @@ $dotenv->safeLoad();
 
 try {
     Terminal::loadThemes(__DIR__ . "/themes");
-    Terminal::enableTheme(Env::get("APP_THEME", "default"));
+    Terminal::enableTheme(Env::get("APP_THEME", "cosmic"));
 
     $app = new Application(
         name: sprintf("%s %s", Terminal::getTheme()->getAppIcon(), Env::get("APP_NAME")),
