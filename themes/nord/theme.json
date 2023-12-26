@@ -1,8 +1,7 @@
 {
-    "name": "dracula",
+    "name": "nord",
     "version": "1.0.0",
-    "description": "Dracula theme for Cosmic Applications",
-    "extends": "default",
+    "description": "Nord Theme for Cosmic Applications",
     "config": {
         "width": 80,
         "spacing": 1,
@@ -23,7 +22,7 @@
             "spacing": 1
         },
         "table": {
-            "charset": "double",
+            "charset": "rounded",
             "table_color": "white",
             "header_color": "notice",
             "field_color": "text"

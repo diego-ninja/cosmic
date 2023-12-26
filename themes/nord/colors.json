@@ -1,0 +1,27 @@
+{
+    "colors": {
+        "white": "#ECEFF4",
+        "black": "#2E3440",
+        "gray": "#D8DEE9",
+        "blue": "#5E81AC",
+        "indigo": "#6610f2",
+        "purple": "#B48EAD",
+        "pink": "#e83e8c",
+        "red": "#BF616A",
+        "orange": "#D08770",
+        "yellow": "#EBCB8B",
+        "green": "#A3BE8C",
+        "teal": "#20c997",
+        "cyan": "#88C0D0",
+
+        "text": "@white",
+        "comment": "@yellow",
+        "info": "@cyan",
+        "notice": "@purple",
+        "warning": "@orange",
+        "error": "@red",
+        "success": "@green",
+        "question": "@cyan",
+        "default": "@cyan"
+    }
+}

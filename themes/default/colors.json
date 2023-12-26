@@ -14,14 +14,14 @@
         "teal": "#20c997",
         "cyan": "#17a2b8",
 
-        "text": "#E5E9F0",
-        "comment": "#EBCB8B",
-        "info": "#88C0D0",
-        "notice": "#8FBCBB",
-        "warning": "#D08770",
-        "error": "#BF616A",
-        "success": "#A3BE8C",
-        "question": "#88C0D0",
-        "default": "#88C0D0"
+        "text": "@white",
+        "comment": "@yellow200",
+        "info": "@cyan300",
+        "notice": "@teal300",
+        "warning": "@orange300",
+        "error": "@red300",
+        "success": "@green300",
+        "question": "@cyan300",
+        "default": "@cyan300"
     }
 }

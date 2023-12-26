@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Theme\Element\Style;
 
+use JsonException;
 use Ninja\Cosmic\Terminal\Theme\Element\AbstractElementCollection;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -37,6 +38,9 @@ class StyleCollection extends AbstractElementCollection
         return null;
     }
 
+    /**
+     * @throws JsonException
+     */
     public static function fromFile(string $file): StyleCollection
     {
         $collection = new StyleCollection();

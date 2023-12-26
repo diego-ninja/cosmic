@@ -87,4 +87,9 @@ class Color extends AbstractThemeElement
         return str_starts_with($name, "@");
     }
 
+    public static function isGradient(string $name): bool
+    {
+        return preg_match('/\d{3}$/', $name) === 1;
+    }
+
 }
