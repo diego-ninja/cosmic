@@ -99,8 +99,6 @@ final class Application extends \Symfony\Component\Console\Application
 
         $this->withContainer($container ?? new Container(), true, true);
         $this->registerCommands([__DIR__ . "/../Command"]);
-        $this->setupSignals();
-
     }
 
     /**
