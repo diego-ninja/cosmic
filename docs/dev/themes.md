@@ -185,7 +185,7 @@ Icons are used mainly to decorate the terminal output when requesting input or d
 ```json
 {
     "icons": {
-        "application": "🚀",
+        "application": "🛸",
         "bullet": "🔸",
         "success": "⬡",
         "failure": "⬡",
@@ -260,6 +260,14 @@ Probably you will not need to create your own charsets, but if you want to do it
 
 ### Theme file
 
+### Notification icon
+The notification icon is used as part of the os-based notifications. The notification icon should be a png image with a transparent background. The notification icon is stored in the notification.png file.
+The recommended size for the notification icon is **512x512** pixels.
+
 ### Theme logo
 
-### Notification icon
+The theme logo is a piece of ANSI art that is displayed as part of the about command. The theme logo is stored in the logo.php file. The logo is a PHP file that returns a string with the ANSI art.
+
+By the time of writing this documentation, there are not a local tool or mechanism to generate ANSI logos from images. But you can use online resources like [image2ansi](https://dom111.github.io/image-to-ansi/) to generate your own logos. In a near future, Cosmic will include a local tool to generate ANSI logos from images.
+
+**🤓 PRO TIP**: You can convert your notification icon to ANSI art using the [image2ansi](https://dom111.github.io/image-to-ansi/) tool and use it as your logo. This way you will have a consistent look and feel in your application.
