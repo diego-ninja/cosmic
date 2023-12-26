@@ -19,8 +19,7 @@
         },
         "symfony": {
             "hl": {
-                "fg": "#f8f8f2",
-                "bg": "#6272a4"
+                "fg": "#f8f8f2"
             },
             "critical": {
                 "fg": "#ff5555",

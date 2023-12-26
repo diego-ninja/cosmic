@@ -95,8 +95,8 @@ class StyleCollection extends AbstractElementCollection
                 $output[$element->name] = $element->style;
             } elseif ($element instanceof SymfonyStyle) {
                 $output[$element->name] = [
-                    "fg"      => $element->fg,
-                    "bg"      => $element->bg,
+                    "fg"      => $element->foreground,
+                    "bg"      => $element->background,
                     "options" => $element->options,
                 ];
             }

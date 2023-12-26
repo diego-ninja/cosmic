@@ -43,8 +43,6 @@ class SelectHandler
      */
     public function handle(): array
     {
-        Terminal::hideCursor();
-
         $this->firstRun = true;
         $ctrlMode       = $this->question->controlMode();
         $usage          = $ctrlMode === self::SIMPLE_CTR ?
@@ -57,6 +55,8 @@ class SelectHandler
 
         $sttyMode = shell_exec('stty -g');
         shell_exec('stty -icanon -echo');
+
+        Terminal::hideCursor();
 
         // Read a keypress
         while (!feof($this->stream)) {
