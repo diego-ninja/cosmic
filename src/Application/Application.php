@@ -48,7 +48,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
 use function Cosmic\get_class_from_file;
-use function Cosmic\is_child;
 
 /**
  * Class Application
