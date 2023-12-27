@@ -248,6 +248,18 @@ if (!function_exists("Cosmic\is_nullable")) {
     }
 }
 
+if (!function_exists("Cosmic\is_child")) {
+    /**
+     * Check if the current process is a child process.
+     *
+     * @return bool
+     */
+    function is_child(): bool
+    {
+        return posix_getppid() !== 0;
+    }
+}
+
 if (!function_exists('Cosmic\sudo')) {
     /**
      * Run a command with sudo.
