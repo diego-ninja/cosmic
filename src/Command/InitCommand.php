@@ -13,6 +13,7 @@ use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Environment\Env;
+use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Notifier\NotifiableInterface;
 use Ninja\Cosmic\Terminal\Terminal;
 use Ninja\Cosmic\Terminal\UI\Input\Question;
@@ -60,7 +61,6 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     private static array $summary      = [];
 
     /**
-     * @throws ReflectionException
      * @throws Exception
      */
     public function __invoke(?string $name, ?string $path): int
@@ -71,15 +71,15 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
                      Press <notice>^C</notice> at any time to quit."
         );
 
-        $this->askPackageName();
-        $this->askApplicationPath();
+        $this->askPackageName($name);
+        $this->askApplicationPath($path);
         $this->askApplicationDescription();
         $this->askApplicationAuthor();
         $this->askApplicationWebsite();
         $this->askApplicationLicense();
         $this->askSudoPassword();
 
-        Terminal::clear(count(self::$summary));
+        Terminal::clear(count(self::$summary) + 8);
         Terminal::output()->writeln("");
         $this->displaySummary();
 
@@ -92,7 +92,11 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
                 )
             );
 
-            $this->executionResult = $this->expandApplication() && $this->replacePlaceholders() && $this->installApplicationDependencies() && $this->renameApplication();
+            $this->executionResult =
+                $this->expandApplication() &&
+                $this->replacePlaceholders() &&
+                $this->installApplicationDependencies() &&
+                $this->renameApplication();
 
             if ($this->executionResult) {
                 Terminal::output()->writeln("");
@@ -186,9 +190,9 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         );
     }
 
-    private function askPackageName(): void
+    private function askPackageName(?string $name = null): void
     {
-        $default_name = sprintf("%s/cosmic-app", get_current_user());
+        $default_name = $name ?? sprintf("%s/cosmic-app", get_current_user());
         $package_name = Question::ask(
             message: sprintf(" %s <question>Package name</question> (vendor/name):", "📦"),
             default: $default_name,
@@ -204,12 +208,16 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         self::$replacements["{package.name}"] = $package_name;
     }
 
-    private function askApplicationPath(): void
+    private function askApplicationPath(?string $path = null): void
     {
-        $default_path = getcwd();
-        $path         = Question::ask(message: " 📁 <question>Application path</question>:", default: $default_path, decorated: false);
+        $default_path = $path ?? getcwd();
+        $path = Question::ask(message: " 📁 <question>Application path</question>:", default: $default_path, decorated: false);
 
-        self::$summary[]                  = ["key" => "Application path ", "value" => $path];
+        if (!is_dir($path) && !mkdir($path, 0777, true) && !is_dir($path)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
+        }
+
+        self::$summary[] = ["key" => "Application path ", "value" => $path];
         self::$replacements["{app.path}"] = $path;
     }
 
@@ -221,6 +229,9 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         self::$replacements["{app.description}"] = $description;
     }
 
+    /**
+     * @throws BinaryNotFoundException
+     */
     private function askApplicationAuthor(): void
     {
         $author = Question::ask(message: " 🥷 <question>Author</question>:", default: git_config("user.name"), decorated: false);
@@ -236,7 +247,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     {
         $website = Question::ask(message: " 🌎 <question>Website</question>:", default: git_config("user.website"), decorated: false);
 
-        self::$summary[]                    = ["key" => "Website", "value" => $website];
+        self::$summary[] = ["key" => "Website", "value" => $website];
         self::$replacements["{author.url}"] = $website;
     }
 
@@ -250,12 +261,23 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             maxWidth: 90
         );
 
-        self::$summary[]                     = ["key" => "License", "value" => $license[0]];
+        self::$summary[] = ["key" => "License", "value" => $license[0]];
         self::$replacements["{app.license}"] = $license[0];
     }
 
+    /**
+     * @throws Exception
+     */
     private function askSudoPassword(): void
     {
+        UI::title("🔑 Sudo password");
+        UI::p(
+            "Provide the sudo password if you want to perform root operations automatically.
+                     This password is encrypted and stored in the <info>.env</info> file.
+                     This password is not persisted in the application builds.
+                     If you don't want to store the password, just press <notice>return</notice> to skip this step."
+        );
+
         $password = Question::hidden(message: " 🔑 <question>Sudo password</question>:", decorated: false);
         if ($password) {
             $key = randomize(32);

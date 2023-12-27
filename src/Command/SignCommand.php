@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Command;
 
+use Exception;
 use Ninja\Cosmic\Command\Attribute\Alias;
 use Ninja\Cosmic\Command\Attribute\Argument;
 use Ninja\Cosmic\Command\Attribute\Description;
@@ -16,6 +17,8 @@ use Ninja\Cosmic\Crypt\KeyRing;
 use Ninja\Cosmic\Crypt\SignerInterface;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
+use Ninja\Cosmic\Exception\MissingInterfaceException;
+use Ninja\Cosmic\Exception\UnexpectedValueException;
 use Ninja\Cosmic\Installer\AptInstaller;
 use Ninja\Cosmic\Terminal\Terminal;
 use Ninja\Cosmic\Terminal\UI\Input\Question;
@@ -35,6 +38,8 @@ class SignCommand extends CosmicCommand
 {
     /**
      * @throws BinaryNotFoundException
+     * @throws MissingInterfaceException
+     * @throws UnexpectedValueException
      */
     public function __invoke(string $binary, ?string $user, ?string $keyId): int
     {
@@ -92,6 +97,11 @@ class SignCommand extends CosmicCommand
 
     }
 
+    /**
+     * @throws UnexpectedValueException
+     * @throws MissingInterfaceException
+     * @throws Exception
+     */
     private function tryUserSign(string $binary, string $user): bool
     {
         $keyring  = KeyRing::public();
@@ -134,6 +144,11 @@ class SignCommand extends CosmicCommand
         return array_flip($keys)[$selection];
     }
 
+    /**
+     * @throws UnexpectedValueException
+     * @throws MissingInterfaceException
+     * @throws Exception
+     */
     private function tryKeyIdSign(string $binary, string $keyId): bool
     {
         $keyring = KeyRing::public();
@@ -159,6 +174,11 @@ class SignCommand extends CosmicCommand
         return false;
     }
 
+    /**
+     * @throws UnexpectedValueException
+     * @throws MissingInterfaceException
+     * @throws Exception
+     */
     private function tryDefaultSign(string $binary): bool
     {
         $keyring = KeyRing::public();
@@ -182,6 +202,9 @@ class SignCommand extends CosmicCommand
         return false;
     }
 
+    /**
+     * @throws Exception
+     */
     private function sign(string $binary, AbstractKey $key): bool
     {
         return SpinnerFactory::for(
