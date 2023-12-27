@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Signal;
 
 use Innmind\Signals\Handler;
-use Innmind\Signals\Signal;
 
 final class SignalHandler
 {
