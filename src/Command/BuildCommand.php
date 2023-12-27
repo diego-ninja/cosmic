@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Command;
 
+use Exception;
 use Ninja\Cosmic\Application\Application;
 use Ninja\Cosmic\Application\Builder\ApplicationBuilder;
 use Ninja\Cosmic\Command\Attribute\Alias;
@@ -16,6 +17,7 @@ use Ninja\Cosmic\Crypt\KeyRing;
 use Ninja\Cosmic\Crypt\SignerInterface;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Event\Lifecycle;
+use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Notifier\NotifiableInterface;
 use Ninja\Cosmic\Terminal\Terminal;
 use ReflectionException;
@@ -35,6 +37,7 @@ final class BuildCommand extends CosmicCommand implements NotifiableInterface
 
     /**
      * @throws ReflectionException
+     * @throws Exception
      */
     public function __invoke(?bool $sign): int
     {
@@ -81,11 +84,17 @@ final class BuildCommand extends CosmicCommand implements NotifiableInterface
         return $envs;
     }
 
+    /**
+     * @throws BinaryNotFoundException
+     */
     public function getSuccessMessage(): string
     {
         return sprintf("App %s %s was successfully built.", Env::get("APP_NAME"), Env::appVersion());
     }
 
+    /**
+     * @throws BinaryNotFoundException
+     */
     public function getErrorMessage(): string
     {
         return sprintf("Error building %s %s app", Env::get("APP_NAME"), Env::appVersion());

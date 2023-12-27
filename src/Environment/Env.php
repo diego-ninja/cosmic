@@ -7,6 +7,7 @@ namespace Ninja\Cosmic\Environment;
 use Dotenv\Repository\Adapter\PutenvAdapter;
 use Dotenv\Repository\RepositoryBuilder;
 use Dotenv\Repository\RepositoryInterface;
+use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Terminal\Terminal;
 use Phar;
 use PhpOption\Option;
@@ -150,6 +151,7 @@ class Env
      * Get the application version.
      *
      * @return string
+     * @throws BinaryNotFoundException
      */
     public static function appVersion(): string
     {

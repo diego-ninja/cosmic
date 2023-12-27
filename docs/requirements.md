@@ -21,7 +21,6 @@ You can install these requirements using the following commands:
 
 ```bash
 sudo add-apt-repository ppa:ondrej/php -y
-sudo add-apt-repository ppa:openswoole/ppa -y    
 sudo apt update    
 yes | sudo apt install php8.2 php8.2-cli php8.2-common php8.2-{json,hash,mbstring,openssl,pctnl,posix,random,zip}   
 ```
