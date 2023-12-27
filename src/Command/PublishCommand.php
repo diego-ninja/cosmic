@@ -15,9 +15,13 @@ use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Environment\Env;
+use Ninja\Cosmic\Exception\BinaryNotFoundException;
+use Ninja\Cosmic\Exception\MissingInterfaceException;
+use Ninja\Cosmic\Exception\UnexpectedValueException;
 use Ninja\Cosmic\Terminal\Terminal;
 use Ninja\Cosmic\Terminal\UI\Input\Question;
 use Ninja\Cosmic\Terminal\UI\Spinner\SpinnerFactory;
+
 use function Cosmic\is_git;
 
 #[Icon("🚀")]
@@ -32,6 +36,11 @@ use function Cosmic\is_git;
 #[Alias("app:publish")]
 final class PublishCommand extends CosmicCommand
 {
+    /**
+     * @throws UnexpectedValueException
+     * @throws MissingInterfaceException
+     * @throws BinaryNotFoundException
+     */
     public function __invoke(string $tag, ?string $name, ?string $description, bool $prerelease, bool $draft): int
     {
         if (!is_git()) {
@@ -70,6 +79,10 @@ final class PublishCommand extends CosmicCommand
 
     }
 
+    /**
+     * @throws UnexpectedValueException
+     * @throws MissingInterfaceException
+     */
     private function displayRelease(Release $release): void
     {
         Terminal::output()->writeln("");

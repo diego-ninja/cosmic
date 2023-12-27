@@ -1,9 +1,13 @@
 #!/usr/bin/env php
 <?php
 
+use Innmind\Signals\Info;
+use Innmind\Signals\Signal;
 use Ninja\Cosmic\Application\Application;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Environment\Exception\EnvironmentNotFoundException;
+use Ninja\Cosmic\Event\Lifecycle;
+use Ninja\Cosmic\Signal\SignalHandler;
 use Ninja\Cosmic\Terminal\Terminal;
 
 use function Cosmic\find_env;
@@ -29,6 +33,15 @@ try {
     Terminal::output()->writeln("<error>You need at least one environment file present to run a cosmic app. Please create them before continue.</error>");
     die(1);
 }
+
+SignalHandler::listen([Signal::interrupt, Signal::terminate], static function (Signal $signal, Info $info): void {
+    Lifecycle::dispatchLifecycleEvent(Application::LIFECYCLE_APP_SIGNALED, ["signal" => $signal, "info" => $info]);
+    Terminal::output()->writeln("\n\n 💔 <error>Interrupted by user.</error>");
+    Terminal::restoreCursor();
+
+    exit($signal->toInt());
+});
+
 
 $dotenv = is_phar() ?
     Dotenv\Dotenv::createMutable(Phar::running(), $env_file) :

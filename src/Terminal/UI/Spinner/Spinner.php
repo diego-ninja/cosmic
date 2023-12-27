@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Terminal\UI\Spinner;
 
 use Exception;
+use Ninja\Cosmic\Signal\SignalHandler;
 use Ninja\Cosmic\Terminal\Terminal;
 use RuntimeException;
 
@@ -13,8 +14,6 @@ class Spinner
     public const DEFAULT_SPINNER_STYLE    = 'dots8Bit';
     public const DEFAULT_SPINNER_INTERVAL = 1000;
     public const DEFAULT_SPINNER_PADDING  = 2;
-    public const BLINK_OFF                = "\e[?25l";
-    public const BLINK_ON                 = "\e[?25h";
     public const CLEAR_LINE               = "\33[2K\r";
     public const RETURN_TO_LEFT           = "\r";
 
@@ -55,7 +54,7 @@ class Spinner
 
     private function loopSpinnerFrames(): void
     {
-        print self::BLINK_OFF;
+        Terminal::hideCursor();
 
         /** @phpstan-ignore-next-line */
         while (true) {
@@ -84,7 +83,7 @@ class Spinner
     private function reset(): void
     {
         Terminal::output()->write(self::CLEAR_LINE);
-        Terminal::output()->write(self::BLINK_ON);
+        Terminal::restoreCursor();
     }
 
     private function keyboardInterrupts(): void
@@ -113,6 +112,9 @@ class Spinner
         if (!extension_loaded('pcntl') || !posix_isatty(STDOUT)) {
             return $callback();
         }
+
+        SignalHandler::reset();
+
         return $this->runCallBack($callback);
     }
 
@@ -139,6 +141,9 @@ class Spinner
         }
 
         $this->loopSpinnerFrames();
+
+        SignalHandler::restore();
+
         return null;
     }
 

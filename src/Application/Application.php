@@ -27,6 +27,7 @@ use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Event\Lifecycle;
 use Ninja\Cosmic\Reflector\CallableReflector;
 use Ninja\Cosmic\Resolver\HyphenatedInputResolver;
+use Ninja\Cosmic\Signal\SignalHandler;
 use Ninja\Cosmic\Terminal\Terminal;
 use NunoMaduro\Collision\Handler;
 use NunoMaduro\Collision\Provider;
@@ -59,8 +60,7 @@ final class Application extends \Symfony\Component\Console\Application
     public const LIFECYCLE_APP_SHUTDOWN = 'app.shutdown';
     public const LIFECYCLE_APP_BUILD    = 'app.build';
     public const LIFECYCLE_APP_INSTALL  = 'app.install';
-    public const LIFECYCLE_APP_INTERRUPTED = 'app.interrupt';
-    public const LIFECYCLE_APP_TERMINATED = 'app.terminate';
+    public const LIFECYCLE_APP_SIGNALED = 'app.signal';
 
     private ExpressionParser $parser;
 
@@ -99,6 +99,7 @@ final class Application extends \Symfony\Component\Console\Application
 
         $this->withContainer($container ?? new Container(), true, true);
         $this->registerCommands([__DIR__ . "/../Command"]);
+
     }
 
     /**
@@ -526,26 +527,4 @@ final class Application extends \Symfony\Component\Console\Application
         Terminal::enableTheme($theme);
         $this->setName(sprintf("%s %s", Terminal::getTheme()->getAppIcon(), Env::get("APP_NAME")));
     }
-
-    private function setupSignals(): void
-    {
-        $handler = new \Innmind\Signals\Handler();
-        $handler->listen(Signal::interrupt, function (Signal $signal, Info $info): void {
-            Lifecycle::dispatchLifecycleEvent(self::LIFECYCLE_APP_INTERRUPTED, ["signal" => $signal, "info" => $info]);
-            Terminal::output()->writeln("\n\n 💔 <error>Interrupted by user.</error>");
-            Terminal::restoreCursor();
-
-            exit(0);
-        });
-
-        $handler->listen(Signal::terminate, function (Signal $signal, Info $info): void {
-            Lifecycle::dispatchLifecycleEvent(self::LIFECYCLE_APP_TERMINATED, ["signal" => $signal, "info" => $info]);
-            Terminal::output()->writeln("\n\n 💔 <error>Terminated by user.</error>");
-            Terminal::restoreCursor();
-
-            exit(0);
-        });
-
-    }
-
 }
