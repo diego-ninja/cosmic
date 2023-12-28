@@ -10,6 +10,7 @@ use Ninja\Cosmic\Serializer\SerializableInterface;
 use Ninja\Cosmic\Terminal\Terminal;
 use Ninja\Cosmic\Terminal\UI\Table\Column\TableColumn;
 use Ramsey\Collection\AbstractCollection;
+
 use function Cosmic\is_nullable;
 use function Cosmic\snakeize;
 

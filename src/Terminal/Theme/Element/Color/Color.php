@@ -8,7 +8,6 @@ use Ninja\Cosmic\Terminal\Theme\Element\AbstractThemeElement;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function Cosmic\gradient;
 use function Termwind\style;
 
 class Color extends AbstractThemeElement
@@ -55,9 +54,9 @@ class Color extends AbstractThemeElement
     public function toArray(): array
     {
         return [
-            "name"  => $this->name,
-            "color" => $this->color,
-            "gradient" => $this->gradient->toArray()
+            "name"     => $this->name,
+            "color"    => $this->color,
+            "gradient" => $this->gradient->toArray(),
         ];
     }
 

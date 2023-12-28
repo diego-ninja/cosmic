@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Installer;
 
+use Exception;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Terminal\UI\Spinner\SpinnerFactory;
 use Symfony\Component\Process\Process;
+
 use function Cosmic\find_binary;
 use function Cosmic\sudo;
 
@@ -76,6 +78,7 @@ class AptInstaller extends AbstractInstaller
      *
      * @return bool True if the update is successful, false otherwise.
      * @throws BinaryNotFoundException
+     * @throws Exception
      */
     protected function updateApt(): bool
     {

@@ -9,6 +9,7 @@ use Ninja\Cosmic\Terminal\UI\Input\Select\Input\CheckboxInput;
 use Ninja\Cosmic\Terminal\UI\Input\Select\Input\ColumnAwareInterface;
 use Ninja\Cosmic\Terminal\UI\Input\Select\Input\SelectInputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function Termwind\terminal;
 
 class SelectHandler
