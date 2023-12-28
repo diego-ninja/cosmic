@@ -10,10 +10,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SymfonyStyle extends AbstractStyle
 {
     public function __construct(
-        public readonly string  $name,
+        public readonly string $name,
         public readonly ?string $foreground,
         public readonly ?string $background,
-        public readonly ?array  $options
+        public readonly ?array $options
     ) {}
 
     public static function fromArray(array $input): SymfonyStyle

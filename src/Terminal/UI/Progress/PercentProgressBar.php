@@ -9,25 +9,25 @@ use RuntimeException;
 
 class PercentProgressBar
 {
-    public const CARRIAGE_RETURN_CHARACTER = "\r";
-    public const NEW_LINE_CHARACTER = PHP_EOL;
+    public const CARRIAGE_RETURN_CHARACTER     = "\r";
+    public const NEW_LINE_CHARACTER            = PHP_EOL;
     public const PROGRESS_INCOMPLETE_CHARACTER = '░';
-    public const PROGRESS_COMPLETE_CHARACTER = '▓';
+    public const PROGRESS_COMPLETE_CHARACTER   = '▓';
 
-    private int $progress = 0;
+    private int $progress    = 0;
     private int $maxProgress = 100;
-    private string $message = 'Working...';
-    private int $barWidth = 20;
+    private string $message  = 'Working...';
+    private int $barWidth    = 20;
 
     private int $startTime;
 
     private float $lastProgressAdvancement;
-    private array $advancementTimings = [];
+    private array $advancementTimings    = [];
     private float $maxAdvancementTimings = 50;
 
     public function __construct()
     {
-        $this->startTime = time();
+        $this->startTime               = time();
         $this->lastProgressAdvancement = microtime(true);
     }
 
@@ -43,7 +43,7 @@ class PercentProgressBar
             throw new RuntimeException('Max progress can not be zero or below.');
         }
 
-        $this->maxProgress = $maxProgress;
+        $this->maxProgress           = $maxProgress;
         $this->maxAdvancementTimings = $maxProgress * 0.1;
 
         return $this;
@@ -63,8 +63,8 @@ class PercentProgressBar
 
     public function advance(): static
     {
-        $now = microtime(true);
-        $this->advancementTimings[] = $now - $this->lastProgressAdvancement;
+        $now                           = microtime(true);
+        $this->advancementTimings[]    = $now - $this->lastProgressAdvancement;
         $this->lastProgressAdvancement = $now;
 
         if (count($this->advancementTimings) > $this->maxAdvancementTimings) {
@@ -108,29 +108,29 @@ class PercentProgressBar
 
     public function display(): void
     {
-        echo self::CARRIAGE_RETURN_CHARACTER;
+        print self::CARRIAGE_RETURN_CHARACTER;
 
-        echo $this->message;
-        echo '   ';
+        print $this->message;
+        print '   ';
 
         $percentage = $this->getPercentage();
 
-        echo $percentage . '%';
-        echo '   ';
+        print $percentage . '%';
+        print '   ';
 
-        echo $this->progress . '/' . $this->maxProgress;
-        echo '   ';
+        print $this->progress . '/' . $this->maxProgress;
+        print '   ';
 
-        echo 'ETC: ';
-        echo $this->getHumanReadableTimeRemaining();
-        echo '   ';
+        print 'ETC: ';
+        print $this->getHumanReadableTimeRemaining();
+        print '   ';
 
-        echo 'Elapsed: ';
-        echo $this->getHumanReadableTimeElapsed();
-        echo '   ';
+        print 'Elapsed: ';
+        print $this->getHumanReadableTimeElapsed();
+        print '   ';
 
-        $barCompleteWidth = ceil($this->barWidth * (int) $percentage / 100);
-        $barIncompleteWidth = floor($this->barWidth * (100 - (int) $percentage) / 100);
+        $barCompleteWidth   = ceil($this->barWidth * (int)$percentage / 100);
+        $barIncompleteWidth = floor($this->barWidth * (100 - (int)$percentage) / 100);
 
         if ($barCompleteWidth > $this->barWidth) {
             $barCompleteWidth = $this->barWidth;
@@ -144,16 +144,16 @@ class PercentProgressBar
             $barIncompleteWidth -= $this->barWidth - $barCompleteWidth;
         }
 
-        echo str_repeat(self::PROGRESS_COMPLETE_CHARACTER, (int) $barCompleteWidth);
-        echo str_repeat(self::PROGRESS_INCOMPLETE_CHARACTER, (int) $barIncompleteWidth);
+        print str_repeat(self::PROGRESS_COMPLETE_CHARACTER, (int)$barCompleteWidth);
+        print str_repeat(self::PROGRESS_INCOMPLETE_CHARACTER, (int)$barIncompleteWidth);
 
-        echo '   ';
+        print '   ';
     }
 
     public function complete(): void
     {
         $this->setProgress($this->maxProgress)->display();
 
-        echo self::NEW_LINE_CHARACTER;
+        print self::NEW_LINE_CHARACTER;
     }
 }

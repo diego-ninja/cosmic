@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Crypt;
 
 use Carbon\CarbonImmutable;
+use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Exception\MissingInterfaceException;
 use Ninja\Cosmic\Exception\UnexpectedValueException;
 use Ninja\Cosmic\Serializer\SerializableInterface;
@@ -12,6 +13,8 @@ use Ninja\Cosmic\Serializer\SerializableTrait;
 use Ninja\Cosmic\Terminal\UI\Table\TableableInterface;
 use Ninja\Cosmic\Terminal\UI\Table\TableableTrait;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
+use function Cosmic\find_binary;
 
 /**
  * Class AbstractKey
@@ -24,6 +27,12 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
 {
     use SerializableTrait;
     use TableableTrait;
+
+    protected const KEY_SERVERS = [
+        'keys.openpgp.org',
+        'keyserver.ubuntu.com',
+        'pgp.mit.edu',
+    ];
 
     protected KeyCollection $subKeys;
 
@@ -168,5 +177,31 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
     public function render(OutputInterface $output): void
     {
         $this->asTable()->display($output);
+    }
+
+    /**
+     * @throws BinaryNotFoundException
+     */
+    public function publish(?string $keyServer = ALL_OPTION): bool
+    {
+        $result = true;
+
+        if ($keyServer === ALL_OPTION) {
+            foreach (self::KEY_SERVERS as $server) {
+                $result = $result && $this->publish($server);
+            }
+
+            return $result;
+        }
+
+        $command = sprintf(
+            "%s --keyserver %s --send-keys %s",
+            find_binary("gpg"),
+            $keyServer,
+            $this->id
+        );
+
+        $process = Process::fromShellCommandline($command);
+        return $process->mustRun()->isSuccessful();
     }
 }

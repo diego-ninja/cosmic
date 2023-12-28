@@ -17,6 +17,7 @@ use Ninja\Cosmic\Event\Lifecycle;
 use Ninja\Cosmic\Terminal\Terminal;
 use Ninja\Cosmic\Terminal\UI\Spinner\SpinnerFactory;
 use Symfony\Component\Process\Process;
+
 use function Cosmic\find_binary;
 use function Cosmic\sudo;
 

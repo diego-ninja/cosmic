@@ -24,6 +24,7 @@ use Ninja\Cosmic\Terminal\Terminal;
 use Ninja\Cosmic\Terminal\UI\Input\Question;
 use Ninja\Cosmic\Terminal\UI\Spinner\SpinnerFactory;
 use Ninja\Cosmic\Terminal\UI\UI;
+
 use function Cosmic\find_binary;
 
 #[Icon("🔑")]

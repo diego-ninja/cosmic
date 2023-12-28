@@ -26,6 +26,7 @@ use Ninja\Cosmic\Terminal\UI\Input\Question;
 use Ninja\Cosmic\Terminal\UI\Spinner\SpinnerFactory;
 
 use Symfony\Component\Process\Process;
+
 use function Cosmic\find_binary;
 use function Cosmic\is_git;
 
@@ -131,7 +132,6 @@ final class PublishCommand extends CosmicCommand
         $key = Env::get("APP_SIGNING_KEY") ?
             $keyring->all()->getById(Env::get("APP_SIGNING_KEY")) :
             $keyring->all()->getByEmail(Env::get("APP_AUTHOR_EMAIL"));
-
 
         return SpinnerFactory::for(
             callable: static function () use ($key, $binary): bool {

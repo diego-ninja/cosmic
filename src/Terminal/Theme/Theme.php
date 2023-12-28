@@ -18,6 +18,7 @@ use Ninja\Cosmic\Terminal\Theme\Element\Style\AbstractStyle;
 use Ninja\Cosmic\Terminal\Theme\Element\Style\StyleCollection;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function Cosmic\unzip;
 
 class Theme implements ThemeInterface
@@ -111,7 +112,7 @@ class Theme implements ThemeInterface
      */
     public static function fromZippedTheme(string $filename): self
     {
-        $fingerprint = md5(file_get_contents($filename));
+        $fingerprint  = md5(file_get_contents($filename));
         $themeTempDir = sprintf("%s/.cosmic/themes/%s", sys_get_temp_dir(), $fingerprint);
 
         if (is_dir($themeTempDir)) {
@@ -156,15 +157,15 @@ class Theme implements ThemeInterface
     public function toArray(): array
     {
         return [
-            "name"     => $this->name,
-            "version"  => $this->version,
+            "name"        => $this->name,
+            "version"     => $this->version,
             "description" => $this->description,
-            "colors"   => $this->getColors()->toArray(),
-            "styles"   => $this->getStyles()->toArray(),
-            "icons"    => $this->getIcons()->toArray(),
-            "charsets" => $this->getCharsets()->toArray(),
-            "spinners" => $this->getSpinners()->toArray(),
-            "config"   => $this->getConfig(),
+            "colors"      => $this->getColors()->toArray(),
+            "styles"      => $this->getStyles()->toArray(),
+            "icons"       => $this->getIcons()->toArray(),
+            "charsets"    => $this->getCharsets()->toArray(),
+            "spinners"    => $this->getSpinners()->toArray(),
+            "config"      => $this->getConfig(),
         ];
     }
 
