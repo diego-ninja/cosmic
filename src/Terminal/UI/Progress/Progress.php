@@ -71,7 +71,7 @@ class Progress
         protected ProgressConfig $config,
         protected string $details = ""
     ) {
-        $this->startTime = time();
+        $this->startTime               = time();
         $this->lastProgressAdvancement = microtime(true);
 
         $this->section = Terminal::output()->section();
@@ -171,8 +171,8 @@ class Progress
             throw new \InvalidArgumentException('Current step must be 0 or above');
         }
 
-        $now = microtime(true);
-        $this->advancementTimings[] = $now - $this->lastProgressAdvancement;
+        $now                           = microtime(true);
+        $this->advancementTimings[]    = $now - $this->lastProgressAdvancement;
         $this->lastProgressAdvancement = $now;
 
         if (count($this->advancementTimings) > $this->maxAdvancementTimings) {
@@ -257,7 +257,7 @@ class Progress
                 $this->drawDetails(),
                 $this->getHumanReadableTimeElapsed(),
                 $this->getHumanReadableTimeRemaining(),
-                "\n"
+                "\n",
             ],
             $format
         );
@@ -270,16 +270,16 @@ class Progress
      */
     private function drawBar(): string
     {
-        $fullValue = floor($this->getCurrentStep() / $this->getSteps() * $this->config->getWidth());
+        $fullValue  = floor($this->getCurrentStep() / $this->getSteps() * $this->config->getWidth());
         $emptyValue = $this->config->getWidth() - $fullValue;
-        $percent = ($this->getCurrentStep() / $this->getSteps()) * 100;
+        $percent    = ($this->getCurrentStep() / $this->getSteps()) * 100;
 
         $color = $this->getBarColor($percent);
 
         return sprintf(
             "<%3\$s>%1\$s%2\$s</%3\$s>",
-            str_repeat($this->config->getCharFull(), (int) $fullValue),
-            str_repeat($this->config->getCharEmpty(), (int) $emptyValue),
+            str_repeat($this->config->getCharFull(), (int)$fullValue),
+            str_repeat($this->config->getCharEmpty(), (int)$emptyValue),
             $color
         );
     }
@@ -291,7 +291,7 @@ class Progress
      */
     private function drawPercent(): string
     {
-        $percent = ($this->getCurrentStep() / $this->getSteps()) * 100;
+        $percent           = ($this->getCurrentStep() / $this->getSteps()) * 100;
         $formatted_percent = number_format($percent, 1, '.', ' ');
 
         return sprintf(
@@ -341,7 +341,7 @@ class Progress
     private function getIntensity(float $percent): int
     {
         $intensities = array_reverse([100, 100, 200, 300, 400, 500, 600, 700, 800, 900, 900]);
-        return $intensities[(int) floor($percent / 10)];
+        return $intensities[(int)floor($percent / 10)];
     }
 
     /**
@@ -358,7 +358,7 @@ class Progress
                 $percent < 25 => $color = 'red',
                 $percent < 50 => $color = 'orange',
                 $percent < 75 => $color = 'yellow',
-                default => $color = 'green',
+                default       => $color       = 'green',
             };
         } else {
             $color = $this->config->getBarColor();

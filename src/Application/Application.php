@@ -6,8 +6,6 @@ namespace Ninja\Cosmic\Application;
 
 use Closure;
 use DI\Container;
-use Innmind\Signals\Info;
-use Innmind\Signals\Signal;
 use InvalidArgumentException;
 use Invoker\Exception\InvocationException;
 use Invoker\Exception\NotCallableException;
@@ -27,7 +25,6 @@ use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Event\Lifecycle;
 use Ninja\Cosmic\Reflector\CallableReflector;
 use Ninja\Cosmic\Resolver\HyphenatedInputResolver;
-use Ninja\Cosmic\Signal\SignalHandler;
 use Ninja\Cosmic\Terminal\Terminal;
 use NunoMaduro\Collision\Handler;
 use NunoMaduro\Collision\Provider;
@@ -107,9 +104,9 @@ final class Application extends \Symfony\Component\Console\Application
      *
      * @param InputInterface|null $input
      * @param OutputInterface|null $output
-
+     *
      * @return int
-
+     *
      * @throws InvalidArgumentException
      * @throws RuntimeException
      * @throws InvocationException

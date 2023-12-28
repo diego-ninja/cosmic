@@ -11,6 +11,7 @@ use Ninja\Cosmic\Terminal\UI\Spinner\SpinnerFactory;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+
 use function Cosmic\find_binary;
 use function Cosmic\sudo;
 
@@ -69,22 +70,16 @@ class PhiveInstaller extends AbstractInstaller
      */
     public function installPackages(): bool
     {
+        $result = true;
+
         $package_set = implode(" ", array_keys($this->packages));
         $keys        = implode(",", self::$allowed_keys);
-        $command     = sudo(
-            command: sprintf(
-                "%s --no-progress install %s -g --trust-gpg-keys %s",
-                find_binary("phive"),
-                $package_set,
-                $keys
-            ),
-            sudo_passwd: Env::get("SUDO_PASSWORD")
-        );
 
-        $result = SpinnerFactory::for(
-            callable: Process::fromShellCommandline($command),
-            message: sprintf("Installing <info>%s</info> using <comment>phive</comment>", $package_set)
-        );
+        foreach ($this->packages as $package) {
+            if (!$this->isPackageInstalled($package)) {
+                $result = $result && $this->installPackage($package);
+            }
+        }
 
         $this->output->writeln("\n");
 
@@ -235,5 +230,27 @@ class PhiveInstaller extends AbstractInstaller
         } catch (Exception $e) {
             throw new RuntimeException("Unable to verify phive binary", 0, $e);
         }
+    }
+
+    /**
+     * @throws BinaryNotFoundException
+     * @throws Exception
+     */
+    private function installPackage(string $package): bool
+    {
+        $command     = sudo(
+            command: sprintf(
+                "%s --no-progress install %s -g",
+                find_binary("phive"),
+                $package,
+            ),
+            sudo_passwd: Env::get("SUDO_PASSWORD")
+        );
+
+        return SpinnerFactory::for(
+            callable: Process::fromShellCommandline(sprintf("yes | %s", $command)),
+            message: sprintf("Installing <info>%s</info> using <comment>phive</comment>", $package)
+        );
+
     }
 }

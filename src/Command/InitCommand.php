@@ -12,6 +12,7 @@ use Ninja\Cosmic\Command\Attribute\Icon;
 use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Option;
 use Ninja\Cosmic\Command\Attribute\Signature;
+use Ninja\Cosmic\Crypt\KeyRing;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Notifier\NotifiableInterface;
@@ -20,10 +21,11 @@ use Ninja\Cosmic\Terminal\UI\Input\Question;
 use Ninja\Cosmic\Terminal\UI\Spinner\SpinnerFactory;
 use Ninja\Cosmic\Terminal\UI\UI;
 use Phar;
-use ReflectionException;
 use Symfony\Component\Process\Process;
 use ZipArchive;
+
 use function Cosmic\cypher;
+use function Cosmic\find_binary;
 use function Cosmic\git_config;
 use function Cosmic\is_phar;
 use function Cosmic\mask;
@@ -77,11 +79,10 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         $this->askApplicationAuthor();
         $this->askApplicationWebsite();
         $this->askApplicationLicense();
+        $this->askGenerateGPGKey();
         $this->askSudoPassword();
 
-        Terminal::clear(count(self::$summary) + 8);
-        Terminal::output()->writeln("");
-        $this->displaySummary();
+        //$this->displaySummary();
 
         if (Question::confirm("Do you confirm generation of the application?")) {
             Terminal::output()->writeln("");
@@ -92,11 +93,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
                 )
             );
 
-            $this->executionResult =
-                $this->expandApplication() &&
-                $this->replacePlaceholders() &&
-                $this->installApplicationDependencies() &&
-                $this->renameApplication();
+            $this->executionResult = $this->expandApplication() && $this->replacePlaceholders() && $this->installApplicationDependencies() && $this->renameApplication();
 
             if ($this->executionResult) {
                 Terminal::output()->writeln("");
@@ -200,6 +197,12 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         );
         [,$binary_name] = explode("/", $package_name);
 
+        Terminal::clear(2);
+        Terminal::output()->writeln("");
+        Terminal::output()->writeln(sprintf(" 📦 Package name: <info>%s</info>", $package_name));
+        Terminal::output()->writeln(sprintf(" ⚙️  Binary name: <info>%s</info>", $binary_name));
+        Terminal::output()->writeln("");
+
         self::$summary[] = ["key" => "Package name", "value" => $package_name];
         self::$summary[] = ["key" => "Binary name", "value" => $binary_name];
 
@@ -211,19 +214,27 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     private function askApplicationPath(?string $path = null): void
     {
         $default_path = $path ?? getcwd();
-        $path = Question::ask(message: " 📁 <question>Application path</question>:", default: $default_path, decorated: false);
+        $path         = Question::ask(message: " 📁 <question>Application path</question>:", default: $default_path, decorated: false);
 
         if (!is_dir($path) && !mkdir($path, 0777, true) && !is_dir($path)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
         }
 
-        self::$summary[] = ["key" => "Application path ", "value" => $path];
+        Terminal::clear(2);
+        Terminal::output()->writeln(sprintf(" 📁 Application path: <info>%s</info>", $path));
+        Terminal::output()->writeln("");
+
+        self::$summary[]                  = ["key" => "Application path ", "value" => $path];
         self::$replacements["{app.path}"] = $path;
     }
 
     private function askApplicationDescription(): void
     {
         $description = Question::ask(message: " 📄 <question>Description</question>:", decorated: false);
+
+        Terminal::clear(2);
+        Terminal::output()->writeln(sprintf(" 📄 Description: <info>%s</info>", $description));
+        Terminal::output()->writeln("");
 
         self::$summary[]                         = ["key" => "Description", "value" => $description ?? ""];
         self::$replacements["{app.description}"] = $description;
@@ -237,6 +248,10 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         $author = Question::ask(message: " 🥷 <question>Author</question>:", default: git_config("user.name"), decorated: false);
         $email  = Question::ask(message: " 📧 <question>E-Mail</question>:", default: git_config("user.email"), decorated: false);
 
+        Terminal::clear(3);
+        Terminal::output()->writeln(sprintf(" 🥷 Author: <info>%s</info> <%s>", $author, $email));
+        Terminal::output()->writeln("");
+
         self::$summary[] = ["key" => "Author", "value" => sprintf("%s <%s>", $author, $email)];
 
         self::$replacements["{author.name}"]  = $author;
@@ -247,7 +262,11 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     {
         $website = Question::ask(message: " 🌎 <question>Website</question>:", default: git_config("user.website"), decorated: false);
 
-        self::$summary[] = ["key" => "Website", "value" => $website];
+        Terminal::clear(2);
+        Terminal::output()->writeln(sprintf(" 🌎 Website: <info>%s</info>", $website));
+        Terminal::output()->writeln("");
+
+        self::$summary[]                    = ["key" => "Website", "value" => $website];
         self::$replacements["{author.url}"] = $website;
     }
 
@@ -261,7 +280,11 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             maxWidth: 90
         );
 
-        self::$summary[] = ["key" => "License", "value" => $license[0]];
+        Terminal::clear(1);
+        Terminal::output()->writeln(sprintf(" 🔎 License: <info>%s</info>", $license[0]));
+        Terminal::output()->writeln("");
+
+        self::$summary[]                     = ["key" => "License", "value" => $license[0]];
         self::$replacements["{app.license}"] = $license[0];
     }
 
@@ -270,7 +293,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
      */
     private function askSudoPassword(): void
     {
-        UI::title("🔑 Sudo password");
+        UI::title("<span class='mr-1'>#️⃣</span> Sudo password");
         UI::p(
             "Provide the sudo password if you want to perform root operations automatically.
                      This password is encrypted and stored in the <info>.env</info> file.
@@ -278,19 +301,105 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
                      If you don't want to store the password, just press <notice>return</notice> to skip this step."
         );
 
-        $password = Question::hidden(message: " 🔑 <question>Sudo password</question>:", decorated: false);
+        $password = Question::hidden(message: " #️⃣  <question>Sudo password</question>:", decorated: false);
         if ($password) {
             $key = randomize(32);
+
+            Terminal::clear(10);
+            Terminal::output()->writeln(sprintf(" #️⃣  Sudo password: <info>%s</info>", mask($password, 10)));
+            Terminal::output()->writeln("");
+
 
             self::$replacements["{app.key}"]       = $key;
             self::$replacements["{sudo.password}"] = cypher($password, $key);
 
             self::$summary[] = ["key" => "Sudo password", "value" => mask($password, 10)];
+        } else {
+            Terminal::clear(10);
+            Terminal::output()->writeln("");
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function askGenerateGPGKey(): void
+    {
+        $keyring = KeyRing::public();
+
+        $default_key = Env::get("APP_SIGNING_KEY") ?
+            $keyring->all()->getById(Env::get("APP_SIGNING_KEY")) :
+            $keyring->all()->getByEmail(Env::get("APP_AUTHOR_EMAIL"));
+
+
+        UI::title("🔑 GPG key");
+        UI::p(
+            "Provide or generate the GPG key if you want to sign your application builds.
+                     If you want to generate a new key, use <notice>generate</notice> to generate a new key.
+                     If you want to use an existing key, just paste the key id and press <notice>return</notice>.
+                     If you don't want to store the key right just press <notice>return</notice> to skip this step.
+                     "
+        );
+
+        $key = Question::ask(
+            message: " 🔑 <question>GPG key</question>:",
+            default: $default_key?->id,
+            autoComplete: ["generate", "skip"],
+            decorated: false
+        );
+
+        if ($key === "skip") {
+            return;
+        }
+
+        if ($key === "generate") {
+            $key = $this->generateGPGKey();
+        }
+
+        if ($key) {
+            Terminal::clear(11);
+            Terminal::output()->writeln(sprintf(" 🔑 GPG key: <info>%s</info>", $key));
+            Terminal::output()->writeln("");
+
+            self::$replacements["{gpg.key}"] = $key;
+            self::$summary[] = ["key" => "GPG key", "value" => $key];
+        }
+    }
+
+    /**
+     * @throws BinaryNotFoundException
+     * @throws Exception
+     */
+    private function generateGPGKey(): string
+    {
+        $command = sprintf(
+            "%s --batch --passphrase '' --quick-generate-key '%s (%s) <%s>' rsa4096 sign,cert 2y",
+            find_binary("gpg"),
+            self::$replacements["{author.name}"],
+            sprintf("GPG for %s", self::$replacements["{app.root}"]),
+            self::$replacements["{author.email}"]
+        );
+
+        Terminal::output()->writeln("");
+        $result = SpinnerFactory::for(
+            callable: Process::fromShellCommandline($command),
+            message: "Generating 🔑 GPG key for application signing..."
+        );
+
+        if (!$result) {
+            throw new \RuntimeException("Could not generate GPG key");
+        }
+
+        Terminal::clear(2);
+        $key = KeyRing::public()->all()->getByEmail(self::$replacements["{author.email}"]);
+        return $key->id;
     }
 
     private function displaySummary(): void
     {
+        Terminal::clear(count(self::$summary) + 8);
+        Terminal::output()->writeln("");
+
         UI::p("Please review the following summary before generating the application:");
         UI::summary(
             data: self::$summary,

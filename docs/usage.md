@@ -33,7 +33,7 @@ cosmic build
 this will generate a PHAR file in the `builds` directory of your application. This binary is usable in your local system, but is not signed and cannot be distributed to other users. 
 
 ## 🔑 Signing
-In order to distribute this binary using phar.io and make it installable with phive you need to sign it with a GPG key. You can use the `sign` command to sign the PHAR file, before signing binaries you need to generate a GPG key pair, please refer to GPG documentation to know how to do it.
+In order to distribute this binary using phar.io and make it installable with phive you need to sign it with a GPG key. You can use the `sign` command to sign the PHAR file, before signing binaries you need to generate a GPG key pair, please refer to phar.io and [GPG documentation](https://www.gnupg.org/gph/en/manual.html) to know how to [generate](https://phar.io/howto/generate-gpg-key.html) and [publish](https://phar.io/howto/uploading-public-keys.html) a key.
 
 ```bash
 cosmic sign builds/cosmic-app.phar --user yosoy@diego.ninja
