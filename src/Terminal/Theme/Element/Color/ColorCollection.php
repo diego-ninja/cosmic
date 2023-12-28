@@ -111,7 +111,7 @@ class ColorCollection extends AbstractElementCollection
         if (Color::isAlias($color)) {
             if (Color::isGradient($color)) {
                 $gradient_color = substr($color, 1);
-                $seed_color = substr($gradient_color, 0, -3);
+                $seed_color     = substr($gradient_color, 0, -3);
 
                 $seed = $collection->getByName($seed_color);
 

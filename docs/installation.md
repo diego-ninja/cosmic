@@ -17,8 +17,8 @@ You may download the Cosmic PHAR directly from the GitHub release directly. You 
 
 ```bash
 # Do adjust the URL based on the latest release
-wget -O cosmic "https://github.com/diego-ninja/cosmic/releases/download/1.0.0/cosmic.phar"
-wget -O cosmic.asc "https://github.com/diego-ninja/cosmic/releases/download/1.0.0/cosmic.phar.asc"
+wget -O cosmic "https://github.com/diego-ninja/cosmic/releases/download/v1.0.0/cosmic.phar"
+wget -O cosmic.asc "https://github.com/diego-ninja/cosmic/releases/download/v1.0.0/cosmic.phar.asc"
 
 # Check that the signature matches
 gpg --verify cosmic.asc cosmic

@@ -16,6 +16,7 @@ use Ninja\Cosmic\Terminal\UI\Table\Column\TableColumn;
 use Ninja\Cosmic\Terminal\UI\Table\Manipulator\BoolManipulator;
 use Ninja\Cosmic\Terminal\UI\Table\Table;
 use Ninja\Cosmic\Terminal\UI\Table\TableConfig;
+
 use function Termwind\render;
 
 #[Icon("❤️ ")]

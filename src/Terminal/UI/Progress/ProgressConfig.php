@@ -9,14 +9,14 @@ use PHLAK\Config\Config;
 
 class ProgressConfig extends Config
 {
-    public const DEFAULT_BAR_COLOR = 'cyan';
-    public const DEFAULT_TEXT_COLOR = 'white';
+    public const DEFAULT_BAR_COLOR      = 'cyan';
+    public const DEFAULT_TEXT_COLOR     = 'white';
     public const DEFAULT_APPLY_GRADIENT = false;
-    public const DEFAULT_USE_SEGMENTS = false;
-    public const DEFAULT_CHAR_EMPTY = '░';
-    public const DEFAULT_CHAR_FULL = '█';
-    public const DEFAULT_WIDTH = 40;
-    public const DEFAULT_FORMAT = "{detail}{nl}{bar} {percentage}% {steps}";
+    public const DEFAULT_USE_SEGMENTS   = false;
+    public const DEFAULT_CHAR_EMPTY     = '░';
+    public const DEFAULT_CHAR_FULL      = '█';
+    public const DEFAULT_WIDTH          = 40;
+    public const DEFAULT_FORMAT         = "{detail}{nl}{bar} {percentage}% {steps}";
 
     public function __construct(array|string $context = null, string $prefix = null)
     {
@@ -118,15 +118,15 @@ class ProgressConfig extends Config
     private function getDefaultConfig(): array
     {
         return [
-            "bar_color" => self::DEFAULT_BAR_COLOR,
-            "text_color" => self::DEFAULT_TEXT_COLOR,
+            "bar_color"      => self::DEFAULT_BAR_COLOR,
+            "text_color"     => self::DEFAULT_TEXT_COLOR,
             "apply_gradient" => self::DEFAULT_APPLY_GRADIENT,
-            "use_segments" => self::DEFAULT_USE_SEGMENTS,
-            "char_empty" => self::DEFAULT_CHAR_EMPTY,
-            "char_full" => self::DEFAULT_CHAR_FULL,
-            "width" => self::DEFAULT_WIDTH,
-            "format" => self::DEFAULT_FORMAT,
-            "spacing" => Terminal::getTheme()->getConfig("spacing"),
+            "use_segments"   => self::DEFAULT_USE_SEGMENTS,
+            "char_empty"     => self::DEFAULT_CHAR_EMPTY,
+            "char_full"      => self::DEFAULT_CHAR_FULL,
+            "width"          => self::DEFAULT_WIDTH,
+            "format"         => self::DEFAULT_FORMAT,
+            "spacing"        => Terminal::getTheme()->getConfig("spacing"),
         ];
     }
 

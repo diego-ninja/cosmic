@@ -10,44 +10,44 @@ use Ninja\Cosmic\Crypt\KeyInterface;
 use Ninja\Cosmic\Crypt\PrivateKey;
 use Ninja\Cosmic\Crypt\PublicKey;
 use Ninja\Cosmic\Crypt\Uid;
+use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Symfony\Component\Process\Process;
 
 use function Cosmic\find_binary;
 
 class KeyParser
 {
+    /**
+     * @throws BinaryNotFoundException
+     */
     public function extractKeys(string $keyType): KeyCollection
     {
         $imported_keys = new KeyCollection();
-        try {
-            $process = Process::fromShellCommandline($this->getCommand($keyType));
-            if ($process->mustRun()->isSuccessful()) {
-                $output = $this->stripHeader($process->getOutput(), 2);
+        $process = Process::fromShellCommandline($this->getCommand($keyType));
+        if ($process->mustRun()->isSuccessful()) {
+            $output = $this->stripHeader($process->getOutput(), 2);
 
-                $keys = explode("\n\n", $output);
-                foreach ($keys as $key) {
-                    if (empty($key)) {
-                        continue;
-                    }
-
-                    $lines                  = explode("\n", $key);
-                    $keyData                = $this->parseKeyInfo($lines[0]);
-                    $keyData['fingerprint'] = trim($lines[1]);
-                    $keyData['uid']         = Uid::fromArray($this->parseUidInfo($lines[2]));
-
-                    $master_key = $this->buildKey($keyData);
-
-                    if (isset($lines[3])) {
-                        $subkey = $this->parseKeyInfo($lines[3]);
-                        $master_key->addSubKey($this->buildKey($subkey));
-                    }
-
-                    $imported_keys->add($master_key);
+            $keys = explode("\n\n", $output);
+            foreach ($keys as $key) {
+                if (empty($key)) {
+                    continue;
                 }
 
+                $lines                  = explode("\n", $key);
+                $keyData                = $this->parseKeyInfo($lines[0]);
+                $keyData['fingerprint'] = trim($lines[1]);
+                $keyData['uid']         = Uid::fromArray($this->parseUidInfo($lines[2]));
+
+                $master_key = $this->buildKey($keyData);
+
+                if (isset($lines[3])) {
+                    $subkey = $this->parseKeyInfo($lines[3]);
+                    $master_key->addSubKey($this->buildKey($subkey));
+                }
+
+                $imported_keys->add($master_key);
             }
-        } catch (\Exception $e) {
-            throw $e;
+
         }
 
         return $imported_keys;
@@ -112,6 +112,9 @@ class KeyParser
         ];
     }
 
+    /**
+     * @throws BinaryNotFoundException
+     */
     private function getCommand(string $keyType): string
     {
         if ($keyType === KeyInterface::GPG_TYPE_PUBLIC) {

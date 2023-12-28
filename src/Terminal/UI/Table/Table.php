@@ -8,6 +8,7 @@ use Ninja\Cosmic\Terminal\Terminal;
 use Ninja\Cosmic\Terminal\UI\Table\Column\ColumnCollection;
 use Ninja\Cosmic\Terminal\UI\Table\Column\TableColumn;
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function Cosmic\pluralize;
 
 class Table
