@@ -6,7 +6,7 @@ namespace Ninja\Cosmic\Terminal\UI\Table\Manipulator;
 
 class BoolManipulator implements TableManipulatorInterface
 {
-    public const TYPE = 'bool';
+    final public const TYPE = 'bool';
 
     public function manipulate(mixed $value): ?string
     {

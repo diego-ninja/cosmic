@@ -9,16 +9,20 @@ use PHLAK\Config\Config;
 
 class TableConfig extends Config
 {
-    public const DEFAULT_TABLE_COLOR    = "white";
-    public const DEFAULT_HEADER_COLOR   = "white";
-    public const DEFAULT_TITLE_COLOR    = "notice";
-    public const DEFAULT_FIELD_COLOR    = "white";
-    public const DEFAULT_SHOW_HEADER    = true;
-    public const DEFAULT_ITEM_NAME      = "row";
-    public const DEFAULT_PADDING        = 1;
-    public const DEFAULT_CENTER_CONTENT = false;
-    public const DEFAULT_CHARSET        = "double";
+    final public const DEFAULT_TABLE_COLOR    = "white";
+    final public const DEFAULT_HEADER_COLOR   = "white";
+    final public const DEFAULT_TITLE_COLOR    = "notice";
+    final public const DEFAULT_FIELD_COLOR    = "white";
+    final public const DEFAULT_SHOW_HEADER    = true;
+    final public const DEFAULT_ITEM_NAME      = "row";
+    final public const DEFAULT_PADDING        = 1;
+    final public const DEFAULT_CENTER_CONTENT = false;
+    final public const DEFAULT_CHARSET        = "double";
 
+    /**
+     * @param array<string, mixed>|string|null $context
+     * @param string|null $prefix
+     */
     public function __construct(array|string $context = null, string $prefix = null)
     {
         if (is_array($context)) {
@@ -28,9 +32,12 @@ class TableConfig extends Config
         parent::__construct($context, $prefix);
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getCharset(): array
     {
-        return Terminal::getTheme()->getCharset($this->get("charset", self::DEFAULT_CHARSET))->chars;
+        return Terminal::getTheme()->getCharset($this->get("charset", self::DEFAULT_CHARSET))?->chars ?? [];
     }
 
     public function getChar(string $char): ?string
@@ -43,6 +50,9 @@ class TableConfig extends Config
         return isset($this->getCharset()[$char]);
     }
 
+    /**
+     * @param array<string, string> $charset
+     */
     public function setCharset(array $charset): self
     {
         $this->set("charset", $charset);
@@ -137,6 +147,9 @@ class TableConfig extends Config
         return $this;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getDefaultConfig(): array
     {
         return [

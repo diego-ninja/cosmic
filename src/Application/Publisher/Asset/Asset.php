@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Application\Publisher\Asset;
 
+use Stringable;
 use Carbon\CarbonImmutable;
 use JsonException;
 use Ninja\Cosmic\Crypt\SignerInterface;
@@ -15,7 +16,7 @@ use function Cosmic\human_filesize;
  *
  * @package Ninja\Cosmic\Application
  */
-class Asset
+class Asset implements Stringable
 {
     public const STATE_UPLOADED  = 'uploaded';
     public const STATE_VERIFIED  = 'verified';
@@ -35,7 +36,7 @@ class Asset
         public ?string $url = null
     ) {
         $signaturePath = sprintf('%s.%s', $path, SignerInterface::SIGNATURE_SUFFIX);
-        if (file_exists($signaturePath)) {
+        if ($this->path !== null && file_exists($signaturePath)) {
             $signature = Signature::for($this->path);
             if ($signature->verify()) {
                 $this->setSignature($signature);
@@ -46,7 +47,7 @@ class Asset
 
     public function isVerified(): bool
     {
-        return $this->signature !== null && $this->signature->verify();
+        return $this->signature instanceof Signature && $this->signature->verify();
     }
 
     public function setCreatedAt(CarbonImmutable $createdAt): void
@@ -59,6 +60,10 @@ class Asset
         $this->updatedAt = $updatedAt;
     }
 
+    /**
+     * @param array<string,mixed> $data
+     * @return self
+     */
     public static function fromArray(array $data): self
     {
         $release = new self(
@@ -120,12 +125,12 @@ class Asset
         return $this->state;
     }
 
-    public function getSize(): int
+    public function getSize(): ?int
     {
         return $this->size;
     }
 
-    public function getContentType(): string
+    public function getContentType(): ?string
     {
         return $this->contentType;
     }
@@ -140,11 +145,19 @@ class Asset
 
     public function __toString(): string
     {
+        if ($this->path !== null) {
+            return sprintf(
+                "%s [%s] [%s]",
+                $this->name,
+                $this->state,
+                $this->size ? human_filesize($this->size) : human_filesize((int) filesize($this->path))
+            );
+        }
+
         return sprintf(
-            "%s [%s] [%s]",
+            "%s [%s]",
             $this->name,
-            $this->state,
-            $this->size ? human_filesize($this->size) : human_filesize(filesize($this->path))
+            $this->state
         );
     }
 

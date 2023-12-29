@@ -9,15 +9,19 @@ use PHLAK\Config\Config;
 
 class ProgressConfig extends Config
 {
-    public const DEFAULT_BAR_COLOR      = 'cyan';
-    public const DEFAULT_TEXT_COLOR     = 'white';
-    public const DEFAULT_APPLY_GRADIENT = false;
-    public const DEFAULT_USE_SEGMENTS   = false;
-    public const DEFAULT_CHAR_EMPTY     = '░';
-    public const DEFAULT_CHAR_FULL      = '█';
-    public const DEFAULT_WIDTH          = 40;
-    public const DEFAULT_FORMAT         = "{detail}{nl}{bar} {percentage}% {steps}";
+    final public const DEFAULT_BAR_COLOR      = 'cyan';
+    final public const DEFAULT_TEXT_COLOR     = 'white';
+    final public const DEFAULT_APPLY_GRADIENT = false;
+    final public const DEFAULT_USE_SEGMENTS   = false;
+    final public const DEFAULT_CHAR_EMPTY     = '░';
+    final public const DEFAULT_CHAR_FULL      = '█';
+    final public const DEFAULT_WIDTH          = 40;
+    final public const DEFAULT_FORMAT         = "{detail}{nl}{bar} {percentage}% {steps}";
 
+    /**
+     * @param array<string, mixed>|string|null $context
+     * @param string|null $prefix
+     */
     public function __construct(array|string $context = null, string $prefix = null)
     {
         if (is_array($context)) {
@@ -115,6 +119,9 @@ class ProgressConfig extends Config
         return $this;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getDefaultConfig(): array
     {
         return [

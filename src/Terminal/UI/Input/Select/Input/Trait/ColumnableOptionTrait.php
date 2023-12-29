@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\UI\Input\Select\Input\Trait;
 
+use InvalidArgumentException;
 use Ninja\Cosmic\Terminal\UI\Input\Select\Input\Exception\IndexOutOfRangeException;
 
 trait ColumnableOptionTrait
 {
     public const DEFAULT_COLUMN_SIZE = 3;
 
+    /** @var array<int, list<string>> */
     protected array $columns;
+
     protected int $columnSize = self::DEFAULT_COLUMN_SIZE;
 
     /**
@@ -23,12 +26,19 @@ trait ColumnableOptionTrait
         }
 
         if (!isset($this->columns)) {
+            if ($this->columnSize < 1) {
+                throw new InvalidArgumentException("Column size must be greater than 0");
+            }
+
             $this->columns = array_chunk($this->getOptions(), $this->columnSize);
         }
 
         return $this->columns;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getColumnAt(int $index): array
     {
         if (!empty($this->getColumns()[$index])) {

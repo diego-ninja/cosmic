@@ -12,10 +12,13 @@ use function Cosmic\gradient;
 
 class Gradient extends AbstractThemeElement
 {
-    public const GRADIENT_DEFAULT_VARIATIONS = 10;
-    public const GRADIENT_DEFAULT_DEVIATION  = 2;
+    final public const GRADIENT_DEFAULT_VARIATIONS = 10;
+    final public const GRADIENT_DEFAULT_DEVIATION  = 2;
 
-    public function __construct(public readonly string $name, public readonly ColorCollection $colors) {}
+    public function __construct(public string $name, public readonly ColorCollection $colors)
+    {
+        parent::__construct($name);
+    }
 
     public static function withSeed(Color $color): Gradient
     {
@@ -32,6 +35,9 @@ class Gradient extends AbstractThemeElement
 
     }
 
+    /**
+     * @param array<string, mixed> $input
+     */
     public static function fromArray(array $input): Gradient
     {
         $colors = new ColorCollection();
@@ -45,10 +51,14 @@ class Gradient extends AbstractThemeElement
     public function load(OutputInterface $output): void
     {
         foreach ($this->colors as $color) {
+            /** @var Color $color */
             $color->load($output);
         }
     }
 
+    /**
+     * @return array<string>
+     */
     private static function light(Color $color): array
     {
         $gradient_variations = (self::GRADIENT_DEFAULT_VARIATIONS / 2) + self::GRADIENT_DEFAULT_DEVIATION;
@@ -61,6 +71,9 @@ class Gradient extends AbstractThemeElement
         return $light_gradient;
     }
 
+    /**
+     * @return array<string>
+     */
     private static function dark(Color $color): array
     {
         $gradient_variations = (self::GRADIENT_DEFAULT_VARIATIONS / 2) + self::GRADIENT_DEFAULT_DEVIATION;

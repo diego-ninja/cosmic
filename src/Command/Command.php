@@ -53,6 +53,11 @@ final class Command extends SymfonyCommand
         return $this;
     }
 
+    /**
+     * @param string $description
+     * @param array<string,string|null> $args_descriptions
+     * @return $this
+     */
     public function descriptions(string $description, array $args_descriptions = []): self
     {
         $definition = $this->getDefinition();
@@ -71,6 +76,10 @@ final class Command extends SymfonyCommand
         return $this;
     }
 
+    /**
+     * @param array<string,mixed> $defaults
+     * @return $this
+     */
     public function defaults(array $defaults = []): self
     {
         $definition = $this->getDefinition();
@@ -92,7 +101,7 @@ final class Command extends SymfonyCommand
         return $this;
     }
 
-    private function setArgumentDescription(InputDefinition $definition, $name, $description): void
+    private function setArgumentDescription(InputDefinition $definition, string|int $name, ?string $description): void
     {
         $argument = $definition->getArgument($name);
         if ($argument instanceof Argument) {
@@ -100,7 +109,7 @@ final class Command extends SymfonyCommand
         }
     }
 
-    private function setOptionDescription(InputDefinition $definition, $name, $description): void
+    private function setOptionDescription(InputDefinition $definition, string $name, ?string $description): void
     {
         $argument = $definition->getOption($name);
         if ($argument instanceof Option) {

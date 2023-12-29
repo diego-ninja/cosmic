@@ -4,4 +4,5 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Crypt\Exception;
 
-class PGPNotInstalledException extends \RuntimeException {}
+use RuntimeException;
+class PGPNotInstalledException extends RuntimeException {}

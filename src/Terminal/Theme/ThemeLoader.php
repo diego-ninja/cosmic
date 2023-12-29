@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Theme;
 
+use DirectoryIterator;
 use InvalidArgumentException;
 use JsonException;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
@@ -13,6 +14,9 @@ final class ThemeLoader implements ThemeLoaderInterface
 {
     private ThemeInterface $theme;
 
+    /**
+     * @param array<string, ThemeInterface> $themes
+     */
     public function __construct(private array $themes, private readonly OutputInterface $output) {}
     /**
      * @throws JsonException
@@ -20,7 +24,7 @@ final class ThemeLoader implements ThemeLoaderInterface
      */
     public function loadDirectory(string $directory): ThemeLoaderInterface
     {
-        foreach (new \DirectoryIterator($directory) as $fileInfo) {
+        foreach (new DirectoryIterator($directory) as $fileInfo) {
             if ($fileInfo->isDot()) {
                 continue;
             }

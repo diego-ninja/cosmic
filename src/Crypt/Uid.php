@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Crypt;
 
-final readonly class Uid
+use Stringable;
+final readonly class Uid implements Stringable
 {
     public function __construct(
         public string $name,
@@ -27,6 +28,9 @@ final readonly class Uid
         );
     }
 
+    /**
+     * @param array<string,string> $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(

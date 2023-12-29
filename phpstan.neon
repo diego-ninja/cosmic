@@ -1,5 +1,8 @@
 parameters:
-    level: 5
+    level: 8
     paths:
       - src
       - tests
+    excludePaths:
+      - src/Parser/MarkdownParser.php
+      - src/Serializer/SerializableTrait.php

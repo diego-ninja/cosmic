@@ -22,6 +22,9 @@ class CosmicCommand implements CommandInterface, EnvironmentAwareInterface
     use CommandAttributeTrait;
 
     protected bool $executionResult;
+    /**
+     * @var ReflectionClass<CosmicCommand>
+     */
     protected ReflectionClass $reflector;
     protected Application $application;
 
@@ -41,7 +44,7 @@ class CosmicCommand implements CommandInterface, EnvironmentAwareInterface
     public function register(Application $app): void
     {
         $app->command($this->getSignature(), static::class)
-            ->setName($this->getCommandName())
+            ?->setName($this->getCommandName())
             ->setHidden($this->isHidden())
             ->setDecorated($this->isDecorated())
             ->descriptions($this->getCommandDescription(), $this->getArgumentDescriptions())

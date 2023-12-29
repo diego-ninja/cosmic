@@ -6,7 +6,14 @@ namespace Ninja\Cosmic\Terminal\Theme\Element;
 
 use Ramsey\Collection\AbstractCollection;
 
-/** @phpstan-consistent-constructor */
+/**
+ * Class AbstractElementCollection
+ *
+ * @package Ninja\Cosmic\Terminal\Theme\Element
+ *
+ * @template T
+ * @extends AbstractCollection<AbstractThemeElement>
+ */
 abstract class AbstractElementCollection extends AbstractCollection
 {
     abstract public function getType(): string;

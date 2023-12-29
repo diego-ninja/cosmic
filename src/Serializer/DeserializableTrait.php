@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Serializer;
 
+use JsonException;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
@@ -52,7 +53,7 @@ trait DeserializableTrait
     /**
      * @throws ReflectionException
      * @throws UnexpectedValueException
-     * @throws \JsonException
+     * @throws JsonException
      */
     public static function fromJson(string $json): static
     {
@@ -65,7 +66,7 @@ trait DeserializableTrait
     protected function getPropertyType(string $property, ?string $classname = null): ?string
     {
         try {
-            $type = (new ReflectionProperty($classname ?? get_class($this), $property))->getType();
+            $type = (new ReflectionProperty($classname ?? $this::class, $property))->getType();
             if ($type !== null) {
                 /** @var ReflectionNamedType $type */
                 return $type->getName();
@@ -83,7 +84,7 @@ trait DeserializableTrait
     protected function isPropertyNullable(string $property, ?string $classname = null): bool
     {
         try {
-            $type = (new ReflectionProperty($classname ?? get_class($this), $property))->getType();
+            $type = (new ReflectionProperty($classname ?? $this::class, $property))->getType();
             if ($type !== null) {
                 /** @var ReflectionNamedType $type */
                 return $type->allowsNull();
@@ -140,7 +141,6 @@ trait DeserializableTrait
         }
 
         if (isset($value["date"], $value["timezone"]) && is_array($value)) {
-            /** @var DateTimeInterface */
             return new $type($value["date"], new DateTimeZone($value["timezone"]));
         }
 

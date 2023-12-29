@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Theme\Element\Color\Exception;
 
-class ColorNotFoundException extends \RuntimeException
+use RuntimeException;
+class ColorNotFoundException extends RuntimeException
 {
     public static function withColor(string $color): self
     {

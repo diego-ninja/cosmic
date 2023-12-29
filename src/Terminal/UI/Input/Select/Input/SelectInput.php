@@ -11,7 +11,7 @@ final class SelectInput extends RadioInput
 {
     public function __construct(string $message, array $options)
     {
-        if (!$options) {
+        if ($options === []) {
             throw new BadMethodCallException('Can\'t create selection without options');
         }
 

@@ -7,7 +7,7 @@
         "spacing": 1,
         "icons_enabled": true,
         "spinner": {
-            "style": "dots2",
+            "style": "dots8Bit",
             "color": "cyan"
         },
         "progress": {

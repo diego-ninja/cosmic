@@ -18,6 +18,9 @@ trait SerializableTrait
         return json_encode($this, JSON_THROW_ON_ERROR);
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function toArray(): ?array
     {
         $clone = (array)$this;
@@ -32,13 +35,7 @@ trait SerializableTrait
             } elseif ($value instanceof UuidInterface) {
                 $ret[$newKey] = $value->toString();
             } elseif (is_float($value)) {
-                if (defined(static::class . "::PRECISION")) {
-                    $precision = static::PRECISION;
-                } else {
-                    $precision = 2;
-                }
-                // Round floats to 2 decimal points by default
-                $ret[$newKey] = round($value, $precision);
+                $ret[$newKey] = round($value, 2);
             } else {
                 $ret[$newKey] = $value instanceof SerializableInterface ? $value->toArray() : $value;
             }
@@ -47,6 +44,9 @@ trait SerializableTrait
         return $ret;
     }
 
+    /**
+      * @return array<string,mixed>|null
+     */
     public function jsonSerialize(): ?array
     {
         return $this->toArray();

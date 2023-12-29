@@ -70,15 +70,22 @@ final class BuildCommand extends CosmicCommand implements NotifiableInterface
         return $this->exit();
     }
 
+    /**
+     * @return array<string>
+     */
     private function extractEnvironments(): array
     {
         $envs = [];
-        foreach (glob("./.env.*") as $env_file) {
-            if (basename($env_file) === ".env.back") {
-                continue;
-            }
+        $files = glob("./.env.*");
 
-            $envs[] = str_replace(".env.", "", basename($env_file, ".env"));
+        if ($files) {
+            foreach ($files as $env_file) {
+                if (basename($env_file) === ".env.back") {
+                    continue;
+                }
+
+                $envs[] = str_replace(".env.", "", basename($env_file, ".env"));
+            }
         }
 
         return $envs;

@@ -57,7 +57,7 @@ final class PublishCommand extends CosmicCommand
             return $this->failure();
         }
 
-        $tag = $tag ?? Env::get("APP_VERSION");
+        $tag ??= Env::get("APP_VERSION");
 
         Terminal::output()->writeln("");
 
@@ -86,10 +86,7 @@ final class PublishCommand extends CosmicCommand
 
         if (Question::confirm(message: "Do you want to publish the release?")) {
             $this->executionResult = SpinnerFactory::for(
-                callable:  static function () use ($release): bool {
-                    return (new GithubClientPublisher())->publish($release) !== null;
-
-                },
+                callable:  static fn(): bool => (new GithubClientPublisher())->publish($release) instanceof Release,
                 message: sprintf("Publishing <info>GitHub</info> release <comment>%s</comment>", $releaseName)
             );
 
@@ -132,6 +129,13 @@ final class PublishCommand extends CosmicCommand
         $key = Env::get("APP_SIGNING_KEY") ?
             $keyring->all()->getById(Env::get("APP_SIGNING_KEY")) :
             $keyring->all()->getByEmail(Env::get("APP_AUTHOR_EMAIL"));
+
+        if (!$key) {
+            Terminal::output()->writeln("<error>Signing key</error> not found in the keychain.");
+            return false;
+        }
+
+        $key = is_array($key) ? $key[0] : $key;
 
         return SpinnerFactory::for(
             callable: static function () use ($key, $binary): bool {

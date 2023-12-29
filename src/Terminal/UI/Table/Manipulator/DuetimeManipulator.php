@@ -6,7 +6,7 @@ namespace Ninja\Cosmic\Terminal\UI\Table\Manipulator;
 
 class DuetimeManipulator implements TableManipulatorInterface
 {
-    public const TYPE = 'duetime';
+    final public const TYPE = 'duetime';
 
     public function manipulate(mixed $value): ?string
     {
@@ -28,6 +28,10 @@ class DuetimeManipulator implements TableManipulatorInterface
         return $text . ($isPast ? ' ago' : '');
     }
 
+    /**
+     * @param int $seconds
+     * @return array<string, float|int<min, 59>>
+     */
     protected function secondsToTimeUnits(int $seconds): array
     {
         $timeUnits = [
@@ -63,6 +67,9 @@ class DuetimeManipulator implements TableManipulatorInterface
         return $timeUnits;
     }
 
+    /**
+     * @param array<string, float|int<min, 59>> $timeUnits
+     */
     protected function formatTimeUnits(array $timeUnits): string
     {
         $text = '';

@@ -124,9 +124,9 @@ final class Terminal
     /**
      * Get the streamable input object.
      *
-     * @return StreamableInputInterface The streamable input object.
+     * @return StreamableInputInterface|null The streamable input object.
      */
-    public static function input(): StreamableInputInterface
+    public static function input(): ?StreamableInputInterface
     {
         return self::getInstance()->input;
     }
@@ -190,19 +190,21 @@ final class Terminal
 
     /**
      * Hide the cursor.
+     * @param resource $stream
      */
-    public static function hideCursor($stream = STDOUT): void
+    public static function hideCursor(mixed $stream = STDOUT): void
     {
         fprintf($stream, "\033[?25l"); // hide cursor
-        register_shutdown_function(static function () use ($stream) {
+        register_shutdown_function(static function () use ($stream): void {
             self::restoreCursor($stream = STDOUT);
         });
     }
 
     /**
      * Restore the cursor to its original position.
+     * @param resource $stream
      */
-    public static function restoreCursor($stream = STDOUT): void
+    public static function restoreCursor(mixed $stream = STDOUT): void
     {
         self::output()->write("\033[?25h");
     }
@@ -210,11 +212,11 @@ final class Terminal
     /**
      * Get the stream associated with the terminal input.
      *
-     * @return mixed The input stream or STDIN if not available.
+     * @return resource The input stream or STDIN if not available.
      */
     public static function stream(): mixed
     {
-        return self::input()->getStream() ?: STDIN;
+        return self::input()?->getStream() ?: STDIN;
     }
 
     private function __construct(

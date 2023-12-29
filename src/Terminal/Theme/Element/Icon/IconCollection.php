@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Theme\Element\Icon;
 
+use JsonException;
 use Ninja\Cosmic\Terminal\Theme\Element\AbstractElementCollection;
 
+/**
+ * Class IconCollection
+ *
+ * @package Ninja\Cosmic\Terminal\Theme\Element\Icon
+ * @extends AbstractElementCollection<Icon>
+ */
 class IconCollection extends AbstractElementCollection
 {
     public function getType(): string
@@ -15,13 +22,14 @@ class IconCollection extends AbstractElementCollection
 
     public function getCollectionType(): string
     {
-        return __CLASS__;
+        return self::class;
     }
 
     public function icon(string $name): ?Icon
     {
         foreach ($this->getIterator() as $item) {
             if ($item->name === $name) {
+                /** @var Icon $item */
                 return $item;
             }
         }
@@ -30,12 +38,18 @@ class IconCollection extends AbstractElementCollection
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     public static function fromFile(string $file): IconCollection
     {
         $collection = new IconCollection();
-        $data       = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
+
+        $content = file_get_contents($file);
+        if ($content === false) {
+            return $collection;
+        }
+
+        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
         foreach ($data["icons"] as $name => $icon) {
             $collection->add(Icon::fromArray(["name" => $name, "icon" => $icon]));
         }
@@ -43,6 +57,10 @@ class IconCollection extends AbstractElementCollection
         return $collection;
     }
 
+    /**
+     * @param array<string, string> $input
+     * @return IconCollection
+     */
     public static function fromArray(array $input): IconCollection
     {
         $collection = new IconCollection();

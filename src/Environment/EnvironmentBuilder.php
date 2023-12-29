@@ -53,12 +53,16 @@ class EnvironmentBuilder
      * @param string $example_file The path to the example environment file.
      * @param bool   $get_values   Whether to retrieve values along with keys.
      *
-     * @return array The list of environment variables.
+     * @return array<int|string,mixed> The list of environment variables.
      */
     private function extractVariables(string $example_file, bool $get_values = false): array
     {
         $vars  = [];
         $lines = file($example_file, FILE_IGNORE_NEW_LINES);
+        if ($lines === false) {
+            return $vars;
+        }
+
         foreach ($lines as $line) {
             if ($line !== "" && !str_starts_with($line, "#")) {
                 [$key, $value] = explode("=", $line);
@@ -85,10 +89,8 @@ class EnvironmentBuilder
     {
         $env_vars = $this->extractVariables($example_file, true);
         foreach ($env_vars as $key => $value) {
-            if ($value === "") {
-                if ($key === "APP_KEY") {
-                    $env_vars[$key] = randomize(32);
-                }
+            if ($value === "" && $key === "APP_KEY") {
+                $env_vars[$key] = randomize(32);
             }
         }
 

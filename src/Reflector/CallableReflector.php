@@ -17,7 +17,7 @@ class CallableReflector
      * @throws NotCallableException
      * @throws ReflectionException
      */
-    public static function create($callable): ReflectionFunctionAbstract
+    public static function create(mixed $callable): ReflectionFunctionAbstract
     {
         if ($callable instanceof Closure) {
             return new ReflectionFunction($callable);
@@ -43,7 +43,7 @@ class CallableReflector
 
         throw new NotCallableException(sprintf(
             '%s is not a callable',
-            is_string($callable) ? $callable : 'Instance of ' . get_class($callable)
+            is_string($callable) ? $callable : 'Instance of ' . $callable::class
         ));
     }
 }

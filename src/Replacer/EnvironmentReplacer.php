@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Replacer;
 
 use Ninja\Cosmic\Environment\Env;
+use Ninja\Cosmic\Exception\BinaryNotFoundException;
 
 class EnvironmentReplacer extends AbstractReplacer
 {
-    public const REPLACER_PREFIX = 'env';
+    final public const REPLACER_PREFIX = 'env';
 
     protected static ?EnvironmentReplacer $instance = null;
 
@@ -21,6 +22,9 @@ class EnvironmentReplacer extends AbstractReplacer
         return self::$instance;
     }
 
+    /**
+     * @throws BinaryNotFoundException
+     */
     public function getPlaceholderValue(string $placeholder): string
     {
         if ($placeholder === "shell") {

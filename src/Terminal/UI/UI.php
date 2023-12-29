@@ -23,11 +23,11 @@ use Ninja\Cosmic\Terminal\UI\Element\UnorderedList;
  */
 class UI
 {
-    public const DEFAULT_OUTPUT_WIDTH            = 80;
-    public const DEFAULT_HEADER_BACKGROUND_COLOR = 'default';
-    public const DEFAULT_RULE_COLOR              = 'white';
-    public const DEFAULT_LIST_TYPE               = UnorderedList::TYPE;
-    public const DEFAULT_LIST_ITEM_COLOR         = 'white';
+    final public const DEFAULT_OUTPUT_WIDTH            = 80;
+    final public const DEFAULT_HEADER_BACKGROUND_COLOR = 'default';
+    final public const DEFAULT_RULE_COLOR              = 'white';
+    final public const DEFAULT_LIST_TYPE               = UnorderedList::TYPE;
+    final public const DEFAULT_LIST_ITEM_COLOR         = 'white';
 
     /**
      * Display a header in the terminal.
@@ -47,7 +47,7 @@ class UI
     /**
      * Display a list in the terminal.
      *
-     * @param array  $items     The list items.
+     * @param string[]  $items     The list items.
      * @param string $itemColor The color of the list items (default is 'white').
      * @param string $type      The type of the list (default is UnorderedList::TYPE).
      */
@@ -64,27 +64,12 @@ class UI
     /**
      * Display a table in the terminal.
      *
-     * @param array $header The table header.
-     * @param array $data   The table data.
+     * @param array<string, string> $header
+     * @param array<array<string, string>> $data
      */
     public static function table(array $header, array $data): void
     {
         (new Table(Terminal::output()))($header, $data);
-    }
-
-    /**
-     * Display a summary in the terminal.
-     *
-     * @param array       $data   The summary data.
-     * @param int         $width  The width of the summary (default is 80).
-     * @param string|null $title  The title of the summary (optional).
-     */
-    public static function summary(
-        array $data,
-        int $width = self::DEFAULT_OUTPUT_WIDTH,
-        ?string $title = null
-    ): void {
-        (new Summary(Terminal::output()))($data, $width, $title);
     }
 
     /**

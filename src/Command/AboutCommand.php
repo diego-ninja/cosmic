@@ -11,6 +11,7 @@ use Ninja\Cosmic\Command\Attribute\Icon;
 use Ninja\Cosmic\Command\Attribute\Name;
 use Ninja\Cosmic\Command\Attribute\Signature;
 use Ninja\Cosmic\Environment\Env;
+use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Terminal\Terminal;
 use Ninja\Cosmic\Terminal\UI\Table\Column\TableColumn;
 use Ninja\Cosmic\Terminal\UI\Table\Manipulator\BoolManipulator;
@@ -27,6 +28,9 @@ use function Termwind\render;
 #[Alias("info")]
 final class AboutCommand extends CosmicCommand
 {
+    /**
+     * @throws BinaryNotFoundException
+     */
     public function __invoke(): int
     {
 
@@ -95,12 +99,12 @@ final class AboutCommand extends CosmicCommand
     {
         $logo = Terminal::getTheme()->getLogo();
 
-        if (empty($logo)) {
+        if ($logo === null || $logo === '' || $logo === '0') {
             return;
         }
 
         Terminal::output()->writeln("");
-        Terminal::output()->write(Terminal::getTheme()->getLogo());
+        Terminal::output()->write(Terminal::getTheme()->getLogo() ?? "");
         Terminal::output()->writeln("\n");
     }
 }

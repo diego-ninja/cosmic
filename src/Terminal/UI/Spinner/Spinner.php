@@ -11,14 +11,20 @@ use RuntimeException;
 
 class Spinner
 {
-    public const DEFAULT_SPINNER_STYLE    = 'dots8Bit';
-    public const DEFAULT_SPINNER_INTERVAL = 1000;
-    public const DEFAULT_SPINNER_PADDING  = 2;
-    public const CLEAR_LINE               = "\33[2K\r";
-    public const RETURN_TO_LEFT           = "\r";
+    final public const DEFAULT_SPINNER_STYLE    = 'dots8Bit';
+    final public const DEFAULT_SPINNER_INTERVAL = 1000;
+    final public const DEFAULT_SPINNER_PADDING  = 2;
+    final public const CLEAR_LINE               = "\33[2K\r";
+    final public const RETURN_TO_LEFT           = "\r";
 
     private int $child_pid = 0;
-    private array $spinner;
+
+    /** @var array{
+          *   frames: string[],
+          *   interval: int
+          * }|null
+     */
+    private ?array $spinner;
 
     private int $padding = self::DEFAULT_SPINNER_PADDING;
     private string $message;
@@ -34,7 +40,7 @@ class Spinner
 
     public function setMessage(string $message): self
     {
-        $this->message = Terminal::render($message);
+        $this->message = Terminal::render($message) ?? "";
         return $this;
     }
 
@@ -49,7 +55,7 @@ class Spinner
      */
     private function getSpinnerFrames(): array
     {
-        return $this->spinner["frames"];
+        return $this->spinner["frames"] ?? [];
     }
 
     private function loopSpinnerFrames(): void
@@ -67,10 +73,11 @@ class Spinner
                         $this->message,
                         self::RETURN_TO_LEFT
                     )
-                );
+                ) ?? "";
 
                 Terminal::output()->write($parsed_frame);
-                usleep($this->spinner["interval"] * self::DEFAULT_SPINNER_INTERVAL);
+                $interval = $this->spinner["interval"] ?? self::DEFAULT_SPINNER_INTERVAL;
+                usleep($interval * self::DEFAULT_SPINNER_INTERVAL);
             }
         }
     }
@@ -92,7 +99,7 @@ class Spinner
         // Exit both parent and child process
         // They are both running the same code
 
-        $keyboard_interrupts = function (int $signal) {
+        $keyboard_interrupts = function (int $signal): never {
             posix_kill($this->child_pid, SIGTERM);
             $this->reset();
             exit($signal);
@@ -125,7 +132,7 @@ class Spinner
             throw new RuntimeException('Could not fork process');
         }
 
-        if ($child_pid) {
+        if ($child_pid !== 0) {
             $this->keyboardInterrupts();
             $this->child_pid = $child_pid;
             $res             = $callback();

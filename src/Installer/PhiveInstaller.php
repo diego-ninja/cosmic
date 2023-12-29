@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Installer;
 
+use Closure;
 use Exception;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
@@ -22,12 +23,7 @@ use function Cosmic\sudo;
  */
 class PhiveInstaller extends AbstractInstaller
 {
-    public const PHIVE_INSTALLATION_PATH = "/usr/local/bin/phive";
-    private static array $allowed_keys   = [
-        "2DF45277AEF09A2F",
-        "F4D32E2C9343B2AE",
-        "033E5F8D801A2F8D",
-    ];
+    final public const PHIVE_INSTALLATION_PATH = "/usr/local/bin/phive";
 
     /**
      * PhiveInstaller constructor.
@@ -38,7 +34,7 @@ class PhiveInstaller extends AbstractInstaller
     {
         parent::__construct($output);
 
-        $this->preInstall(function (self $installer) {
+        $this->preInstall(function (self $installer): void {
             $installer->installPhive();
         });
     }
@@ -51,11 +47,11 @@ class PhiveInstaller extends AbstractInstaller
      */
     public function install(): bool
     {
-        if ($this->pre_install) {
+        if ($this->pre_install instanceof Closure) {
             ($this->pre_install)($this);
         }
 
-        if (!empty($this->packages)) {
+        if ($this->packages !== []) {
             return $this->installPackages();
         }
 
@@ -72,10 +68,7 @@ class PhiveInstaller extends AbstractInstaller
     {
         $result = true;
 
-        $package_set = implode(" ", array_keys($this->packages));
-        $keys        = implode(",", self::$allowed_keys);
-
-        foreach ($this->packages as $package) {
+        foreach ($this->packages as $package => $version) {
             if (!$this->isPackageInstalled($package)) {
                 $result = $result && $this->installPackage($package);
             }

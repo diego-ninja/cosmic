@@ -10,6 +10,10 @@ use Ninja\Cosmic\Terminal\UI\Table\TableConfig;
 
 readonly class Table extends AbstractElement
 {
+    /**
+     * @param string[]|array<string, string> $header
+     * @param array<array<string, string>> $data
+     */
     public function __invoke(array $header, array $data): void
     {
         $headers = $this->normalizeHeaders($header);
@@ -30,24 +34,29 @@ readonly class Table extends AbstractElement
         Terminal::clear(1);
     }
 
+    /**
+     * @param string[]|array<string, string> $headers
+     * @return array<string, string>
+     */
     private function normalizeHeaders(array $headers): array
     {
         if (array_is_list($headers)) {
-            return array_combine($headers, array_map(static fn($header) => ucfirst($header), $headers));
+            return array_combine($headers, array_map(static fn($header): string => ucfirst((string) $header), $headers));
         }
 
         return $headers;
     }
 
+    /**
+     * @param array<array<int|string, string>> $data
+     * @param string[]|array<string, string> $headers
+     * @return array<array<string, string>>
+     */
     private function normalizeData(array $data, array $headers): array
     {
         $normalized = [];
-        foreach ($data as $key => $value) {
-            if (array_is_list($value)) {
-                $normalized[] = array_combine(array_keys($headers), array_values($value));
-            } else {
-                $normalized[] = $value;
-            }
+        foreach ($data as $value) {
+            $normalized[] = array_is_list($value) ? array_combine(array_keys($headers), array_values($value)) : $value;
         }
 
         return $normalized;

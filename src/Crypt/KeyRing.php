@@ -24,7 +24,7 @@ class KeyRing
      *
      * @param string $type The type of keys in the keyring.
      */
-    public function __construct(private string $type = KeyInterface::GPG_TYPE_PUBLIC)
+    public function __construct(private readonly string $type = KeyInterface::GPG_TYPE_PUBLIC)
     {
         $this->keys = new KeyCollection([]);
     }
@@ -98,24 +98,18 @@ class KeyRing
     /**
      * Add a key to the keyring.
      *
-     * @param KeyInterface $key The key to add.
-     *
-     * @return void
+     * @param AbstractKey $key The key to add.
      */
-    public function add(KeyInterface $key): void
+    public function add(AbstractKey $key): void
     {
         $this->keys->add($key);
     }
 
     /**
      * Get a key from the keyring by its ID.
-     *
-     * @param string $id The ID of the key.
-     *
-     * @return KeyInterface The key with the given ID.
      * @throws Exception
      */
-    public function get(string $id): KeyInterface
+    public function get(string $id): ?AbstractKey
     {
         return $this->keys->getById($id);
     }
@@ -123,11 +117,11 @@ class KeyRing
     /**
      * Check if the keyring contains a specific key.
      *
-     * @param KeyInterface $key The key to check for.
+     * @param AbstractKey $key The key to check for.
      *
      * @return bool True if the keyring contains the key, false otherwise.
      */
-    public function has(KeyInterface $key): bool
+    public function has(AbstractKey $key): bool
     {
         return $this->keys->contains($key);
     }

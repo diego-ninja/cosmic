@@ -18,7 +18,7 @@ class Lifecycle implements LifecycleAwareInterface
     /** @var array<string, array<callable>> The list of event listeners. */
     protected static array $event_listeners = [];
 
-    /** @var array<string, array> The list of lifecycle events. */
+    /** @var string[] The list of lifecycle events. */
     protected static array $lifecycle_events = [];
 
     /** @var self|null The singleton instance of the Lifecycle class. */

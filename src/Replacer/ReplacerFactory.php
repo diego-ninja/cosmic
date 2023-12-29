@@ -6,6 +6,9 @@ namespace Ninja\Cosmic\Replacer;
 
 final class ReplacerFactory
 {
+    /**
+     * @var array<string, ReplacerInterface>
+     */
     private static array $replacers = [];
 
     public static function getInstance(): self
@@ -18,6 +21,9 @@ final class ReplacerFactory
         self::$replacers[$replacer->getPrefix()] = $replacer;
     }
 
+    /**
+     * @return array<string, ReplacerInterface>
+     */
     private function getReplacers(): array
     {
         return self::$replacers;
