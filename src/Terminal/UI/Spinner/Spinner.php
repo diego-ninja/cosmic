@@ -76,7 +76,8 @@ class Spinner
                 ) ?? "";
 
                 Terminal::output()->write($parsed_frame);
-                usleep($this->spinner["interval"] ?? 1 * self::DEFAULT_SPINNER_INTERVAL);
+                $interval = $this->spinner["interval"] ?? self::DEFAULT_SPINNER_INTERVAL;
+                usleep($interval * self::DEFAULT_SPINNER_INTERVAL);
             }
         }
     }
