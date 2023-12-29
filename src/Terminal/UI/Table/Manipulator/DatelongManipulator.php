@@ -6,7 +6,7 @@ namespace Ninja\Cosmic\Terminal\UI\Table\Manipulator;
 
 class DatelongManipulator implements TableManipulatorInterface
 {
-    public const TYPE = 'datelong';
+    final public const TYPE = 'datelong';
 
     public function manipulate(mixed $value): ?string
     {

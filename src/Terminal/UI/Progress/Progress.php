@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\UI\Progress;
 
+use Stringable;
+use InvalidArgumentException;
 use Khill\Duration\Duration;
 use Ninja\Cosmic\Terminal\Terminal;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
@@ -15,47 +17,36 @@ use Symfony\Component\Console\Output\ConsoleSectionOutput;
  *
  * @package Ninja\Cosmic\Terminal\UI
  */
-class Progress
+class Progress implements Stringable
 {
     /**
      * The current step of the progress.
-     *
-     * @var int
      */
     protected int $currentStep = 0;
 
     /**
      * The start time of the progress.
-     *
-     * @var int
      */
     protected int $startTime;
 
     /**
      * The last progress advancement.
-     *
-     * @var float
      */
     protected float $lastProgressAdvancement;
 
     /**
      * The timings of the progress advancements.
-     *
-     * @var array
+     * @var float[]
      */
     protected array $advancementTimings = [];
 
     /**
      * The maximum number of advancement timings.
-     *
-     * @var float
      */
     protected float $maxAdvancementTimings = 50;
 
     /**
      * The section of the console where the progress is displayed.
-     *
-     * @var ConsoleSectionOutput
      */
     protected ConsoleSectionOutput $section;
 
@@ -168,7 +159,7 @@ class Progress
     public function setCurrentStep(int $currentStep): static
     {
         if ($currentStep < 0) {
-            throw new \InvalidArgumentException('Current step must be 0 or above');
+            throw new InvalidArgumentException('Current step must be 0 or above');
         }
 
         $now                           = microtime(true);
@@ -193,13 +184,12 @@ class Progress
     }
 
     /**
-     * @param int $steps
      * @return $this
      */
     public function setSteps(int $steps): static
     {
         if ($steps < 0) {
-            throw new \InvalidArgumentException('Steps amount must be 0 or above');
+            throw new InvalidArgumentException('Steps amount must be 0 or above');
         }
 
         $this->setCurrentStep($this->getCurrentStep());
@@ -208,7 +198,7 @@ class Progress
         return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->draw();
     }
@@ -221,8 +211,6 @@ class Progress
 
     /**
      * Display the progress.
-     *
-     * @return void
      */
     public function display(): void
     {
@@ -323,7 +311,7 @@ class Progress
      */
     private function drawDetails(): string
     {
-        return $this->details ?
+        return $this->details !== '' && $this->details !== '0' ?
             sprintf(
                 "<%2\$s>%1\$s</%2\$s>",
                 $this->getDetails(),
@@ -353,6 +341,7 @@ class Progress
      */
     private function getBarColor(float $percent): string
     {
+        $color = ''; //just to trick phpstan
         if ($this->config->getUseSegments()) {
             match (true) {
                 $percent < 25 => $color = 'red',
@@ -377,8 +366,6 @@ class Progress
 
     /**
      * Get the elapsed time of the progress.
-     *
-     * @return int
      */
     private function getTimeElapsed(): int
     {
@@ -387,8 +374,6 @@ class Progress
 
     /**
      * Get the elapsed time of the progress formatted to be readable by humans.
-     *
-     * @return string
      */
     private function getHumanReadableTimeElapsed(): string
     {
@@ -397,12 +382,10 @@ class Progress
 
     /**
      * Get the remaining time of the progress.
-     *
-     * @return float|int
      */
     private function getTimeRemaining(): float|int
     {
-        if (count($this->advancementTimings) === 0) {
+        if ($this->advancementTimings === []) {
             return 0;
         }
 
@@ -413,8 +396,6 @@ class Progress
 
     /**
      * Get the remaining time of the progress formatted to be readable by humans.
-     *
-     * @return string
      */
     private function getHumanReadableTimeRemaining(): string
     {

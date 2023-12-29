@@ -13,6 +13,11 @@ use Ramsey\Collection\AbstractCollection;
  * Class KeyCollection
  *
  * A collection of AbstractKey objects.
+ * This class is used to store the keys retrieved from the key servers.
+ *
+ * @package Ninja\Cosmic\Crypt
+ * @extends AbstractCollection<AbstractKey>
+ * @implements SerializableInterface<AbstractKey>
  */
 class KeyCollection extends AbstractCollection implements SerializableInterface
 {
@@ -51,7 +56,7 @@ class KeyCollection extends AbstractCollection implements SerializableInterface
      *
      * @param string $email The email associated with the AbstractKey object(s).
      *
-     * @return array|AbstractKey The AbstractKey object(s) if found.
+     * @return array<AbstractKey>|AbstractKey The AbstractKey object(s) if found.
      *
      * @throws Exception If an error occurs.
      */
@@ -59,7 +64,7 @@ class KeyCollection extends AbstractCollection implements SerializableInterface
     {
         $keys = [];
         foreach ($this->getIterator() as $item) {
-            if ($item->uid->email === $email) {
+            if ($item->uid?->email === $email) {
                 $keys[] = $item;
             }
         }
@@ -82,7 +87,7 @@ class KeyCollection extends AbstractCollection implements SerializableInterface
     /**
      * Specify data which should be serialized to JSON.
      *
-     * @return array The data to be serialized to JSON.
+     * @return array<string,mixed> The data to be serialized to JSON.
      */
     public function jsonSerialize(): array
     {

@@ -65,7 +65,7 @@ interface KeyInterface
     /**
      * Create a new instance of the key from an array of data.
      *
-     * @param array $data The data to create the key from.
+     * @param array<string,mixed> $data The data to create the key from.
      *
      * @return static The new instance of the key.
      */
@@ -82,10 +82,6 @@ interface KeyInterface
 
     /**
      * Add a subkey to the key.
-     *
-     * @param KeyInterface $key The subkey to add.
-     *
-     * @return void
      */
-    public function addSubKey(KeyInterface $key): void;
+    public function addSubKey(AbstractKey $key): void;
 }

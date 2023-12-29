@@ -21,7 +21,7 @@ class Signature extends Asset
      */
     public function __construct(private readonly string $signed_file)
     {
-        $name = sprintf('%s GPG Signature', ucfirst(Env::get('APP_NAME')));
+        $name = sprintf('%s GPG Signature', ucfirst((string) Env::get('APP_NAME')));
         $path = sprintf('%s.asc', $signed_file);
         parent::__construct($name, $path);
     }
@@ -30,8 +30,6 @@ class Signature extends Asset
      * Create a Signature instance for the specified file.
      *
      * @param string $file The file for which to create a Signature instance.
-     *
-     * @return self
      */
     public static function for(string $file): self
     {
@@ -40,8 +38,6 @@ class Signature extends Asset
 
     /**
      * Verify the file using the guessed signature.
-     *
-     * @return bool
      */
     public function verify(): bool
     {

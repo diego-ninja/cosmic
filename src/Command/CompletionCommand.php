@@ -22,18 +22,21 @@ use Symfony\Component\Console\Command\CompleteCommand;
 #[Decorated(false)]
 final class CompletionCommand extends CosmicCommand
 {
+    /**
+     * @var string[]
+     */
     private array $supported_shells = [];
 
     public function __invoke(?string $shell): int
     {
-        $command_name = basename($_SERVER['argv'][0]);
-        $shell        = $shell ?? self::guessShell();
+        $command_name = basename((string) $_SERVER['argv'][0]);
+        $shell ??= $this->guessShell();
 
         $completion_file = __DIR__ . '/../../resources/completion/completion.' . $shell;
         if (!file_exists($completion_file)) {
             $supported_shells = $this->getSupportedShells();
 
-            if ($shell) {
+            if ($shell !== '' && $shell !== '0') {
                 Terminal::output()
                     ->writeln(
                         sprintf(
@@ -55,11 +58,18 @@ final class CompletionCommand extends CosmicCommand
             return $this->failure();
         }
 
+        $content = file_get_contents($completion_file);
+        if ($content === false) {
+            Terminal::output()->writeln('<error>Failed to read completion file.</>');
+
+            return $this->failure();
+        }
+
         Terminal::output()->write(
             str_replace(
                 ['{{ COMMAND_NAME }}', '{{ VERSION }}'],
                 [$command_name, CompleteCommand::COMPLETION_API_VERSION],
-                file_get_contents($completion_file)
+                $content
             )
         );
 
@@ -69,10 +79,10 @@ final class CompletionCommand extends CosmicCommand
     public function getCommandHelp(): ?string
     {
         $fullCommand = $_SERVER['PHP_SELF'];
-        $commandName = basename($fullCommand);
+        $commandName = basename((string) $fullCommand);
         $fullCommand = @realpath($fullCommand) ?: $fullCommand;
 
-        $shell                     = self::guessShell();
+        $shell                     = $this->guessShell();
         [$rcFile, $completionFile] = match ($shell) {
             'fish'  => ['~/.config/fish/config.fish', "/etc/fish/completions/$commandName.fish"],
             'zsh'   => ['~/.zshrc', '$fpath[1]/_' . $commandName],
@@ -111,9 +121,12 @@ final class CompletionCommand extends CosmicCommand
         EOH;
     }
 
+    /**
+     * @return string[]
+     */
     private function getSupportedShells(): array
     {
-        if (!empty($this->supported_shells)) {
+        if ($this->supported_shells !== []) {
             return $this->supported_shells;
         }
 
@@ -129,7 +142,7 @@ final class CompletionCommand extends CosmicCommand
         return $this->supported_shells = $shells;
     }
 
-    private static function guessShell(): string
+    private function guessShell(): string
     {
         return basename($_SERVER['SHELL'] ?? '');
     }

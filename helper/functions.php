@@ -530,6 +530,14 @@ if (!function_exists('Cosmic\human_filesize')) {
 }
 
 if (!function_exists('Cosmic\gradient')) {
+    /**
+     * Generate a gradient between two colors.
+     *
+     * @param string $from
+     * @param string $to
+     * @param int $variations
+     * @return array<string>
+     */
     function gradient(string $from, string $to, int $variations = 10): array
     {
         $ret = [];

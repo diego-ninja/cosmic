@@ -37,11 +37,11 @@ trait TableableTrait
         $nullableBooleans    = [];
         $nullableDates       = [];
         $arraysOrCollections = [];
-        $raw                 = $this->toArray();
+        $raw                 = $this->toArray() ?? [];
 
         foreach ($raw as $key => $value) {
             $isCollection = false;
-            $icon         = is_nullable($key, get_class($this)) ?
+            $icon         = is_nullable($key, $this::class) ?
                 Terminal::getTheme()->getIcon("nullable") :
                 Terminal::getTheme()->getIcon("mandatory");
 
@@ -60,18 +60,18 @@ trait TableableTrait
             if (is_array($value) || $value instanceof AbstractCollection) {
                 $arraysOrCollections[$key] = $formattedValue;
             } elseif (str_ends_with($key, 'At')) {
-                if (is_nullable($key, get_class($this))) {
+                if (is_nullable($key, $this::class)) {
                     $nullableDates[$key] = $formattedValue;
                 } else {
                     $nonNullableDates[$key] = $formattedValue;
                 }
             } elseif (str_starts_with($key, 'is')) {
-                if (is_nullable($key, get_class($this))) {
+                if (is_nullable($key, $this::class)) {
                     $nullableBooleans[$key] = $formattedValue;
                 } else {
                     $nonNullableBooleans[$key] = $formattedValue;
                 }
-            } elseif (is_nullable($key, get_class($this))) {
+            } elseif (is_nullable($key, $this::class)) {
                 $nullableNormal[$key] = $formattedValue;
             } else {
                 $nonNullableNormal[$key] = $formattedValue;

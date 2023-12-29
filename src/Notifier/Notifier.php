@@ -20,7 +20,7 @@ class Notifier
 {
     private static ?self $instance = null;
 
-    private JoliNotifier $notifier;
+    private readonly JoliNotifier $notifier;
 
     /**
      * Notifier constructor.
@@ -39,7 +39,7 @@ class Notifier
      */
     public static function getInstance(): self
     {
-        if (self::$instance === null) {
+        if (!self::$instance instanceof \Ninja\Cosmic\Notifier\Notifier) {
             self::$instance = new self();
         }
 
@@ -106,9 +106,9 @@ class Notifier
     private function getSuccessNotification(string $message): Notification
     {
         return (new Notification())
-            ->setTitle(ucfirst(Env::get("APP_NAME")))
-            ->setBody(sprintf("%s", $message))
-            ->setIcon(Terminal::getTheme()->getNotificationIcon());
+            ->setTitle(ucfirst((string) Env::get("APP_NAME")))
+            ->setBody($message)
+            ->setIcon(Terminal::getTheme()->getNotificationIcon() ?? "");
     }
 
     /**
@@ -121,8 +121,8 @@ class Notifier
     private function getErrorNotification(string $message): Notification
     {
         return (new Notification())
-            ->setTitle(ucfirst(Env::get("APP_NAME")))
-            ->setBody(sprintf("%s", $message))
-            ->setIcon(Terminal::getTheme()->getNotificationIcon());
+            ->setTitle(ucfirst((string) Env::get("APP_NAME")))
+            ->setBody($message)
+            ->setIcon(Terminal::getTheme()->getNotificationIcon() ?? "");
     }
 }

@@ -12,6 +12,10 @@ use Ramsey\Collection\AbstractCollection;
  * Class AssetCollection
  *
  * @package Ninja\Cosmic\Application
+ *
+ * @template T
+ * @extends AbstractCollection<Asset>
+ * @implements SerializableInterface<T>
  */
 class AssetCollection extends AbstractCollection implements SerializableInterface
 {
@@ -25,6 +29,7 @@ class AssetCollection extends AbstractCollection implements SerializableInterfac
 
     /**
      * @inheritDoc
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -34,7 +39,6 @@ class AssetCollection extends AbstractCollection implements SerializableInterfac
     /**
      * Return a JSON representation of the collection.
      *
-     * @return string
      * @throws JsonException
      */
     public function toJson(): string

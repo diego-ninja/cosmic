@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Descriptor;
 
+use JsonException;
 use Ninja\Cosmic\Terminal\Renderer\CommandHelpRenderer;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -122,7 +123,7 @@ class TextDescriptor extends AbstractDescriptor
     {
         $command->mergeApplicationDefinition(false);
 
-        if ($description = replace($command->getDescription())) {
+        if (($description = replace($command->getDescription())) !== '' && ($description = replace($command->getDescription())) !== '0') {
             $this->writeText('<comment>Description:</comment>', $options);
             $this->writeText("\n");
             $this->writeText('  ' . $description);
@@ -182,7 +183,7 @@ class TextDescriptor extends AbstractDescriptor
             }
 
             /** @psalm-suppress RedundantFunctionCall*/
-            $width = $this->getColumnWidth(array_merge(...array_values(array_map(fn($namespace) => array_intersect($namespace['commands'], array_keys($commands)), array_values($namespaces))))); //phpcs:ignore
+            $width = $this->getColumnWidth(array_merge(...array_values(array_map(static fn($namespace): array => array_intersect($namespace['commands'], array_keys($commands)), array_values($namespaces))))); //phpcs:ignore
 
             if ($described_namespace) {
                 $this->writeText(sprintf('<comment>Available commands for the "%s" namespace:</comment>', $described_namespace), $options); //phpcs:ignore
@@ -191,7 +192,7 @@ class TextDescriptor extends AbstractDescriptor
             }
 
             foreach ($namespaces as $namespace) {
-                $namespace['commands'] = array_filter($namespace['commands'], static fn($name) => isset($commands[$name])); //phpcs:ignore
+                $namespace['commands'] = array_filter($namespace['commands'], static fn($name): bool => isset($commands[$name])); //phpcs:ignore
 
                 if (!$namespace['commands']) {
                     continue;
@@ -217,6 +218,9 @@ class TextDescriptor extends AbstractDescriptor
         }
     }
 
+    /**
+     * @param array<string, mixed> $options
+     */
     private function writeText(string $content, array $options = []): void
     {
         $this->write(
@@ -233,14 +237,17 @@ class TextDescriptor extends AbstractDescriptor
         $text    = '';
         $aliases = $command->getAliases();
 
-        if ($aliases) {
+        if ($aliases !== []) {
             $text = '[<info>' . implode('</info> | <info>', $aliases) . '</info>] ';
         }
 
         return $text;
     }
 
-    private function formatDefaultValue(mixed $default): string
+    /**
+     * @throws JsonException
+     */
+    private function formatDefaultValue(mixed $default): mixed
     {
         if (\INF === $default) {
             return 'INF';
@@ -256,7 +263,10 @@ class TextDescriptor extends AbstractDescriptor
             }
         }
 
-        return str_replace('\\\\', '\\', json_encode($default, \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE));
+        $content = json_encode($default,\JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
+
+        return $content ? str_replace('\\\\', '\\', $content) : $default;
+
     }
 
     /**
@@ -277,7 +287,7 @@ class TextDescriptor extends AbstractDescriptor
             }
         }
 
-        return $widths ? max($widths) + 2 : 0;
+        return $widths !== [] ? max($widths) + 2 : 0;
     }
 
     /**

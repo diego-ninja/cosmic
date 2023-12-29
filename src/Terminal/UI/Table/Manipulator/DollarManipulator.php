@@ -6,7 +6,7 @@ namespace Ninja\Cosmic\Terminal\UI\Table\Manipulator;
 
 class DollarManipulator implements TableManipulatorInterface
 {
-    public const TYPE = 'dollar';
+    final public const TYPE = 'dollar';
 
     public function manipulate(mixed $value): ?string
     {

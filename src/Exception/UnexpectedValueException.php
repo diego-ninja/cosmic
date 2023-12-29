@@ -12,7 +12,7 @@ class UnexpectedValueException extends CosmicException
 {
     public static function fromValue(mixed $value): self
     {
-        $type = is_object($value) ? get_class($value) : gettype($value);
+        $type = get_debug_type($value);
         return new self(\sprintf('Unexpected value of type "%s" with value %s', $type, $value));
     }
 }

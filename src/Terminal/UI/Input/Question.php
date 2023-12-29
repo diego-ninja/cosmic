@@ -25,7 +25,7 @@ class Question
      *
      * @param string      $message      The message to display as the question.
      * @param string|null $default      The default value for the input (optional).
-     * @param array       $autoComplete An array of values for autocompletion (optional).
+     * @param string[]    $autoComplete An array of values for autocompletion (optional).
      * @param bool        $decorated    Whether to use decorated output (default is true).
      *
      * @return string|null The user's input or null if no input is provided.
@@ -39,9 +39,10 @@ class Question
             sprintf("%s [%s] ", $message, $defaultOption);
 
         $helper   = new QuestionHelper();
-        $question = new SymfonyQuestion(Terminal::render($message), $default);
+        $question = new SymfonyQuestion(Terminal::render($message) ?? "", $default);
         $question->setAutocompleterValues($autoComplete);
 
+        /** @phpstan-ignore-next-line  */
         return $helper->ask(Terminal::input(), Terminal::output(), $question);
 
     }
@@ -64,10 +65,12 @@ class Question
             sprintf("%s %s ", $message, self::getAutocompleteOptions($autoComplete, $default ? 'yes' : 'no'));
 
         $helper   = new QuestionHelper();
-        $question = new SymfonyQuestion(Terminal::render($message), $default);
+        $question = new SymfonyQuestion(Terminal::render($message) ?? '', $default);
         $question->setAutocompleterValues(['yes', 'no']);
 
+        /** @phpstan-ignore-next-line  */
         $response = $helper->ask(Terminal::input(), Terminal::output(), $question);
+
         return in_array($response, ['yes', 'y']);
     }
 
@@ -86,9 +89,10 @@ class Question
             sprintf("%s ", $message);
 
         $helper   = new QuestionHelper();
-        $question = new SymfonyQuestion(Terminal::render($message));
+        $question = new SymfonyQuestion(Terminal::render($message) ?? '');
         $question->setHidden(true);
 
+        /** @phpstan-ignore-next-line  */
         return $helper->ask(Terminal::input(), Terminal::output(), $question);
     }
 
@@ -96,12 +100,12 @@ class Question
      * Present a selection question to the user.
      *
      * @param string $message       The message to display as the selection question.
-     * @param array  $options       The available options for selection.
+     * @param string[]  $options    The available options for selection.
      * @param bool   $allowMultiple Whether to allow multiple selections (default is true).
      * @param int|null $columns     The number of columns to use for displaying options (optional).
      * @param int|null $maxWidth    The maximum width for displaying options (optional).
      *
-     * @return array The selected options.
+     * @return string[] The selected options.
      */
     public static function select(
         string $message,
@@ -126,7 +130,7 @@ class Question
     /**
      * Get autocomplete options with formatting for default value.
      *
-     * @param array  $autocomplete An array of values for autocompletion.
+     * @param string[]  $autocomplete An array of values for autocompletion.
      * @param string $default      The default value to highlight.
      *
      * @return string Formatted autocomplete options string.

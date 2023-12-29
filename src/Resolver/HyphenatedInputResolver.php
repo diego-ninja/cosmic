@@ -9,6 +9,12 @@ use ReflectionFunctionAbstract;
 
 class HyphenatedInputResolver implements ParameterResolver
 {
+    /**
+     * @param ReflectionFunctionAbstract $reflection
+     * @param array<string,mixed> $providedParameters
+     * @param array<string,mixed> $resolvedParameters
+     * @return array<int|string,mixed>
+     */
     public function getParameters(
         ReflectionFunctionAbstract $reflection,
         array $providedParameters,

@@ -14,28 +14,19 @@ use function Termwind\terminal;
 
 class SelectHandler
 {
-    public const SIMPLE_CTR  = 0x01;
-    public const COMPLEX_CTR = 0x02;
+    final public const SIMPLE_CTR  = 0x01;
+    final public const COMPLEX_CTR = 0x02;
 
-    public const DEFAULT_CTR = self::COMPLEX_CTR;
+    final public const DEFAULT_CTR = self::COMPLEX_CTR;
 
-    protected int $row;
-    protected int $column;
+    protected int $row = 0;
+    protected int $column = 0;
     protected bool $firstRun = false;
 
     /**
      * @param resource $stream
      */
-    public function __construct(
-        protected SelectInputInterface & ColumnAwareInterface $question,
-        protected OutputInterface $output,
-        protected mixed $stream = STDIN,
-        protected ?int $columns = null,
-        protected ?int $terminalWidth = null
-    ) {
-        $this->row    = 0;
-        $this->column = 0;
-    }
+    public function __construct(protected SelectInputInterface & ColumnAwareInterface $question, protected OutputInterface $output, protected mixed $stream = STDIN, protected ?int $columns = null, protected ?int $terminalWidth = null) {}
 
     /**
      * Navigates through option items.
@@ -66,7 +57,7 @@ class SelectHandler
                 $this->select();
             } elseif ("\033" === $char) {
                 $this->navigate($char, $ctrlMode);
-            } elseif (10 === ord($char)) {
+            } elseif (10 === ord((string) $char)) {
                 if ($ctrlMode === self::SIMPLE_CTR && !$this->question->hasSelections()) {
                     $this->select();
                 }
@@ -192,15 +183,18 @@ class SelectHandler
         $columns     = $this->question->getColumns($columnSize);
         $columnSpace = (int)floor(($this->terminalWidth() - ($columnSize * 5)) / $columnSize);
 
-        return implode(PHP_EOL, array_map(function ($entries) use ($columns, $columnSpace) {
+        return implode(PHP_EOL, array_map(function ($entries) use ($columns, $columnSpace): string {
             $hasCursor = $this->row === array_search($entries, $columns, true);
             return $this->makeRow($entries, ($hasCursor ? $this->column : -10), $columnSpace);
         }, $columns));
     }
 
+    /**
+     * @param array<string> $entries
+     */
     protected function makeRow(array $entries, int $activeColumn, int $columnSpace): string
     {
-        return array_reduce($entries, function ($carry, $item) use ($entries, $activeColumn, $columnSpace) {
+        return array_reduce($entries, function (string $carry, $item) use ($entries, $activeColumn, $columnSpace): string {
             $isActive = $activeColumn === array_search($item, $entries, true);
             return $carry . $this->makeCell($item, $isActive, $columnSpace);
         }, '');

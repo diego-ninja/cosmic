@@ -6,7 +6,7 @@ namespace Ninja\Cosmic\Terminal\UI\Table\Manipulator;
 
 class PercentManipulator implements TableManipulatorInterface
 {
-    public const TYPE = 'percent';
+    final public const TYPE = 'percent';
 
     public function manipulate(mixed $value): ?string
     {

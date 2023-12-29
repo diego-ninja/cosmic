@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Replacer\Exception;
 
-class UndefinedReplacerPrefixException extends \RuntimeException
+use RuntimeException;
+class UndefinedReplacerPrefixException extends RuntimeException
 {
     public static function forReplacer(string $replacer): self
     {

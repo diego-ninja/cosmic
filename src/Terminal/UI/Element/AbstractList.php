@@ -12,6 +12,10 @@ use function Termwind\render;
 abstract readonly class AbstractList extends AbstractElement
 {
     public const TYPE = UI::DEFAULT_LIST_TYPE;
+
+    /**
+     * @param array<string> $items
+     */
     public function __invoke(array $items, string $itemColor = UI::DEFAULT_LIST_ITEM_COLOR): void
     {
         render(
@@ -25,5 +29,9 @@ abstract readonly class AbstractList extends AbstractElement
         Terminal::clear(1);
     }
 
+    /**
+     * @param array<string> $items
+     * @return array<string>
+     */
     abstract protected function getItems(array $items, string $itemColor): array;
 }

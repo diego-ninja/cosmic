@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Crypt\Parser;
 
 use Carbon\CarbonImmutable;
+use Ninja\Cosmic\Crypt\AbstractKey;
 use Ninja\Cosmic\Crypt\KeyCollection;
 use Ninja\Cosmic\Crypt\KeyInterface;
 use Ninja\Cosmic\Crypt\PrivateKey;
@@ -29,7 +30,7 @@ class KeyParser
 
             $keys = explode("\n\n", $output);
             foreach ($keys as $key) {
-                if (empty($key)) {
+                if ($key === '' || $key === '0') {
                     continue;
                 }
 
@@ -41,8 +42,10 @@ class KeyParser
                 $master_key = $this->buildKey($keyData);
 
                 if (isset($lines[3])) {
-                    $subkey = $this->parseKeyInfo($lines[3]);
-                    $master_key->addSubKey($this->buildKey($subkey));
+                    $subKey = $this->parseKeyInfo($lines[3]);
+                    if ($subKey !== null) {
+                        $master_key->addSubKey($this->buildKey($subKey));
+                    }
                 }
 
                 $imported_keys->add($master_key);
@@ -60,6 +63,9 @@ class KeyParser
         return implode("\n", $lines);
     }
 
+    /**
+     * @return array<string,mixed>|null
+     */
     private function parseKeyInfo(string $line): ?array
     {
         $keyType = substr($line, 0, 3);
@@ -87,7 +93,10 @@ class KeyParser
 
     }
 
-    private function buildKey(array $keyData): KeyInterface
+    /**
+     * @param array<string,mixed> $keyData
+     */
+    private function buildKey(array $keyData): AbstractKey
     {
         $keyType = $keyData['type'];
         if ($keyType === KeyInterface::GPG_TYPE_PUBLIC || $keyType === KeyInterface::GPG_TYPE_SUB) {
@@ -97,6 +106,9 @@ class KeyParser
         return PrivateKey::fromArray($keyData);
     }
 
+    /**
+     * @return array<string,string>
+     */
     private function parseUidInfo(string $string): array
     {
         preg_match(

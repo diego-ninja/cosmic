@@ -26,15 +26,11 @@ class Env
 {
     /**
      * Whether to use putenv for setting environment variables.
-     *
-     * @var bool
      */
     protected static bool $putenv = true;
 
     /**
      * The Dotenv repository instance.
-     *
-     * @var RepositoryInterface|null
      */
     protected static ?RepositoryInterface $repository = null;
 
@@ -58,12 +54,10 @@ class Env
 
     /**
      * Get the Dotenv repository instance.
-     *
-     * @return RepositoryInterface
      */
     public static function getRepository(): RepositoryInterface
     {
-        if (static::$repository === null) {
+        if (!static::$repository instanceof RepositoryInterface) {
             $builder = RepositoryBuilder::createWithDefaultAdapters();
 
             if (static::$putenv) {
@@ -80,10 +74,8 @@ class Env
      * Get the base path, optionally with a subdirectory appended.
      *
      * @param string|null $dir Subdirectory (optional)
-     *
-     * @return string|null
      */
-    public static function basePath(?string $dir = null): ?string
+    public static function basePath(?string $dir = null): string
     {
         $base_path = is_phar() ? Phar::running() : self::get("BASE_PATH", getcwd());
         return $dir ? sprintf("%s/%s", $base_path, $dir) : $base_path;
@@ -93,8 +85,6 @@ class Env
      * Get the build path, optionally with a subdirectory appended.
      *
      * @param string|null $dir Subdirectory (optional)
-     *
-     * @return string|null
      */
     public static function buildPath(?string $dir = null): ?string
     {
@@ -107,8 +97,6 @@ class Env
      * Get the help path for commands, optionally with a subdirectory appended.
      *
      * @param string|null $dir Subdirectory (optional)
-     *
-     * @return string|null
      */
     public static function helpPath(?string $dir = null): ?string
     {
@@ -119,12 +107,10 @@ class Env
 
     /**
      * Check if the application is in debug mode.
-     *
-     * @return bool
      */
     public static function isDebug(): bool
     {
-        if (Terminal::input()->hasOption("debug")) {
+        if (Terminal::input()?->hasOption("debug")) {
             return Terminal::input()->getOption("debug") === true ?
                 true :
                 self::get("APP_DEBUG", false);
@@ -135,12 +121,10 @@ class Env
 
     /**
      * Get the current environment.
-     *
-     * @return string
      */
     public static function env(): string
     {
-        if (Terminal::input()->hasOption("env")) {
+        if (Terminal::input()?->hasOption("env")) {
             return Terminal::input()->getOption("env");
         }
 
@@ -150,7 +134,6 @@ class Env
     /**
      * Get the application version.
      *
-     * @return string
      * @throws BinaryNotFoundException
      */
     public static function appVersion(): string
@@ -160,8 +143,6 @@ class Env
 
     /**
      * Get the application name.
-     *
-     * @return string
      */
     public static function appName(): string
     {
@@ -172,27 +153,25 @@ class Env
      * Get the shell executable, optionally with an icon.
      *
      * @param string|null $icon Shell icon (optional)
-     *
-     * @return string
      */
     public static function shell(?string $icon = null): string
     {
         if ($icon) {
-            return sprintf("%s %s", $icon, basename(self::get("SHELL")));
+            return sprintf("%s %s", $icon, basename((string) self::get("SHELL")));
         }
 
-        return basename(self::get("SHELL"));
+        return basename((string) self::get("SHELL"));
     }
 
     /**
      * Dump the environment variables along with some additional information.
-     *
-     * @return array
+     * @return array<string, array<string, string>>
+     * @throws BinaryNotFoundException
      */
     public static function dump(): array
     {
         $ret = [];
-        foreach ($_ENV as $key => $value) {
+        foreach (array_keys($_ENV) as $key) {
             $var["key"]   = $key;
             $var["value"] = self::get($key);
             $ret[$key]    = $var;
@@ -228,14 +207,16 @@ class Env
      *
      * @param string $key     The key to retrieve
      * @param mixed  $default Default value if the key is not set
-     *
-     * @return mixed
      */
     public static function get(string $key, mixed $default = null): mixed
     {
         /** @psalm-suppress UndefinedFunction */
         return Option::fromValue(static::getRepository()->get($key))
             ->map(function ($value) {
+                if ($value === null) {
+                    return null;
+                }
+
                 switch (strtolower($value)) {
                     case 'true':
                     case '(true)':
@@ -257,6 +238,6 @@ class Env
 
                 return $value;
             })
-            ->getOrCall(fn() => value($default));
+            ->getOrCall(fn(): mixed => value($default));
     }
 }

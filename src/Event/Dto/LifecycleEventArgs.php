@@ -17,7 +17,7 @@ final class LifecycleEventArgs
 {
     /**
      * @param string         $lifecycle_event The name of the lifecycle event.
-     * @param array          $args             The arguments associated with the event.
+     * @param array<string,mixed> $args             The arguments associated with the event.
      * @param UuidInterface|null $lifecycle_id    The UUID associated with the lifecycle event, if any.
      */
     public function __construct(
@@ -49,7 +49,7 @@ final class LifecycleEventArgs
     /**
      * Gets the arguments associated with the event.
      *
-     * @return array The arguments associated with the event.
+     * @return array<string,mixed> The arguments associated with the event.
      */
     public function getArgs(): array
     {
@@ -60,7 +60,7 @@ final class LifecycleEventArgs
      * Magic method to support getter and setter methods dynamically.
      *
      * @param string $method The method name.
-     * @param array  $args   The method arguments.
+     * @param array<int|string,mixed>  $args   The method arguments.
      *
      * @return mixed|null The value if it exists, otherwise null.
      */

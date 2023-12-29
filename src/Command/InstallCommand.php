@@ -32,14 +32,14 @@ final class InstallCommand extends CosmicCommand
     /**
      * @throws Exception
      */
-    public function __invoke(?string $path): int
+    public function __invoke(string $path): int
     {
         Terminal::output()->writeln("");
         $this->executionResult = $this->build() && $this->install($path);
 
         Lifecycle::dispatchLifecycleEvent(
             event_name: Application::LIFECYCLE_APP_INSTALL,
-            event_args: ["result" => $this->executionResult, "path" => $path ?? "/usr/local/bin"]
+            event_args: ["result" => $this->executionResult, "path" => $path]
         );
 
         return $this->exit();

@@ -16,7 +16,7 @@ interface LifecycleAwareInterface
     /**
      * Register a listener for one or multiple lifecycle events.
      *
-     * @param string|array $event_name The name or names of the lifecycle event(s).
+     * @param string|string[] $event_name The name or names of the lifecycle event(s).
      * @param callable|LifecycleEventListenerInterface $listener The listener to be registered.
      */
     public static function registerListener(string|array $event_name, callable|LifecycleEventListenerInterface $listener): void;
@@ -25,16 +25,23 @@ interface LifecycleAwareInterface
      * Dispatch a lifecycle event to its registered listeners.
      *
      * @param string $event_name The name of the lifecycle event to dispatch.
-     * @param array $event_args The arguments to pass to the event listeners.
+     * @param array<int|string, mixed> $event_args The arguments to pass to the event listeners.
      */
     public static function dispatchLifecycleEvent(string $event_name, array $event_args): void;
 
     /**
      * Register multiple lifecycle events.
      *
-     * @param array $lifecycle_events The array of lifecycle events to register.
+     * @param string[] $lifecycle_events The array of lifecycle events to register.
      */
     public static function registerLifecycleEvents(array $lifecycle_events): void;
+
+    /**
+     * @param string $event_name
+     * @param callable|LifecycleEventListenerInterface $listener
+     * @return void
+     */
+    public function register(string $event_name, callable|LifecycleEventListenerInterface $listener): void;
 
     /**
      * Get the unique identifier associated with the object's lifecycle.

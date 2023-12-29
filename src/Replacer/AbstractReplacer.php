@@ -45,6 +45,9 @@ abstract class AbstractReplacer implements ReplacerInterface
         }
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function extractPlaceholders(string $content): array
     {
         $placeholders = [];
@@ -57,7 +60,7 @@ abstract class AbstractReplacer implements ReplacerInterface
         foreach ($matches[1] as $placeholder) {
             [$prefix, $key] = explode(
                 separator: '.',
-                string: $placeholder
+                string: (string) $placeholder
             );
 
             if ($prefix === $this->getPrefix()) {

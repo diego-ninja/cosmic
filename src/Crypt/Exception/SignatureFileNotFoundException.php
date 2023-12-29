@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Crypt\Exception;
 
-class SignatureFileNotFoundException extends \RuntimeException
+use RuntimeException;
+class SignatureFileNotFoundException extends RuntimeException
 {
     public static function for(string $file): self
     {

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Application\Publisher;
 
+use Ninja\Cosmic\Application\Publisher\Asset\Signature;
+use RuntimeException;
 use JsonException;
 use Ninja\Cosmic\Application\Publisher\Asset\Asset;
 use Ninja\Cosmic\Application\Publisher\Release\Release;
@@ -39,7 +41,7 @@ class GithubClientPublisher implements PublisherInterface
                 $release->tagName
             );
 
-            if ($release->name) {
+            if ($release->name !== '' && $release->name !== '0') {
                 $command .= sprintf(' --title "%s"', $release->name);
             }
 
@@ -70,8 +72,9 @@ class GithubClientPublisher implements PublisherInterface
             return null;
 
         } catch (BinaryNotFoundException $e) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 message: "Github CLI binary not found. Please install it and try again.",
+                code: $e->getCode(),
                 previous: $e
             );
         }
@@ -103,8 +106,9 @@ class GithubClientPublisher implements PublisherInterface
             return null;
 
         } catch (BinaryNotFoundException $e) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 message: "Github CLI binary not found. Please install it and try again.",
+                code: $e->getCode(),
                 previous: $e
             );
         }
@@ -140,8 +144,9 @@ class GithubClientPublisher implements PublisherInterface
             return null;
 
         } catch (BinaryNotFoundException $e) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 message: "Github CLI binary not found. Please install it and try again.",
+                code: $e->getCode(),
                 previous: $e
             );
         }
@@ -174,8 +179,9 @@ class GithubClientPublisher implements PublisherInterface
             return $process->mustRun()->isSuccessful();
 
         } catch (BinaryNotFoundException $e) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 message: "Github CLI binary not found. Please install it and try again.",
+                code: $e->getCode(),
                 previous: $e
             );
         }
@@ -185,13 +191,13 @@ class GithubClientPublisher implements PublisherInterface
      * Upload an asset to a GitHub release.
      *
      * @param string $name      The name of the release.
-     * @param Asset  $asset     The asset to upload.
+     * @param mixed  $asset     The asset to upload.
      * @param bool   $overwrite Whether to overwrite the asset if it already exists.
      *
      * @return bool True if the upload is successful, false otherwise.
      *
      */
-    private function uploadAsset(string $name, Asset $asset, bool $overwrite): bool
+    private function uploadAsset(string $name, mixed $asset, bool $overwrite): bool
     {
         try {
             $command = sprintf(
@@ -206,8 +212,9 @@ class GithubClientPublisher implements PublisherInterface
             return $process->mustRun()->isSuccessful();
 
         } catch(BinaryNotFoundException $e) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 message: "Github CLI binary not found. Please install it and try again.",
+                code: $e->getCode(),
                 previous: $e
             );
         }

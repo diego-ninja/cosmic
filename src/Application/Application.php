@@ -6,6 +6,7 @@ namespace Ninja\Cosmic\Application;
 
 use Closure;
 use DI\Container;
+use Exception;
 use InvalidArgumentException;
 use Invoker\Exception\InvocationException;
 use Invoker\Exception\NotCallableException;
@@ -59,7 +60,7 @@ final class Application extends \Symfony\Component\Console\Application
     public const LIFECYCLE_APP_INSTALL  = 'app.install';
     public const LIFECYCLE_APP_SIGNALED = 'app.signal';
 
-    private ExpressionParser $parser;
+    private readonly ExpressionParser $parser;
 
     private InvokerInterface $invoker;
 
@@ -68,8 +69,6 @@ final class Application extends \Symfony\Component\Console\Application
     /**
      * Application constructor.
      *
-     * @param string $name
-     * @param string $version
      * @param Container|null $container
      *
      * @throws InvalidArgumentException
@@ -84,8 +83,8 @@ final class Application extends \Symfony\Component\Console\Application
     {
         parent::__construct($name, $version);
 
-        $this->parser  = self::createParser();
-        $this->invoker = self::createInvoker();
+        $this->parser  = $this->createParser();
+        $this->invoker = $this->createInvoker();
 
         $error_handler = new Provider(
             handler: (new Handler())->setOutput(Terminal::output())
@@ -105,22 +104,17 @@ final class Application extends \Symfony\Component\Console\Application
      * @param InputInterface|null $input
      * @param OutputInterface|null $output
      *
-     * @return int
      *
-     * @throws InvalidArgumentException
-     * @throws RuntimeException
-     * @throws InvocationException
-     * @throws NotCallableException
-     * @throws ReflectionException
-     * @throws Throwable
+     * @return int
+     * @throws Exception
      */
     public function run(?InputInterface $input = null, ?OutputInterface $output = null): int
     {
-        if ($output === null) {
+        if (!$output instanceof OutputInterface) {
             $output = Terminal::output();
         }
 
-        if ($input === null) {
+        if (!$input instanceof InputInterface) {
             $input = Terminal::input();
         }
 
@@ -138,8 +132,6 @@ final class Application extends \Symfony\Component\Console\Application
 
     /**
      * Creates an InputDefinition with the default arguments and options.
-     *
-     * @return InputDefinition
      *
      * @throws InvalidArgumentException
      * @throws RuntimeException
@@ -176,12 +168,6 @@ final class Application extends \Symfony\Component\Console\Application
 
     /**
      * Runs the current command.
-     *
-     * @param SymfonyCommand $command
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     *
-     * @return int
      *
      * @throws Throwable
      */
@@ -220,8 +206,6 @@ final class Application extends \Symfony\Component\Console\Application
     /**
      * Register a command into the application.
      *
-     * @param CommandInterface $command
-     * @return Application
      *
      * @throws InvalidArgumentException
      * @throws InvocationException
@@ -237,7 +221,7 @@ final class Application extends \Symfony\Component\Console\Application
         }
 
         $this->command($command->getSignature(), $command::class)
-            ->setName($command->getCommandName())
+            ?->setName($command->getCommandName())
             ->setHidden($command->isHidden())
             ->setDecorated($command->isDecorated())
             ->descriptions($command->getCommandDescription(), $command->getArgumentDescriptions())
@@ -253,10 +237,7 @@ final class Application extends \Symfony\Component\Console\Application
     /**
      * Register a command into the application if the command is available in the specified environment.
      *
-     * @param CommandInterface & EnvironmentAwareInterface $command
-     * @param string $environment
      *
-     * @return Application
      *
      * @throws NotCallableException
      * @throws InvocationException
@@ -268,7 +249,7 @@ final class Application extends \Symfony\Component\Console\Application
     ): Application {
         if ($command->isAvailableIn($environment)) {
             $this->command($command->getSignature(), $command::class)
-                ->setName($command->getCommandName())
+                ?->setName($command->getCommandName())
                 ->setHidden($command->isHidden())
                 ->setDecorated($command->isDecorated())
                 ->descriptions($command->getCommandDescription(), $command->getArgumentDescriptions())
@@ -285,7 +266,7 @@ final class Application extends \Symfony\Component\Console\Application
     /**
      * Register commands from the specified paths.
      *
-     * @param array $command_paths
+     * @param string[] $command_paths
      * @return Application
      *
      * @throws NotCallableException
@@ -299,9 +280,11 @@ final class Application extends \Symfony\Component\Console\Application
         $commands = CommandFinder::find($command_paths);
         foreach ($commands as $command_file) {
             $class_name = get_class_from_file($command_file);
-            $command    = $this->container->get($class_name);
-            $command->setApplication($this);
-            $this->registerCommand($command);
+            $command    = $this->container?->get($class_name);
+            if ($command instanceof CommandInterface) {
+                $command->setApplication($this);
+                $this->registerCommand($command);
+            }
         }
 
         return $this;
@@ -309,10 +292,6 @@ final class Application extends \Symfony\Component\Console\Application
 
     /**
      * Set the container to use for resolving command dependencies.
-     *
-     * @param ContainerInterface $container
-     * @param bool $byTypeHint
-     * @param bool $byParameterName
      *
      * @throws InvalidArgumentException
      */
@@ -323,7 +302,7 @@ final class Application extends \Symfony\Component\Console\Application
     ): void {
         $this->container = $container;
 
-        $resolver = self::createParameterResolver();
+        $resolver = $this->createParameterResolver();
         if ($byTypeHint) {
             $resolver->appendResolver(new TypeHintContainerResolver($container));
         }
@@ -338,14 +317,15 @@ final class Application extends \Symfony\Component\Console\Application
      * Creates a new command from a callable.
      *
      * @param string $expression
-     * @param callable|string $callable
-     * @param array $aliases
+     * @param callable|string|array<string,mixed> $callable
+     * @param string[] $aliases
      *
-     * @return Command
+     * @return Command|null
      * @throws NotCallableException
      * @throws ReflectionException
+     * @throws Exception
      */
-    public function command(string $expression, callable|string $callable, array $aliases = []): Command
+    public function command(string $expression, callable|string|array $callable, array $aliases = []): ?Command
     {
         $this->assertCallableIsValid($callable);
 
@@ -368,19 +348,23 @@ final class Application extends \Symfony\Component\Console\Application
                 $callable = $callable->bindTo($this, $this);
             }
 
-            try {
-                return $this->invoker->call($callable, $parameters);
-            } catch (InvocationException $e) {
-                throw new RuntimeException(
-                    sprintf(
-                        "Impossible to call the '%s' command: %s",
-                        $input->getFirstArgument() ?? 'UNKNOWN',
-                        $e->getMessage()
-                    ),
-                    0,
-                    $e
-                );
+            if ($callable !== null) {
+                try {
+                    return $this->invoker->call($callable, $parameters);
+                } catch (InvocationException $e) {
+                    throw new RuntimeException(
+                        sprintf(
+                            "Impossible to call the '%s' command: %s",
+                            $input->getFirstArgument() ?? 'UNKNOWN',
+                            $e->getMessage()
+                        ),
+                        0,
+                        $e
+                    );
+                }
             }
+
+            return null;
         };
 
         $command = $this->createCommand($expression, $command_function);
@@ -393,6 +377,9 @@ final class Application extends \Symfony\Component\Console\Application
         return $command;
     }
 
+    /**
+     * @throws Exception
+     */
     private function createCommand(string $expression, callable $callable): Command
     {
         $result = $this->parser->parse($expression);
@@ -407,17 +394,17 @@ final class Application extends \Symfony\Component\Console\Application
         return $command;
     }
 
-    private static function createInvoker(): InvokerInterface
+    private function createInvoker(): InvokerInterface
     {
-        return new Invoker(self::createParameterResolver());
+        return new Invoker($this->createParameterResolver());
     }
 
-    private static function createParser(): ExpressionParser
+    private function createParser(): ExpressionParser
     {
         return new ExpressionParser();
     }
 
-    private static function createParameterResolver(): ResolverChain
+    private function createParameterResolver(): ResolverChain
     {
         return new ResolverChain([
             new AssociativeArrayResolver(),
@@ -427,6 +414,8 @@ final class Application extends \Symfony\Component\Console\Application
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws NotCallableException
      * @throws ReflectionException
      */
@@ -469,7 +458,7 @@ final class Application extends \Symfony\Component\Console\Application
      */
     private function assertCallableIsValid(mixed $callable): void
     {
-        if ($this->container) {
+        if ($this->container instanceof ContainerInterface) {
             return;
         }
 
@@ -504,7 +493,7 @@ final class Application extends \Symfony\Component\Console\Application
         $ret = $matches[0];
 
         foreach ($ret as &$match) {
-            $match = $match === strtoupper($match) ? strtolower($match) : lcfirst($match);
+            $match = $match === strtoupper((string) $match) ? strtolower($match) : lcfirst((string) $match);
         }
 
         return implode('-', $ret);
@@ -512,7 +501,7 @@ final class Application extends \Symfony\Component\Console\Application
 
     private function getThemeName(): string
     {
-        if (Terminal::input()->hasParameterOption(['--theme', '-t'])) {
+        if (Terminal::input()?->hasParameterOption(['--theme', '-t'])) {
             return Terminal::input()->getParameterOption(['--theme', '-t']) ?? Env::get('APP_THEME', "default");
         }
 

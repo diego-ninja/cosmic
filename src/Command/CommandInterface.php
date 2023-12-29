@@ -16,10 +16,19 @@ interface CommandInterface
     public function getCommandName(): string;
     public function getSignature(): string;
     public function getCommandDescription(): string;
+    /**
+     * @return array<string, string>
+     */
     public function getArgumentDescriptions(): array;
+    /**
+     * @return array<string, mixed>
+     */
     public function getDefaults(): array;
     public function getCommandIcon(): string;
     public function getCommandHelp(): ?string;
+    /**
+     * @return array<string, string>
+     */
     public function getAliases(): array;
     public function isHidden(): bool;
     public function register(Application $app): void;

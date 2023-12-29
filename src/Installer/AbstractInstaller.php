@@ -17,28 +17,22 @@ abstract class AbstractInstaller implements InstallerInterface
     /**
      * The list of packages to be installed.
      *
-     * @var array<string, string>
+     * @var array<string, string|null>
      */
     protected array $packages = [];
 
     /**
      * The callback function to execute before installation.
-     *
-     * @var Closure|null
      */
     protected ?Closure $pre_install = null;
 
     /**
      * The callback function to execute after installation.
-     *
-     * @var Closure|null
      */
     protected ?Closure $post_install = null;
 
     /**
      * Indicates whether the installation process is completed.
-     *
-     * @var bool
      */
     protected bool $is_installed = false;
 

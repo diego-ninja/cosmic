@@ -8,12 +8,12 @@ use Ninja\Cosmic\Terminal\Terminal;
 
 readonly class UnorderedList extends AbstractList
 {
-    public const TYPE = "ul";
+    final public const TYPE = "ul";
 
     protected function getItems(array $items, string $itemColor): array
     {
         return array_map(
-            static fn(string $item) => sprintf(
+            static fn(string $item): string => sprintf(
                 "<div class='ml-1'>%s</div><span class='ml-1 text-%s'>%s</span>",
                 Terminal::getTheme()->getIcon('bullet'),
                 $itemColor,

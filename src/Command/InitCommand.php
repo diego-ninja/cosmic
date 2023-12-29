@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Command;
 
+use Ninja\Cosmic\Crypt\AbstractKey;
+use RuntimeException;
 use Exception;
 use Ninja\Cosmic\Command\Attribute\Alias;
 use Ninja\Cosmic\Command\Attribute\Argument;
@@ -59,8 +61,11 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         "Unlicensed",
     ];
 
+    /**
+      * @var array<string,mixed>
+     */
     private static array $replacements = [];
-    private static array $summary      = [];
+
 
     /**
      * @throws Exception
@@ -151,6 +156,10 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             if (file_exists(self::$replacements["{app.path}"])) {
                 foreach ($files as $file) {
                     $content = file_get_contents(self::$replacements["{app.path}"] . "/$file");
+                    if ($content === false) {
+                        continue;
+                    }
+
                     $content = str_replace(array_keys(self::$replacements), array_values(self::$replacements), $content);
                     file_put_contents(self::$replacements["{app.path}"] . "/$file", $content);
                 }
@@ -195,37 +204,42 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             default: $default_name,
             decorated: false
         );
-        [,$binary_name] = explode("/", $package_name);
+        if ($package_name) {
+            [,$binary_name] = explode("/", $package_name);
 
-        Terminal::clear(2);
-        Terminal::output()->writeln("");
-        Terminal::output()->writeln(sprintf(" 📦 Package name: <info>%s</info>", $package_name));
-        Terminal::output()->writeln(sprintf(" ⚙️  Binary name: <info>%s</info>", $binary_name));
-        Terminal::output()->writeln("");
+            Terminal::clear(2);
+            Terminal::output()->writeln("");
+            Terminal::output()->writeln(sprintf(" 📦 Package name: <info>%s</info>", $package_name));
+            Terminal::output()->writeln(sprintf(" ⚙️  Binary name: <info>%s</info>", $binary_name));
+            Terminal::output()->writeln("");
 
-        self::$summary[] = ["key" => "Package name", "value" => $package_name];
-        self::$summary[] = ["key" => "Binary name", "value" => $binary_name];
-
-        self::$replacements["{app.name}"]     = $binary_name;
-        self::$replacements["{app.root}"]     = ucfirst($binary_name);
-        self::$replacements["{package.name}"] = $package_name;
+            self::$replacements["{app.name}"]     = $binary_name;
+            self::$replacements["{app.root}"]     = ucfirst($binary_name);
+            self::$replacements["{package.name}"] = $package_name;
+        }
     }
 
     private function askApplicationPath(?string $path = null): void
     {
         $default_path = $path ?? getcwd();
-        $path         = Question::ask(message: " 📁 <question>Application path</question>:", default: $default_path, decorated: false);
+        $path = Question::ask(
+            message: " 📁 <question>Application path</question>:",
+            default: (string) $default_path,
+            decorated: false
+        );
 
-        if (!is_dir($path) && !mkdir($path, 0777, true) && !is_dir($path)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
+        if ($path) {
+            if (!is_dir($path) && !mkdir($path, 0777, true) && !is_dir($path)) {
+                throw new RuntimeException(sprintf('Directory "%s" was not created', $path));
+            }
+
+            Terminal::clear(2);
+            Terminal::output()->writeln(sprintf(" 📁 Application path: <info>%s</info>", $path));
+            Terminal::output()->writeln("");
+
+            self::$replacements["{app.path}"] = $path;
         }
 
-        Terminal::clear(2);
-        Terminal::output()->writeln(sprintf(" 📁 Application path: <info>%s</info>", $path));
-        Terminal::output()->writeln("");
-
-        self::$summary[]                  = ["key" => "Application path ", "value" => $path];
-        self::$replacements["{app.path}"] = $path;
     }
 
     private function askApplicationDescription(): void
@@ -236,7 +250,6 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         Terminal::output()->writeln(sprintf(" 📄 Description: <info>%s</info>", $description));
         Terminal::output()->writeln("");
 
-        self::$summary[]                         = ["key" => "Description", "value" => $description ?? ""];
         self::$replacements["{app.description}"] = $description;
     }
 
@@ -252,8 +265,6 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         Terminal::output()->writeln(sprintf(" 🥷 Author: <info>%s</info> <%s>", $author, $email));
         Terminal::output()->writeln("");
 
-        self::$summary[] = ["key" => "Author", "value" => sprintf("%s <%s>", $author, $email)];
-
         self::$replacements["{author.name}"]  = $author;
         self::$replacements["{author.email}"] = $email;
     }
@@ -266,7 +277,6 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         Terminal::output()->writeln(sprintf(" 🌎 Website: <info>%s</info>", $website));
         Terminal::output()->writeln("");
 
-        self::$summary[]                    = ["key" => "Website", "value" => $website];
         self::$replacements["{author.url}"] = $website;
     }
 
@@ -284,7 +294,6 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         Terminal::output()->writeln(sprintf(" 🔎 License: <info>%s</info>", $license[0]));
         Terminal::output()->writeln("");
 
-        self::$summary[]                     = ["key" => "License", "value" => $license[0]];
         self::$replacements["{app.license}"] = $license[0];
     }
 
@@ -313,7 +322,6 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             self::$replacements["{app.key}"]       = $key;
             self::$replacements["{sudo.password}"] = cypher($password, $key);
 
-            self::$summary[] = ["key" => "Sudo password", "value" => mask($password, 10)];
         } else {
             Terminal::clear(10);
             Terminal::output()->writeln("");
@@ -330,6 +338,12 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         $default_key = Env::get("APP_SIGNING_KEY") ?
             $keyring->all()->getById(Env::get("APP_SIGNING_KEY")) :
             $keyring->all()->getByEmail(Env::get("APP_AUTHOR_EMAIL"));
+
+
+        if (is_array($default_key)) {
+            $key_id = $this->selectKey($default_key, Env::get("APP_AUTHOR_EMAIL"));
+            $default_key = $keyring->all()->getById($key_id);
+        }
 
 
         UI::title("🔑 GPG key");
@@ -362,7 +376,6 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             Terminal::output()->writeln("");
 
             self::$replacements["{gpg.key}"] = $key;
-            self::$summary[] = ["key" => "GPG key", "value" => $key];
         }
     }
 
@@ -387,24 +400,13 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         );
 
         if (!$result) {
-            throw new \RuntimeException("Could not generate GPG key");
+            throw new RuntimeException("Could not generate GPG key");
         }
 
         Terminal::clear(2);
         $key = KeyRing::public()->all()->getByEmail(self::$replacements["{author.email}"]);
-        return $key->id;
-    }
 
-    private function displaySummary(): void
-    {
-        Terminal::clear(count(self::$summary) + 8);
-        Terminal::output()->writeln("");
-
-        UI::p("Please review the following summary before generating the application:");
-        UI::summary(
-            data: self::$summary,
-            title: sprintf("%s Application summary", "📦")
-        );
+        return is_array($key) ? $key[0]->id : $key->id;
     }
 
     public function getSuccessMessage(): string
@@ -415,5 +417,31 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     public function getErrorMessage(): string
     {
         return sprintf("Application %s could not be generated. Please try again.", self::$replacements["{app.name}"]);
+    }
+
+    /**
+     * @param array<string,AbstractKey> $keys
+     * @param string $user
+     * @return string
+     */
+    private function selectKey(array $keys, string $user): string
+    {
+        Terminal::output()->writeln(
+            sprintf("Multiple keys found for user <comment>%s</comment>. Please select one from the list.", $user)
+        );
+
+        $options = [];
+        foreach ($keys as $key) {
+            $options[$key->id] = (string)$key;
+        }
+
+        $selection = Question::select(
+            message: "Select the key to use to sign the binary",
+            options: $options,
+            allowMultiple: false,
+            maxWidth: 120
+        )[0];
+
+        return array_flip($options)[$selection];
     }
 }

@@ -10,7 +10,7 @@ class CheckboxInput extends AbstractSelect
 {
     public function select(string $option): void
     {
-        if (empty(array_intersect($this->options, [$option]))) {
+        if (array_intersect($this->options, [$option]) === []) {
             throw UnknownOptionException::withOption($option);
         }
 
@@ -19,7 +19,7 @@ class CheckboxInput extends AbstractSelect
 
     public function deselect(string $option): void
     {
-        if (empty(array_intersect($this->options, [$option]))) {
+        if (array_intersect($this->options, [$option]) === []) {
             throw UnknownOptionException::withOption($option);
         }
 

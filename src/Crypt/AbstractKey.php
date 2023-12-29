@@ -21,6 +21,8 @@ use function Cosmic\find_binary;
  *
  * @package Ninja\Cosmic\Crypt
  *
+ * @implements SerializableInterface<AbstractKey>
+ * @implements TableableInterface<AbstractKey>
  * @phpstan-consistent-constructor
  */
 abstract class AbstractKey implements KeyInterface, SerializableInterface, TableableInterface
@@ -36,17 +38,6 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
 
     protected KeyCollection $subKeys;
 
-    /**
-     * AbstractKey constructor.
-     *
-     * @param string              $id
-     * @param string              $method
-     * @param string              $usage
-     * @param CarbonImmutable     $createdAt
-     * @param CarbonImmutable|null $expiresAt
-     * @param Uid|null            $uid
-     * @param string|null         $fingerprint
-     */
     public function __construct(
         public readonly string $id,
         public readonly string $method,
@@ -61,10 +52,6 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
 
     /**
      * Check if the key is able to perform a specific usage.
-     *
-     * @param string $usage
-     *
-     * @return bool
      */
     public function isAbleTo(string $usage): bool
     {
@@ -73,8 +60,6 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
 
     /**
      * Get a string representation of the key.
-     *
-     * @return string
      */
     public function __toString(): string
     {
@@ -90,9 +75,7 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
     /**
      * Create an instance of AbstractKey from an array of data.
      *
-     * @param array $data
      *
-     * @return static
      */
     public static function fromArray(array $data): static
     {
@@ -109,10 +92,6 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
 
     /**
      * Create an instance of AbstractKey from a string.
-     *
-     * @param string $string
-     *
-     * @return static
      */
     public static function fromString(string $string): static
     {
@@ -135,18 +114,14 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
 
     /**
      * Add a sub key to the key.
-     *
-     * @param KeyInterface $key
      */
-    public function addSubKey(KeyInterface $key): void
+    public function addSubKey(AbstractKey $key): void
     {
         $this->subKeys->add($key);
     }
 
     /**
      * Check if the key is able to sign.
-     *
-     * @return bool
      */
     public function isAbleToSign(): bool
     {
@@ -157,9 +132,7 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
     /**
      * Get the signature file path for a given file path.
      *
-     * @param string $file_path
      *
-     * @return string
      */
     public static function getSignatureFilePath(string $file_path): string
     {
@@ -169,7 +142,6 @@ abstract class AbstractKey implements KeyInterface, SerializableInterface, Table
     /**
      * Render the key information to the output.
      *
-     * @param OutputInterface $output
      *
      * @throws MissingInterfaceException
      * @throws UnexpectedValueException

@@ -6,7 +6,7 @@ namespace Ninja\Cosmic\Terminal\UI\Table\Manipulator;
 
 class DatetimeManipulator implements TableManipulatorInterface
 {
-    public const TYPE = 'datetime';
+    final public const TYPE = 'datetime';
 
     public function manipulate(mixed $value): ?string
     {

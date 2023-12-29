@@ -75,7 +75,7 @@ class SignCommand extends CosmicCommand
     private function hasGPG(): bool
     {
         $gpg = find_binary("gpg");
-        if (!$gpg) {
+        if ($gpg === '' || $gpg === '0') {
             Terminal::output()->writeln("Binary <comment>gpg</comment> not found.");
             if (Question::confirm(
                 sprintf("Do you want <info>%s</info> try to install the missing %s binary?", Env::get("APP_NAME"), "gpg")
@@ -109,40 +109,47 @@ class SignCommand extends CosmicCommand
         $user_key = $keyring->all()->getByEmail($user);
 
         if (is_array($user_key)) {
-            Terminal::output()->writeln(
-                sprintf("Multiple keys found for user <comment>%s</comment>. Please select one from the list.", $user)
-            );
-
-            $options = [];
-            foreach ($user_key as $key) {
-                $options[$key->id] = (string)$key;
-            }
-
-            $keyId    = $this->selectKey($options);
+            $keyId    = $this->selectKey($user_key, $user);
             $user_key = $keyring->all()->getById($keyId);
         }
 
-        UI::p("Using the following GPG key to sign the selected file:");
-        $user_key->render(Terminal::output());
+        if ($user_key) {
+            UI::p("Using the following GPG key to sign the selected file:");
+            $user_key->render(Terminal::output());
 
-        if (Question::confirm("Do you want to use this key to sign the binary?")) {
-            $this->executionResult = $this->sign($binary, $user_key);
-            return true;
+            if (Question::confirm("Do you want to use this key to sign the binary?")) {
+                $this->executionResult = $this->sign($binary, $user_key);
+                return true;
+            }
         }
 
         return false;
     }
 
-    private function selectKey(array $keys): string
+    /**
+     * @param array<string,AbstractKey> $keys
+     * @param string $user
+     * @return string
+     */
+    private function selectKey(array $keys, string $user): string
     {
+        Terminal::output()->writeln(
+            sprintf("Multiple keys found for user <comment>%s</comment>. Please select one from the list.", $user)
+        );
+
+        $options = [];
+        foreach ($keys as $key) {
+            $options[$key->id] = (string)$key;
+        }
+
         $selection = Question::select(
             message: "Select the key to use to sign the binary",
-            options: $keys,
+            options: $options,
             allowMultiple: false,
             maxWidth: 120
         )[0];
 
-        return array_flip($keys)[$selection];
+        return array_flip($options)[$selection];
     }
 
     /**
@@ -155,7 +162,7 @@ class SignCommand extends CosmicCommand
         $keyring = KeyRing::public();
         $key     = $keyring->all()->getById($keyId);
 
-        if (!$key) {
+        if (!$key instanceof AbstractKey) {
             Terminal::output()->writeln(
                 sprintf("Key <comment>%s</comment> does not exist.", $key)
             );
@@ -187,6 +194,11 @@ class SignCommand extends CosmicCommand
         $default_key = Env::get("APP_SIGNING_KEY") ?
             $keyring->all()->getById(Env::get("APP_SIGNING_KEY")) :
             $keyring->all()->getByEmail(Env::get("APP_AUTHOR_EMAIL"));
+
+        if (is_array($default_key)) {
+            $key_id = $this->selectKey($default_key, Env::get("APP_AUTHOR_EMAIL"));
+            $default_key = $keyring->all()->getById($key_id);
+        }
 
         if ($default_key) {
             Terminal::output()->writeln("");

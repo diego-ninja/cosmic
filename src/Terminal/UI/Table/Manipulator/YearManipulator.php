@@ -6,7 +6,7 @@ namespace Ninja\Cosmic\Terminal\UI\Table\Manipulator;
 
 class YearManipulator implements TableManipulatorInterface
 {
-    public const TYPE = 'year';
+    final public const TYPE = 'year';
 
     public function manipulate(mixed $value): ?string
     {
