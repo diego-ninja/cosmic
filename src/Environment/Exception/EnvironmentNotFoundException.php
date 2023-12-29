@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Environment\Exception;
 
-class EnvironmentNotFoundException extends \RuntimeException
+use RuntimeException;
+class EnvironmentNotFoundException extends RuntimeException
 {
     public static function forEnv(string $env_file): self
     {

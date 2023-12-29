@@ -6,7 +6,7 @@ namespace Ninja\Cosmic\Terminal\UI\Table\Manipulator;
 
 class MonthManipulator implements TableManipulatorInterface
 {
-    public const TYPE = 'month';
+    final public const TYPE = 'month';
 
     public function manipulate(mixed $value): ?string
     {

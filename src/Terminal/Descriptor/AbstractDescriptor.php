@@ -17,6 +17,13 @@ abstract class AbstractDescriptor implements DescriptorInterface
 {
     protected OutputInterface $output;
 
+    /**
+     * Describes an object if supported.
+     *
+     * @param OutputInterface $output
+     * @param object $object
+     * @param array<string, mixed> $options
+     */
     public function describe(OutputInterface $output, object $object, array $options = []): void
     {
         $this->output = $output;
@@ -38,26 +45,31 @@ abstract class AbstractDescriptor implements DescriptorInterface
 
     /**
      * Describes an InputArgument instance.
+     * @param array<string, mixed> $options
      */
     abstract protected function describeInputArgument(InputArgument $argument, array $options = []): void;
 
     /**
      * Describes an InputOption instance.
+     * @param array<string, mixed> $options
      */
     abstract protected function describeInputOption(InputOption $option, array $options = []): void;
 
     /**
      * Describes an InputDefinition instance.
+     * @param array<string, mixed> $options
      */
     abstract protected function describeInputDefinition(InputDefinition $definition, array $options = []): void;
 
     /**
      * Describes a Command instance.
+     * @param array<string, mixed> $options
      */
     abstract protected function describeCommand(Command $command, array $options = []): void;
 
     /**
      * Describes an Application instance.
+     * @param array<string, mixed> $options
      */
     abstract protected function describeApplication(Application $application, array $options = []): void;
 }

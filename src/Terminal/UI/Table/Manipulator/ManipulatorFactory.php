@@ -19,6 +19,8 @@ class ManipulatorFactory
             throw new RuntimeException('Manipulator class ' . $manipulatorClass . ' does not exist.');
         }
 
-        return new $manipulatorClass();
+        /** @var TableManipulatorInterface $manipulator */
+        $manipulator = new $manipulatorClass();
+        return $manipulator;
     }
 }

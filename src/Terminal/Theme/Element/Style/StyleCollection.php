@@ -8,6 +8,12 @@ use JsonException;
 use Ninja\Cosmic\Terminal\Theme\Element\AbstractElementCollection;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class StyleCollection
+ *
+ * @package Ninja\Cosmic\Terminal\Theme\Element\Style
+ * @extends AbstractElementCollection<AbstractStyle>
+ */
 class StyleCollection extends AbstractElementCollection
 {
     public function getType(): string
@@ -18,19 +24,21 @@ class StyleCollection extends AbstractElementCollection
     public function load(OutputInterface $output): void
     {
         foreach ($this->getIterator() as $item) {
+            /** @var AbstractStyle $item */
             $item->load($output);
         }
     }
 
     public function getCollectionType(): string
     {
-        return __CLASS__;
+        return self::class;
     }
 
     public function style(string $name): ?AbstractStyle
     {
         foreach ($this->getIterator() as $item) {
             if ($item->name === $name) {
+                /** @var AbstractStyle $item */
                 return $item;
             }
         }
@@ -44,7 +52,12 @@ class StyleCollection extends AbstractElementCollection
     public static function fromFile(string $file): StyleCollection
     {
         $collection = new StyleCollection();
-        $data       = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
+        $content    = file_get_contents($file);
+        if ($content === false) {
+            return $collection;
+        }
+
+        $data       = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
         foreach ($data["styles"] as $substyle => $styles) {
             foreach ($styles as $name => $style) {
                 $style = $substyle === AbstractStyle::TERMWIND_STYLE ?
@@ -64,6 +77,10 @@ class StyleCollection extends AbstractElementCollection
         return $collection;
     }
 
+    /**
+     * @param array<string, array<string, mixed>> $data
+     * @return StyleCollection
+     */
     public static function fromArray(array $data): StyleCollection
     {
         $collection = new StyleCollection();
@@ -86,6 +103,9 @@ class StyleCollection extends AbstractElementCollection
         return $collection;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         $elements = parent::toArray();

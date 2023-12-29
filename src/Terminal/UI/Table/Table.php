@@ -15,21 +15,31 @@ class Table
 {
     protected ColumnCollection $columns;
 
+    /**
+     * @param array<array<string, string>> $data
+     * @param TableColumn[]|null $columns
+     */
     public function __construct(
         protected array $data,
         ?array $columns,
         protected TableConfig $config,
         protected ?string $title = null
     ) {
-        $this->columns = new ColumnCollection($columns);
+        $this->columns = $columns ? new ColumnCollection($columns) : new ColumnCollection();
     }
 
+    /**
+     * @param array<array<string, string>> $data
+     */
     public function injectData(array $data): self
     {
         $this->data = $data;
         return $this;
     }
 
+    /**
+     * @return array<array<string, string>>|null
+     */
     public function getData(): ?array
     {
         return $this->data;
@@ -46,6 +56,9 @@ class Table
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> $row
+     */
     public function addRow(array $row): self
     {
         $this->data[] = $row;
@@ -60,7 +73,7 @@ class Table
 
     public function display(?OutputInterface $output): void
     {
-        $output ? $output->writeln($this->render()) : Terminal::output()->writeln($this->render());
+        $output instanceof OutputInterface ? $output->writeln($this->render()) : Terminal::output()->writeln($this->render());
     }
 
     public function render(): string
@@ -84,7 +97,7 @@ class Table
         }
 
         // Data
-        if (!empty($this->data)) {
+        if ($this->data !== []) {
             foreach ($this->data as $row) {
                 // Row
                 $cellData[$rowCount] = [];
@@ -100,7 +113,7 @@ class Table
                     }
 
                     $c     = chr(27);
-                    $lines = explode("\n", preg_replace("/($c\[(.*?)m)/s", '', $value));
+                    $lines = explode("\n", (string) preg_replace("/($c\[(.*?)m)/s", '', $value));
                     foreach ($lines as $line) {
                         $columnLengths[$key] = max($columnLengths[$key], mb_strlen($line));
                     }
@@ -122,7 +135,7 @@ class Table
 
         // Only try and center when content is less than available space
         if ((($dataWidth / 2) < $screenWidth) && $this->config->getCenterContent()) {
-            $padding = str_repeat(' ', ($screenWidth - ($dataWidth / 2)) / 2);
+            $padding = str_repeat(' ', (int) ($screenWidth - ($dataWidth / 2)) / 2);
         } else {
             $padding = str_repeat(' ', $this->config->getPadding());
         }
@@ -145,11 +158,13 @@ class Table
             $response .= $padding . $this->formatRow($row, $columnLengths);
         }
 
-        $response .= $padding . $this->getTableBottom($columnLengths);
-
-        return $response;
+        return $response . ($padding . $this->getTableBottom($columnLengths));
     }
 
+    /**
+     * @param array<string, string> $rowData
+     * @param array<string, int> $columnLengths
+     */
     protected function formatRow(array $rowData, array $columnLengths, bool $header = false): string
     {
         $response = '';
@@ -174,7 +189,7 @@ class Table
                 $line = $lines[$i] ?? '';
 
                 $c          = chr(27);
-                $lineLength = mb_strwidth(preg_replace("/($c\[(.*?)m)/", '', $line)) + 1;
+                $lineLength = mb_strwidth((string) preg_replace("/($c\[(.*?)m)/", '', $line)) + 1;
                 $line       = sprintf(" <%s>%s</%s>", $color, $line, $color);
                 $response .= $line;
 
@@ -190,6 +205,9 @@ class Table
         return $response;
     }
 
+    /**
+     * @param array<string, int> $columnLengths
+     */
     protected function getTitleTop(array $columnLengths): string
     {
         $color = $this->config->getTableColor();
@@ -205,6 +223,9 @@ class Table
 
     }
 
+    /**
+     * @param array<string, int> $columnLengths
+     */
     protected function formatTitleRow(string $title, array $columnLengths): string
     {
         $tableColor  = $this->config->getTableColor();
@@ -213,7 +234,7 @@ class Table
         $total = array_sum($columnLengths) + count($columnLengths) + 1;
 
         $c          = chr(27);
-        $lineLength = mb_strwidth(preg_replace("/($c\[(.*?)m)/", '', $title)) + 1;
+        $lineLength = mb_strwidth((string) preg_replace("/($c\[(.*?)m)/", '', $title)) + 1;
 
         $response = $this->getChar('left');
         $response .= sprintf(" <%s>%s</%s>", $headerColor, $title, $headerColor);
@@ -228,6 +249,9 @@ class Table
             PHP_EOL;
     }
 
+    /**
+     * @param array<string, int> $columnLengths
+     */
     protected function getTableTop(array $columnLengths): string
     {
         $color = $this->config->getTableColor();
@@ -252,6 +276,9 @@ class Table
             PHP_EOL;
     }
 
+    /**
+     * @param array<string, int> $columnLengths
+     */
     protected function getTableBottom(array $columnLengths): string
     {
         $color = $this->config->getTableColor();
@@ -269,6 +296,9 @@ class Table
             PHP_EOL;
     }
 
+    /**
+     * @param array<string, int> $columnLengths
+     */
     protected function getTableSeparator(array $columnLengths): string
     {
         $color = $this->config->getTableColor();
@@ -291,7 +321,7 @@ class Table
     {
         $response = '';
         if ($this->config->hasChar($type)) {
-            $char     = trim($this->config->getChar($type));
+            $char     = trim((string) $this->config->getChar($type));
             $response = str_repeat($char, $length);
         }
 

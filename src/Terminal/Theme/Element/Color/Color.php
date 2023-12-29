@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Terminal\Theme\Element\Color;
 
+use Stringable;
 use Ninja\Cosmic\Terminal\Theme\Element\AbstractThemeElement;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function Termwind\style;
 
-class Color extends AbstractThemeElement
+class Color extends AbstractThemeElement implements Stringable
 {
     private ?Gradient $gradient = null;
 
-    public function __construct(public readonly string $name, public readonly string $color, public readonly bool $allowGradient) {}
+    public function __construct(public string $name, public readonly string $color, public readonly bool $allowGradient)
+    {
+        parent::__construct($name);
+    }
 
     public function getGradient(): ?Gradient
     {
@@ -28,9 +32,12 @@ class Color extends AbstractThemeElement
 
     public function allowGradient(): bool
     {
-        return $this->gradient !== null;
+        return $this->gradient instanceof Gradient;
     }
 
+    /**
+     * @param array<string, mixed> $input
+     */
     public static function fromArray(array $input): Color
     {
         $color = new Color($input["name"], $input["color"], $input["allowGradient"] ?? false);
@@ -51,12 +58,15 @@ class Color extends AbstractThemeElement
         $this->gradient?->load($output);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [
             "name"     => $this->name,
             "color"    => $this->color,
-            "gradient" => $this->gradient->toArray(),
+            "gradient" => $this->gradient?->toArray(),
         ];
     }
 

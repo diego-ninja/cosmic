@@ -6,6 +6,9 @@ namespace Ninja\Cosmic\Terminal\UI\Table\Manipulator;
 
 use Ramsey\Collection\AbstractCollection;
 
+/**
+ * @extends AbstractCollection<TableManipulatorInterface>
+ */
 class ManipulatorCollection extends AbstractCollection
 {
     public function getType(): string

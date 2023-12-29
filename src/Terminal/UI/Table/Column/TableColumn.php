@@ -10,7 +10,7 @@ use Ninja\Cosmic\Terminal\UI\Table\TableConfig;
 
 class TableColumn implements TableColumnInterface
 {
-    private ManipulatorCollection $manipulators;
+    private readonly ManipulatorCollection $manipulators;
 
     public function __construct(
         public readonly string $name,

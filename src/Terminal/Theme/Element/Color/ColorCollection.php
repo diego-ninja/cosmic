@@ -10,6 +10,12 @@ use Ninja\Cosmic\Terminal\Theme\Element\Color\Exception\ColorNotFoundException;
 use Ninja\Cosmic\Terminal\Theme\Element\Color\Exception\GradientNotSupportedException;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class ColorCollection
+ *
+ * @package Ninja\Cosmic\Terminal\Theme\Element\Color
+ * @extends AbstractElementCollection<Color>
+ */
 class ColorCollection extends AbstractElementCollection
 {
     private const GRADIENT_EXCLUDED = ["black", "white"];
@@ -21,13 +27,14 @@ class ColorCollection extends AbstractElementCollection
 
     public function getCollectionType(): string
     {
-        return __CLASS__;
+        return self::class;
     }
 
     public function getByName(string $name): ?Color
     {
         foreach ($this->getIterator() as $item) {
             if ($item->name === $name) {
+                /** @var Color $item */
                 return $item;
             }
         }
@@ -35,17 +42,28 @@ class ColorCollection extends AbstractElementCollection
         return null;
     }
 
+    /**
+     * @return array<string, string>
+     * @phpstan-ignore-next-line
+     */
     public function toArray(): array
     {
         $elements = parent::toArray();
         $output   = [];
         foreach ($elements as $element) {
+            /** @var Color $element */
             $output[$element->name] = $element->color;
         }
 
         return $output;
     }
 
+    /**
+     * @param array<string, string> $input
+     * @return ColorCollection
+     * @throws ColorNotFoundException
+     * @throws GradientNotSupportedException
+     */
     public static function fromArray(array $input): ColorCollection
     {
         $collection = new ColorCollection();
@@ -65,6 +83,7 @@ class ColorCollection extends AbstractElementCollection
     {
         foreach ($this->getIterator() as $item) {
             if ($item->name === $name) {
+                /** @var Color $item */
                 return $item;
             }
         }
@@ -76,6 +95,7 @@ class ColorCollection extends AbstractElementCollection
     public function load(OutputInterface $output): void
     {
         foreach ($this->getIterator() as $item) {
+            /** @var Color $item */
             $item->load($output);
         }
     }
@@ -86,7 +106,12 @@ class ColorCollection extends AbstractElementCollection
     public static function fromFile(string $file): ColorCollection
     {
         $collection = new ColorCollection();
-        $data       = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
+        $content   = file_get_contents($file);
+        if ($content === false) {
+            return $collection;
+        }
+
+        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
         foreach ($data["colors"] as $name => $color) {
             $color = Color::fromArray(["name" => $name, "color" => self::resolveColor($color, $collection)]);
             if (!in_array($color->name, self::GRADIENT_EXCLUDED, true)) {
@@ -115,7 +140,7 @@ class ColorCollection extends AbstractElementCollection
 
                 $seed = $collection->getByName($seed_color);
 
-                if (!$seed) {
+                if (!$seed instanceof Color) {
                     throw ColorNotFoundException::withColor($seed_color);
                 }
 
@@ -123,9 +148,9 @@ class ColorCollection extends AbstractElementCollection
                     throw GradientNotSupportedException::whithColor($seed_color);
                 }
 
-                $color = $seed->getGradient()->colors->getByName($gradient_color)->color;
+                $color = $seed->getGradient()?->colors->getByName($gradient_color)?->color;
             } else {
-                $color = $collection->getByName(substr($color, 1))->color;
+                $color = $collection->getByName(substr($color, 1))?->color;
             }
         }
 

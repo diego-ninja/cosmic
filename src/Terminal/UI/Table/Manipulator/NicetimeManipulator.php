@@ -6,7 +6,7 @@ namespace Ninja\Cosmic\Terminal\UI\Table\Manipulator;
 
 class NicetimeManipulator implements TableManipulatorInterface
 {
-    public const TYPE = 'nicetime';
+    final public const TYPE = 'nicetime';
 
     public function manipulate(mixed $value): ?string
     {

@@ -11,8 +11,14 @@ abstract class AbstractSelect implements SelectInputInterface, ColumnAwareInterf
 {
     use ColumnableOptionTrait;
 
+    /** @var array<string> */
     protected array $selections;
 
+    /**
+     * @param string $message
+     * @param array<string, string> $options
+     * @param array<string> $defaultSelection
+     */
     public function __construct(protected string $message, protected array $options, protected array $defaultSelection = [])
     {
         $this->selections = $defaultSelection;
@@ -23,11 +29,17 @@ abstract class AbstractSelect implements SelectInputInterface, ColumnAwareInterf
         return $this->message;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getOptions(): array
     {
         return $this->options;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getSelections(): array
     {
         return $this->selections;
@@ -35,7 +47,7 @@ abstract class AbstractSelect implements SelectInputInterface, ColumnAwareInterf
 
     public function hasSelections(): bool
     {
-        return !empty($this->selections);
+        return $this->selections !== [];
     }
 
     public function isSelected(string $option): bool

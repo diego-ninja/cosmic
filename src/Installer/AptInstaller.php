@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Installer;
 
+use Closure;
 use Exception;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
@@ -43,8 +44,8 @@ class AptInstaller extends AbstractInstaller
      */
     public function install(): bool
     {
-        if (!empty($this->packages)) {
-            if ($this->pre_install) {
+        if ($this->packages !== []) {
+            if ($this->pre_install instanceof Closure) {
                 ($this->pre_install)($this);
             }
 
@@ -63,7 +64,7 @@ class AptInstaller extends AbstractInstaller
 
             $this->output->writeln("\n");
 
-            if ($this->post_install) {
+            if ($this->post_install instanceof Closure) {
                 ($this->post_install)($this);
             }
 

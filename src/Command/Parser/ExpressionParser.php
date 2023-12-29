@@ -10,13 +10,17 @@ use Ninja\Cosmic\Command\Input\Option;
 
 class ExpressionParser
 {
-    public function parse($expression): array
+    /**
+     * @param string $expression
+     * @return array<string, mixed>
+     */
+    public function parse(string $expression): array
     {
         $tokens = explode(' ', $expression);
         $tokens = array_map('trim', $tokens);
         $tokens = array_values(array_filter($tokens));
 
-        if (count($tokens) === 0) {
+        if ($tokens === []) {
             throw new InvalidCommandExpressionException('The expression was empty');
         }
 
@@ -44,12 +48,12 @@ class ExpressionParser
         ];
     }
 
-    private function isOption($token): bool
+    private function isOption(string $token): bool
     {
         return str_starts_with($token, '[-');
     }
 
-    private function parseArgument($token): Argument
+    private function parseArgument(string $token): Argument
     {
         if (str_ends_with($token, ']*')) {
             $mode = Argument::IS_ARRAY;
@@ -68,7 +72,7 @@ class ExpressionParser
         return new Argument($name, $mode);
     }
 
-    private function parseOption($token): Option
+    private function parseOption(string $token): Option
     {
         $token = trim($token, '[]');
 

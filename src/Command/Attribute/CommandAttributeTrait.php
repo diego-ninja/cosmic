@@ -34,6 +34,9 @@ trait CommandAttributeTrait
         return $attributes[0]->newInstance()->description ?? "";
     }
 
+    /**
+      * @return array<string, string|null>
+     */
     public function getArgumentDescriptions(): array
     {
         $args = [];
@@ -51,6 +54,9 @@ trait CommandAttributeTrait
         return $args;
     }
 
+    /**
+     * @return array<string, string|null>
+     */
     public function getDefaults(): array
     {
         $defaults = [];
@@ -61,20 +67,23 @@ trait CommandAttributeTrait
         );
 
         foreach ($attributes as $attribute) {
-            $option            = str_replace("--", "", $attribute->newInstance()->name);
+            $option            = str_replace("--", "", (string) $attribute->newInstance()->name);
             $defaults[$option] = $attribute->newInstance()->default ?? null;
         }
 
         return $defaults;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getAliases(): array
     {
         $aliases = [];
 
         $attributes = $this->reflector->getAttributes(Alias::class, ReflectionAttribute::IS_INSTANCEOF);
         foreach ($attributes as $attribute) {
-            $alias           = str_replace("--", "", $attribute->newInstance()->alias);
+            $alias           = str_replace("--", "", (string) $attribute->newInstance()->alias);
             $aliases[$alias] = $alias;
         }
 
@@ -101,6 +110,9 @@ trait CommandAttributeTrait
         return in_array($environment, $this->getAvailableEnvironments(), true);
     }
 
+    /**
+     * @return array<int,string>
+     */
     public function getAvailableEnvironments(): array
     {
         $envs       = [];
@@ -109,7 +121,7 @@ trait CommandAttributeTrait
             $envs[] = $attribute->newInstance()->environment;
         }
 
-        return empty($envs) ? [ENV_LOCAL] : $envs;
+        return $envs === [] ? [ENV_LOCAL] : $envs;
     }
 
     public function isHidden(): bool

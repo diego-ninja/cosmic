@@ -6,6 +6,9 @@ namespace Ninja\Cosmic\Terminal\UI\Table\Column;
 
 use Ramsey\Collection\AbstractCollection;
 
+/**
+ * @extends AbstractCollection<TableColumn>
+ */
 class ColumnCollection extends AbstractCollection
 {
     public function getType(): string

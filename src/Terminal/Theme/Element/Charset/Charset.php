@@ -9,21 +9,21 @@ use RuntimeException;
 
 class Charset extends AbstractThemeElement
 {
-    public const CHAR_TOP          = "top";
-    public const CHAR_TOP_MID      = "top-mid";
-    public const CHAR_TOP_LEFT     = "top-left";
-    public const CHAR_TOP_RIGHT    = "top-right";
-    public const CHAR_BOTTOM       = "bottom";
-    public const CHAR_BOTTOM_MID   = "bottom-mid";
-    public const CHAR_BOTTOM_LEFT  = "bottom-left";
-    public const CHAR_BOTTOM_RIGHT = "bottom-right";
-    public const CHAR_LEFT         = "left";
-    public const CHAR_LEFT_MID     = "left-mid";
-    public const CHAR_MID          = "mid";
-    public const CHAR_MID_MID      = "mid-mid";
-    public const CHAR_RIGHT        = "right";
-    public const CHAR_RIGHT_MID    = "right-mid";
-    public const CHAR_MIDDLE       = "middle";
+    final public const CHAR_TOP          = "top";
+    final public const CHAR_TOP_MID      = "top-mid";
+    final public const CHAR_TOP_LEFT     = "top-left";
+    final public const CHAR_TOP_RIGHT    = "top-right";
+    final public const CHAR_BOTTOM       = "bottom";
+    final public const CHAR_BOTTOM_MID   = "bottom-mid";
+    final public const CHAR_BOTTOM_LEFT  = "bottom-left";
+    final public const CHAR_BOTTOM_RIGHT = "bottom-right";
+    final public const CHAR_LEFT         = "left";
+    final public const CHAR_LEFT_MID     = "left-mid";
+    final public const CHAR_MID          = "mid";
+    final public const CHAR_MID_MID      = "mid-mid";
+    final public const CHAR_RIGHT        = "right";
+    final public const CHAR_RIGHT_MID    = "right-mid";
+    final public const CHAR_MIDDLE       = "middle";
 
     private const CHARS = [
         self::CHAR_TOP,
@@ -43,8 +43,27 @@ class Charset extends AbstractThemeElement
         self::CHAR_MIDDLE,
     ];
 
-    public function __construct(public readonly string $name, public readonly array $chars) {}
+    /**
+     * Charset constructor.
+     *
+     * @param string $name
+     * @param array<string, string> $chars
+     */
+    public function __construct(public string $name, public readonly array $chars)
+    {
+        parent::__construct($name);
+    }
 
+    /**
+     * Create a Charset instance from an array of data.
+     *
+     * @param array{
+     *     name: string,
+     *     chars: array<string, string>
+     * } $input
+     *
+     * @return Charset
+     */
     public static function fromArray(array $input): Charset
     {
         if (!self::isComplete($input["chars"])) {
@@ -52,6 +71,7 @@ class Charset extends AbstractThemeElement
         }
 
         return new Charset($input["name"], $input["chars"]);
+
     }
 
     public function char(string $name): string
@@ -59,6 +79,9 @@ class Charset extends AbstractThemeElement
         return $this->chars[$name];
     }
 
+    /**
+     * @return array<string, string|array<string,string>>
+     */
     public function toArray(): array
     {
         return [
@@ -67,6 +90,9 @@ class Charset extends AbstractThemeElement
         ];
     }
 
+    /**
+     * @param array<string,string> $chars
+     */
     private static function isComplete(array $chars): bool
     {
         foreach (self::CHARS as $char) {

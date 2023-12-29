@@ -8,13 +8,13 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class Argument extends InputArgument
 {
-    public const REQUIRED = 1;
-    public const OPTIONAL = 2;
-    public const IS_ARRAY = 4;
+    final public const REQUIRED = 1;
+    final public const OPTIONAL = 2;
+    final public const IS_ARRAY = 4;
 
-    private string $description;
+    private ?string $description;
 
-    public function setDescription($description): void
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
     }

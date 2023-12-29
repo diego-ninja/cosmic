@@ -9,9 +9,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractStyle extends AbstractThemeElement
 {
-    public const TERMWIND_STYLE = "termwind";
-    public const SYMFONY_STYLE  = "symfony";
+    final public const TERMWIND_STYLE = "termwind";
+    final public const SYMFONY_STYLE  = "symfony";
 
+    /** @phpstan-ignore-next-line  */
     abstract public static function fromArray(array $input): self;
     abstract public function load(OutputInterface $output): void;
 }
