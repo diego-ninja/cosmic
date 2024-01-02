@@ -10,6 +10,7 @@ use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Environment\EnvironmentBuilder;
 use Ninja\Cosmic\Environment\Exception\EnvironmentNotFoundException;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
+use Ninja\Cosmic\Exception\CosmicException;
 use Ninja\Cosmic\Exception\UnexpectedValueException;
 use Ninja\Cosmic\Replacer\ReplacerFactory;
 use Ninja\Cosmic\Terminal\Terminal;
@@ -246,12 +247,13 @@ if (!function_exists("Cosmic\is_nullable")) {
      * Check if a property is nullable.
      *
      * @param string $property
-     * @param string|null $classname
+     * @param string $classname
      *
      * @return bool
      * @throws UnexpectedValueException
+     * @throws CosmicException
      */
-    function is_nullable(string $property, string $classname = null): bool
+    function is_nullable(string $property, string $classname): bool
     {
         try {
             $type = (new ReflectionProperty($classname, $property))->getType();
@@ -398,7 +400,7 @@ if (!function_exists('Cosmic\find_env')) {
      */
     function find_env(): string
     {
-        $env_file = Terminal::input()->hasParameterOption(["--env", "-e"]) ?
+        $env_file = Terminal::input()?->hasParameterOption(["--env", "-e"]) ?
             sprintf(".env.%s", Terminal::input()->getParameterOption(["--env", "-e"])) :
             ".env";
 
@@ -411,9 +413,12 @@ if (!function_exists('Cosmic\find_env')) {
         }
 
         if (Question::confirm(message: " 🤔 Environment files not found, create them now?", decorated: false)) {
-            EnvironmentBuilder::build(getcwd());
-            Terminal::reset();
-            return find_env();
+            $current = getcwd();
+            if ($current) {
+                EnvironmentBuilder::build($current);
+                Terminal::reset();
+                return find_env();
+            }
         }
 
         throw EnvironmentNotFoundException::forEnv($env_file);
@@ -450,7 +455,7 @@ if (!function_exists('Cosmic\randomize')) {
     /**
      * Generate a random string.
      *
-     * @param int $length
+     * @param int<1,max> $length
      * @return string
      * @throws Exception
      */
@@ -469,9 +474,9 @@ if (!function_exists('Cosmic\termwindize')) {
      * Convert a symfony style string to termwind css.
      *
      * @param string $message
-     * @return string
+     * @return string|null
      */
-    function termwindize(string $message): string
+    function termwindize(string $message): ?string
     {
         return preg_replace_callback(
             '/<(\w+)>(.*?)<\/\1>/s',
@@ -493,13 +498,23 @@ if (!function_exists('Cosmic\cypher')) {
      * @param string $key
      * @param string $algo
      * @return string
+     * @throws UnexpectedValueException
      */
     function cypher(string $plain, string $key, string $algo = "AES-128-CBC"): string
     {
-        $iv_length      = openssl_cipher_iv_length($algo);
+        $iv_length = openssl_cipher_iv_length($algo);
+        if ($iv_length === false) {
+            throw new UnexpectedValueException("Invalid cipher algorithm");
+        }
+
         $iv             = openssl_random_pseudo_bytes($iv_length);
         $ciphertext_raw = openssl_encrypt($plain, $algo, $key, OPENSSL_RAW_DATA, $iv);
-        $hmac           = hash_hmac('sha256', $ciphertext_raw, $key, true);
+
+        if ($ciphertext_raw === false) {
+            throw new UnexpectedValueException("Invalid cipher algorithm");
+        }
+
+        $hmac = hash_hmac('sha256', $ciphertext_raw, $key, true);
 
         return base64_encode($iv . $hmac . $ciphertext_raw);
     }
@@ -512,14 +527,19 @@ if (!function_exists('Cosmic\decipher')) {
      * @param string $cipher_text
      * @param string $key
      * @param string $algo
-     * @return string
+     * @return string|false
+     * @throws UnexpectedValueException
      */
-    function decipher(string $cipher_text, string $key, string $algo = "AES-128-CBC"): string
+    function decipher(string $cipher_text, string $key, string $algo = "AES-128-CBC"): string|false
     {
         $sha2len = 32;
 
-        $c              = base64_decode($cipher_text);
-        $iv_length      = openssl_cipher_iv_length($algo);
+        $c         = base64_decode($cipher_text);
+        $iv_length = openssl_cipher_iv_length($algo);
+        if ($iv_length === false) {
+            throw new UnexpectedValueException("Invalid cipher algorithm");
+        }
+
         $iv             = substr($c, 0, $iv_length);
         $ciphertext_raw = substr($c, $iv_length + $sha2len);
 
