@@ -55,6 +55,26 @@ if (!function_exists('Cosmic\camelize')) {
     }
 }
 
+if (!function_exists('Cosmic\kebabize')) {
+    /**
+     * Convert a string to kebab case.
+     *
+     * @param string $input
+     * @return string
+     */
+    function kebabize(string $input): string
+    {
+        preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
+        $ret = $matches[0];
+
+        foreach ($ret as &$match) {
+            $match = $match === strtoupper((string)$match) ? strtolower($match) : lcfirst((string)$match);
+        }
+
+        return implode('-', $ret);
+    }
+}
+
 if (!function_exists('Cosmic\colorize')) {
     /**
      * Colorize a string.
