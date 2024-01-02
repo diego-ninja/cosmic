@@ -6,6 +6,7 @@ namespace Ninja\Cosmic\Terminal\UI\Spinner\Exception;
 
 use RuntimeException;
 use Throwable;
+
 class SpinnerStyleFileParsingException extends RuntimeException
 {
     public static function withFile(string $file, ?Throwable $previous): self

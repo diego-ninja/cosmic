@@ -35,7 +35,7 @@ trait CommandAttributeTrait
     }
 
     /**
-      * @return array<string, string|null>
+     * @return array<string, string|null>
      */
     public function getArgumentDescriptions(): array
     {
@@ -67,7 +67,7 @@ trait CommandAttributeTrait
         );
 
         foreach ($attributes as $attribute) {
-            $option            = str_replace("--", "", (string) $attribute->newInstance()->name);
+            $option            = str_replace("--", "", (string)$attribute->newInstance()->name);
             $defaults[$option] = $attribute->newInstance()->default ?? null;
         }
 
@@ -83,7 +83,7 @@ trait CommandAttributeTrait
 
         $attributes = $this->reflector->getAttributes(Alias::class, ReflectionAttribute::IS_INSTANCEOF);
         foreach ($attributes as $attribute) {
-            $alias           = str_replace("--", "", (string) $attribute->newInstance()->alias);
+            $alias           = str_replace("--", "", (string)$attribute->newInstance()->alias);
             $aliases[$alias] = $alias;
         }
 

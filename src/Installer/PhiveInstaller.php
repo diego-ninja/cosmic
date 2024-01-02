@@ -231,7 +231,7 @@ class PhiveInstaller extends AbstractInstaller
      */
     private function installPackage(string $package): bool
     {
-        $command     = sudo(
+        $command = sudo(
             command: sprintf(
                 "%s --no-progress install %s -g",
                 find_binary("phive"),

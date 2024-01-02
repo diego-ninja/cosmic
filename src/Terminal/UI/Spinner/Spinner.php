@@ -20,9 +20,9 @@ class Spinner
     private int $child_pid = 0;
 
     /** @var array{
-          *   frames: string[],
-          *   interval: int
-          * }|null
+     *   frames: string[],
+     *   interval: int
+     * }|null
      */
     private ?array $spinner;
 

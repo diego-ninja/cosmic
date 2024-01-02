@@ -113,7 +113,7 @@ class Table
                     }
 
                     $c     = chr(27);
-                    $lines = explode("\n", (string) preg_replace("/($c\[(.*?)m)/s", '', $value));
+                    $lines = explode("\n", (string)preg_replace("/($c\[(.*?)m)/s", '', $value));
                     foreach ($lines as $line) {
                         $columnLengths[$key] = max($columnLengths[$key], mb_strlen($line));
                     }
@@ -135,7 +135,7 @@ class Table
 
         // Only try and center when content is less than available space
         if ((($dataWidth / 2) < $screenWidth) && $this->config->getCenterContent()) {
-            $padding = str_repeat(' ', (int) ($screenWidth - ($dataWidth / 2)) / 2);
+            $padding = str_repeat(' ', (int)($screenWidth - ($dataWidth / 2)) / 2);
         } else {
             $padding = str_repeat(' ', $this->config->getPadding());
         }
@@ -189,7 +189,7 @@ class Table
                 $line = $lines[$i] ?? '';
 
                 $c          = chr(27);
-                $lineLength = mb_strwidth((string) preg_replace("/($c\[(.*?)m)/", '', $line)) + 1;
+                $lineLength = mb_strwidth((string)preg_replace("/($c\[(.*?)m)/", '', $line)) + 1;
                 $line       = sprintf(" <%s>%s</%s>", $color, $line, $color);
                 $response .= $line;
 
@@ -234,7 +234,7 @@ class Table
         $total = array_sum($columnLengths) + count($columnLengths) + 1;
 
         $c          = chr(27);
-        $lineLength = mb_strwidth((string) preg_replace("/($c\[(.*?)m)/", '', $title)) + 1;
+        $lineLength = mb_strwidth((string)preg_replace("/($c\[(.*?)m)/", '', $title)) + 1;
 
         $response = $this->getChar('left');
         $response .= sprintf(" <%s>%s</%s>", $headerColor, $title, $headerColor);
@@ -321,7 +321,7 @@ class Table
     {
         $response = '';
         if ($this->config->hasChar($type)) {
-            $char     = trim((string) $this->config->getChar($type));
+            $char     = trim((string)$this->config->getChar($type));
             $response = str_repeat($char, $length);
         }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Crypt;
 
 use Stringable;
+
 final readonly class Uid implements Stringable
 {
     public function __construct(

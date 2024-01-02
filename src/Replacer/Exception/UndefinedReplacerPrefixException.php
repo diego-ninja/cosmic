@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Replacer\Exception;
 
 use RuntimeException;
+
 class UndefinedReplacerPrefixException extends RuntimeException
 {
     public static function forReplacer(string $replacer): self

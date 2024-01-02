@@ -52,9 +52,9 @@ class Spinner extends AbstractThemeElement
     public function toArray(): array
     {
         return [
-            "name" => $this->name,
-            "frames" => $this->frames,
-            "interval" => $this->interval
+            "name"     => $this->name,
+            "frames"   => $this->frames,
+            "interval" => $this->interval,
         ];
     }
 }

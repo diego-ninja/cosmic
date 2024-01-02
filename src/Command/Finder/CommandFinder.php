@@ -12,9 +12,9 @@ use function Cosmic\get_class_from_file;
 class CommandFinder
 {
     /**
-      * @param array<string> $command_dirs
-      * @param array<string> $commands
-      * @return array<string>
+     * @param array<string> $command_dirs
+     * @param array<string> $commands
+     * @return array<string>
      */
     public static function find(array $command_dirs, array &$commands = []): array
     {
