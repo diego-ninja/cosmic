@@ -69,15 +69,15 @@ final class Application extends \Symfony\Component\Console\Application
     /**
      * Application constructor.
      *
+     * @param string $name
+     * @param string $version
      * @param Container|null $container
      *
-     * @throws InvalidArgumentException
-     * @throws RuntimeException
+     * @throws ContainerExceptionInterface
      * @throws InvocationException
      * @throws NotCallableException
-     * @throws ReflectionException
-     * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
      */
     public function __construct(string $name = 'UNKNOWN', string $version = 'UNKNOWN', ?Container $container = null)
     {
