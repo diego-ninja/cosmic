@@ -83,10 +83,9 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         $this->askApplicationAuthor();
         $this->askApplicationWebsite();
         $this->askApplicationLicense();
+        $this->askDisableCosmicCommands();
         $this->askGenerateGPGKey();
         $this->askSudoPassword();
-
-        //$this->displaySummary();
 
         if (Question::confirm("Do you confirm generation of the application?")) {
             Terminal::output()->writeln("");
@@ -208,8 +207,8 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
 
             Terminal::clear(2);
             Terminal::output()->writeln("");
-            Terminal::output()->writeln(sprintf(" 📦 Package name: <info>%s</info>", $package_name));
-            Terminal::output()->writeln(sprintf(" ⚙️  Binary name: <info>%s</info>", $binary_name));
+            Terminal::output()->writeln(sprintf(" %s Package name: <info>%s</info>", Terminal::getTheme()->getIcon("bullet"), $package_name));
+            Terminal::output()->writeln(sprintf(" %s Binary name: <info>%s</info>", Terminal::getTheme()->getIcon("bullet"), $binary_name));
             Terminal::output()->writeln("");
 
             self::$replacements["{app.name}"]     = $binary_name;
@@ -233,7 +232,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             }
 
             Terminal::clear(2);
-            Terminal::output()->writeln(sprintf(" 📁 Application path: <info>%s</info>", $path));
+            Terminal::output()->writeln(sprintf(" %s Application path: <info>%s</info>", Terminal::getTheme()->getIcon("bullet"), $path));
             Terminal::output()->writeln("");
 
             self::$replacements["{app.path}"] = $path;
@@ -246,7 +245,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         $description = Question::ask(message: " 📄 <question>Description</question>:", decorated: false);
 
         Terminal::clear(2);
-        Terminal::output()->writeln(sprintf(" 📄 Description: <info>%s</info>", $description));
+        Terminal::output()->writeln(sprintf(" %s Description: <info>%s</info>", Terminal::getTheme()->getIcon("bullet"), $description));
         Terminal::output()->writeln("");
 
         self::$replacements["{app.description}"] = $description;
@@ -261,19 +260,22 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         $email  = Question::ask(message: " 📧 <question>E-Mail</question>:", default: git_config("user.email"), decorated: false);
 
         Terminal::clear(3);
-        Terminal::output()->writeln(sprintf(" 🥷 Author: <info>%s</info> <%s>", $author, $email));
+        Terminal::output()->writeln(sprintf(" %s Author: <info>%s</info> <%s>", Terminal::getTheme()->getIcon("bullet"), $author, $email));
         Terminal::output()->writeln("");
 
         self::$replacements["{author.name}"]  = $author;
         self::$replacements["{author.email}"] = $email;
     }
 
+    /**
+     * @throws BinaryNotFoundException
+     */
     private function askApplicationWebsite(): void
     {
         $website = Question::ask(message: " 🌎 <question>Website</question>:", default: git_config("user.website"), decorated: false);
 
         Terminal::clear(2);
-        Terminal::output()->writeln(sprintf(" 🌎 Website: <info>%s</info>", $website));
+        Terminal::output()->writeln(sprintf(" %s Website: <info>%s</info>", Terminal::getTheme()->getIcon("bullet"), $website));
         Terminal::output()->writeln("");
 
         self::$replacements["{author.url}"] = $website;
@@ -290,10 +292,30 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
         );
 
         Terminal::clear(1);
-        Terminal::output()->writeln(sprintf(" 🔎 License: <info>%s</info>", $license[0]));
+        Terminal::output()->writeln(sprintf(" %s License: <info>%s</info>", Terminal::getTheme()->getIcon("bullet"), $license[0]));
         Terminal::output()->writeln("");
 
         self::$replacements["{app.license}"] = $license[0];
+    }
+
+    private function askDisableCosmicCommands(): void
+    {
+
+        UI::title("<span class='mr-1'>🛸</span> Disable cosmic commands");
+        UI::p(
+            "Cosmic commands are a set of commands that are provided by the <info>cosmic</info> framework.
+                     These commands are used to build, package and sign your application.
+                     If you want to disable these commands, you can do so by setting this option to <notice>no</notice>.
+                     If you want to keep these commands, just press <notice>return</notice> to skip this step."
+        );
+
+        $disable = Question::confirm(message: " 🛸 <question>Do you want to disable cosmic commands</question>:", default: false, decorated: false);
+
+        Terminal::clear(10);
+        Terminal::output()->writeln(sprintf(" %s Cosmic commands: <info>%s</info>", Terminal::getTheme()->getIcon("bullet"), $disable ? "disabled" : "enabled"));
+        Terminal::output()->writeln("");
+
+        self::$replacements["{app.disable_cosmic_commands}"] = $disable ? "true" : "false";
     }
 
     /**
@@ -314,7 +336,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             $key = randomize(32);
 
             Terminal::clear(10);
-            Terminal::output()->writeln(sprintf(" #️⃣  Sudo password: <info>%s</info>", mask($password, 10)));
+            Terminal::output()->writeln(sprintf(" %s Sudo password: <info>%s</info>", Terminal::getTheme()->getIcon("bullet"), mask($password, 10)));
             Terminal::output()->writeln("");
 
             self::$replacements["{app.key}"]       = $key;
@@ -368,7 +390,7 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
 
         if ($key) {
             Terminal::clear(11);
-            Terminal::output()->writeln(sprintf(" 🔑 GPG key: <info>%s</info>", $key));
+            Terminal::output()->writeln(sprintf(" %s GPG key: <info>%s</info>", Terminal::getTheme()->getIcon("bullet"), $key));
             Terminal::output()->writeln("");
 
             self::$replacements["{gpg.key}"] = $key;
