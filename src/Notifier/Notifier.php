@@ -106,7 +106,7 @@ class Notifier
     private function getSuccessNotification(string $message): Notification
     {
         return (new Notification())
-            ->setTitle(ucfirst((string) Env::get("APP_NAME")))
+            ->setTitle(ucfirst((string)Env::get("APP_NAME")))
             ->setBody($message)
             ->setIcon(Terminal::getTheme()->getNotificationIcon() ?? "");
     }
@@ -121,7 +121,7 @@ class Notifier
     private function getErrorNotification(string $message): Notification
     {
         return (new Notification())
-            ->setTitle(ucfirst((string) Env::get("APP_NAME")))
+            ->setTitle(ucfirst((string)Env::get("APP_NAME")))
             ->setBody($message)
             ->setIcon(Terminal::getTheme()->getNotificationIcon() ?? "");
     }

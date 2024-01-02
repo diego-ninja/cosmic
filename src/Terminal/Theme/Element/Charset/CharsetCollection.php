@@ -49,7 +49,7 @@ class CharsetCollection extends AbstractElementCollection
             return $collection;
         }
 
-        $data       = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
         foreach ($data["charsets"] as $name => $chars) {
             $collection->add(Charset::fromArray(["name" => $name, "chars" => $chars]));
         }

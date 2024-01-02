@@ -29,7 +29,7 @@ final class CompletionCommand extends CosmicCommand
 
     public function __invoke(?string $shell): int
     {
-        $command_name = basename((string) $_SERVER['argv'][0]);
+        $command_name = basename((string)$_SERVER['argv'][0]);
         $shell ??= $this->guessShell();
 
         $completion_file = __DIR__ . '/../../resources/completion/completion.' . $shell;
@@ -79,7 +79,7 @@ final class CompletionCommand extends CosmicCommand
     public function getCommandHelp(): ?string
     {
         $fullCommand = $_SERVER['PHP_SELF'];
-        $commandName = basename((string) $fullCommand);
+        $commandName = basename((string)$fullCommand);
         $fullCommand = @realpath($fullCommand) ?: $fullCommand;
 
         $shell                     = $this->guessShell();

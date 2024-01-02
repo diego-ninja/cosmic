@@ -60,7 +60,7 @@ abstract class AbstractReplacer implements ReplacerInterface
         foreach ($matches[1] as $placeholder) {
             [$prefix, $key] = explode(
                 separator: '.',
-                string: (string) $placeholder
+                string: (string)$placeholder
             );
 
             if ($prefix === $this->getPrefix()) {

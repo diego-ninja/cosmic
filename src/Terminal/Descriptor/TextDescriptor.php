@@ -263,7 +263,7 @@ class TextDescriptor extends AbstractDescriptor
             }
         }
 
-        $content = json_encode($default,\JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
+        $content = json_encode($default, \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
 
         return $content ? str_replace('\\\\', '\\', $content) : $default;
 

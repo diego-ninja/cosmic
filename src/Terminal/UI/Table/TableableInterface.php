@@ -14,7 +14,7 @@ use Ninja\Cosmic\Terminal\RenderableInterface;
 interface TableableInterface extends RenderableInterface
 {
     /**
-      * @return array<string,mixed>
+     * @return array<string,mixed>
      */
     public function getTableData(): array;
     public function getTableTitle(): ?string;

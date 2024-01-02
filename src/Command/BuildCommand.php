@@ -75,7 +75,7 @@ final class BuildCommand extends CosmicCommand implements NotifiableInterface
      */
     private function extractEnvironments(): array
     {
-        $envs = [];
+        $envs  = [];
         $files = glob("./.env.*");
 
         if ($files) {

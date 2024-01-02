@@ -62,10 +62,9 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     ];
 
     /**
-      * @var array<string,mixed>
+     * @var array<string,mixed>
      */
     private static array $replacements = [];
-
 
     /**
      * @throws Exception
@@ -222,9 +221,9 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
     private function askApplicationPath(?string $path = null): void
     {
         $default_path = $path ?? getcwd();
-        $path = Question::ask(
+        $path         = Question::ask(
             message: " 📁 <question>Application path</question>:",
-            default: (string) $default_path,
+            default: (string)$default_path,
             decorated: false
         );
 
@@ -318,7 +317,6 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             Terminal::output()->writeln(sprintf(" #️⃣  Sudo password: <info>%s</info>", mask($password, 10)));
             Terminal::output()->writeln("");
 
-
             self::$replacements["{app.key}"]       = $key;
             self::$replacements["{sudo.password}"] = cypher($password, $key);
 
@@ -339,12 +337,10 @@ final class InitCommand extends CosmicCommand implements NotifiableInterface
             $keyring->all()->getById(Env::get("APP_SIGNING_KEY")) :
             $keyring->all()->getByEmail(Env::get("APP_AUTHOR_EMAIL"));
 
-
         if (is_array($default_key)) {
-            $key_id = $this->selectKey($default_key, Env::get("APP_AUTHOR_EMAIL"));
+            $key_id      = $this->selectKey($default_key, Env::get("APP_AUTHOR_EMAIL"));
             $default_key = $keyring->all()->getById($key_id);
         }
-
 
         UI::title("🔑 GPG key");
         UI::p(

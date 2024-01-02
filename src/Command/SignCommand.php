@@ -196,7 +196,7 @@ class SignCommand extends CosmicCommand
             $keyring->all()->getByEmail(Env::get("APP_AUTHOR_EMAIL"));
 
         if (is_array($default_key)) {
-            $key_id = $this->selectKey($default_key, Env::get("APP_AUTHOR_EMAIL"));
+            $key_id      = $this->selectKey($default_key, Env::get("APP_AUTHOR_EMAIL"));
             $default_key = $keyring->all()->getById($key_id);
         }
 

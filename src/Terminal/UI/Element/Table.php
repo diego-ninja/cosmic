@@ -41,7 +41,7 @@ readonly class Table extends AbstractElement
     private function normalizeHeaders(array $headers): array
     {
         if (array_is_list($headers)) {
-            return array_combine($headers, array_map(static fn($header): string => ucfirst((string) $header), $headers));
+            return array_combine($headers, array_map(static fn($header): string => ucfirst((string)$header), $headers));
         }
 
         return $headers;

@@ -157,10 +157,10 @@ class Env
     public static function shell(?string $icon = null): string
     {
         if ($icon) {
-            return sprintf("%s %s", $icon, basename((string) self::get("SHELL")));
+            return sprintf("%s %s", $icon, basename((string)self::get("SHELL")));
         }
 
-        return basename((string) self::get("SHELL"));
+        return basename((string)self::get("SHELL"));
     }
 
     /**
