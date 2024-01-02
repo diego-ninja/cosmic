@@ -493,7 +493,7 @@ final class Application extends \Symfony\Component\Console\Application
         $ret = $matches[0];
 
         foreach ($ret as &$match) {
-            $match = $match === strtoupper((string) $match) ? strtolower($match) : lcfirst((string) $match);
+            $match = $match === strtoupper((string)$match) ? strtolower($match) : lcfirst((string)$match);
         }
 
         return implode('-', $ret);

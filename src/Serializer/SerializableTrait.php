@@ -45,7 +45,7 @@ trait SerializableTrait
     }
 
     /**
-      * @return array<string,mixed>|null
+     * @return array<string,mixed>|null
      */
     public function jsonSerialize(): ?array
     {

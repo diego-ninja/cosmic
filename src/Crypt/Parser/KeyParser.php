@@ -24,7 +24,7 @@ class KeyParser
     public function extractKeys(string $keyType): KeyCollection
     {
         $imported_keys = new KeyCollection();
-        $process = Process::fromShellCommandline($this->getCommand($keyType));
+        $process       = Process::fromShellCommandline($this->getCommand($keyType));
         if ($process->mustRun()->isSuccessful()) {
             $output = $this->stripHeader($process->getOutput(), 2);
 

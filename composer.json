@@ -32,7 +32,9 @@
         "ext-posix": "*",
         "ext-random": "*",
         "ext-zip": "*",
+        "innmind/signals": "^3.1",
         "jolicode/jolinotif": "^2",
+        "khill/php-duration": "^1.1",
         "nesbot/carbon": "^2.72",
         "nunomaduro/collision": "^7",
         "nunomaduro/termwind": "^1.15",
@@ -45,9 +47,7 @@
         "ramsey/uuid": "^4.7",
         "symfony/console": "^6",
         "symfony/process": "^6",
-        "vlucas/phpdotenv": "^5",
-        "khill/php-duration": "^1.1",
-        "innmind/signals": "^3.1"
+        "vlucas/phpdotenv": "^5"
     },
     "require-dev": {
         "captainhook/captainhook": "^5.10",
@@ -56,15 +56,17 @@
         "friendsofphp/php-cs-fixer": "^3.40",
         "icanhazstring/composer-unused": "^0.8.7",
         "maglnet/composer-require-checker": "^4.5",
+        "mockery/mockery": "^1.6",
+        "pestphp/pest": "^2.30",
         "php-parallel-lint/php-console-highlighter": "^1.0",
         "php-parallel-lint/php-parallel-lint": "^1.3",
         "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^10",
         "ramsey/conventional-commits": "^1.3",
-        "roave/security-advisories": "dev-latest",
-        "saggre/phpdocumentor-markdown": "^0.1.4",
+        "rector/phpstan-rules": "^0.7.1",
         "rector/rector": "^0.18.13",
-        "rector/phpstan-rules": "^0.7.1"
+        "roave/security-advisories": "dev-latest",
+        "saggre/phpdocumentor-markdown": "^0.1.4"
     },
     "autoload": {
         "psr-4": {
@@ -88,11 +90,11 @@
             "bamarni/composer-bin-plugin": false,
             "captainhook/plugin-composer": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "ergebnis/composer-normalize": true
+            "ergebnis/composer-normalize": true,
+            "pestphp/pest-plugin": true
         }
     },
     "scripts": {
-        "docs": "phpDocumentor --directory=src --target=docs/api --template='vendor/saggre/phpdocumentor-markdown/themes/markdown'",
         "deps": "@dev:deps",
         "dev:analyze": [
             "@dev:analyze:phpstan"
@@ -121,6 +123,7 @@
         "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
         "dev:test:unit": "phpunit --colors=always --testdox",
         "dev:test:unit:debug": "phpunit --colors=always --testdox -d xdebug.profiler_enable=on",
+        "docs": "phpDocumentor --directory=src --target=docs/api --template='vendor/saggre/phpdocumentor-markdown/themes/markdown'",
         "test": "@dev:test"
     },
     "scripts-descriptions": {

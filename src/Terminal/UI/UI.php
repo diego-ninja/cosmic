@@ -9,7 +9,6 @@ use Ninja\Cosmic\Terminal\UI\Element\Header;
 use Ninja\Cosmic\Terminal\UI\Element\OrderedList;
 use Ninja\Cosmic\Terminal\UI\Element\Paragraph;
 use Ninja\Cosmic\Terminal\UI\Element\Rule;
-use Ninja\Cosmic\Terminal\UI\Element\Summary;
 use Ninja\Cosmic\Terminal\UI\Element\Table;
 use Ninja\Cosmic\Terminal\UI\Element\Title;
 use Ninja\Cosmic\Terminal\UI\Element\UnorderedList;

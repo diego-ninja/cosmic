@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Exception;
 
-use function get_class;
-use function gettype;
-use function is_object;
-
 class UnexpectedValueException extends CosmicException
 {
     public static function fromValue(mixed $value): self

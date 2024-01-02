@@ -52,7 +52,7 @@ final class HelpCommand extends CosmicCommand
 
     private function getCommandHelperRenderer(): CommandHelpRenderer
     {
-        $helpDirectories = [__DIR__ . "/../../resources/help"];
+        $helpDirectories     = [__DIR__ . "/../../resources/help"];
         $applicationHelpPath = Env::helpPath();
 
         if ($applicationHelpPath !== null) {

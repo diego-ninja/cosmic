@@ -13,7 +13,7 @@ use JsonSerializable;
 interface SerializableInterface extends JsonSerializable
 {
     /**
-      * @return array<string,mixed>|null
+     * @return array<string,mixed>|null
      */
     public function toArray(): ?array;
     public function toJson(): string;

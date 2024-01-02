@@ -49,7 +49,7 @@ class SpinnerCollection extends AbstractElementCollection
             return $collection;
         }
 
-        $data       = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
         foreach ($data["spinners"] as $name => $spinner) {
             $collection->add(Spinner::fromArray(["name" => $name, "frames" => $spinner["frames"], "interval" => $spinner["interval"]]));
         }
@@ -70,9 +70,9 @@ class SpinnerCollection extends AbstractElementCollection
         foreach ($input as $name => $spinner) {
             $collection->add(
                 Spinner::fromArray([
-                    "name" => $name,
-                    "frames" => $spinner["frames"],
-                    "interval" => $spinner["interval"]
+                    "name"     => $name,
+                    "frames"   => $spinner["frames"],
+                    "interval" => $spinner["interval"],
                 ])
             );
         }

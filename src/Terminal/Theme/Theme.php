@@ -205,7 +205,6 @@ class Theme implements ThemeInterface
         return $this->toArray();
     }
 
-
     /**
      * @return array<string, mixed>
      */

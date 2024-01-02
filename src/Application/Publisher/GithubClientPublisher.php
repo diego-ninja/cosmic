@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Application\Publisher;
 
-use Ninja\Cosmic\Application\Publisher\Asset\Signature;
 use RuntimeException;
 use JsonException;
 use Ninja\Cosmic\Application\Publisher\Asset\Asset;

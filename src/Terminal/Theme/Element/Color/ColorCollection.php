@@ -106,7 +106,7 @@ class ColorCollection extends AbstractElementCollection
     public static function fromFile(string $file): ColorCollection
     {
         $collection = new ColorCollection();
-        $content   = file_get_contents($file);
+        $content    = file_get_contents($file);
         if ($content === false) {
             return $collection;
         }

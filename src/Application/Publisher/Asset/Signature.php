@@ -21,7 +21,7 @@ class Signature extends Asset
      */
     public function __construct(private readonly string $signed_file)
     {
-        $name = sprintf('%s GPG Signature', ucfirst((string) Env::get('APP_NAME')));
+        $name = sprintf('%s GPG Signature', ucfirst((string)Env::get('APP_NAME')));
         $path = sprintf('%s.asc', $signed_file);
         parent::__construct($name, $path);
     }

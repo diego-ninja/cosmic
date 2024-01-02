@@ -14,6 +14,7 @@ use Ninja\Cosmic\Terminal\UI\Table\TableableInterface;
 use Ninja\Cosmic\Terminal\UI\Table\TableableTrait;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+
 use function Cosmic\find_binary;
 
 /**

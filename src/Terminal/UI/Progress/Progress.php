@@ -347,7 +347,7 @@ class Progress implements Stringable
                 $percent < 25 => $color = 'red',
                 $percent < 50 => $color = 'orange',
                 $percent < 75 => $color = 'yellow',
-                default       => $color       = 'green',
+                default       => $color = 'green',
             };
         } else {
             $color = $this->config->getBarColor();

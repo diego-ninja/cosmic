@@ -19,8 +19,8 @@ class SelectHandler
 
     final public const DEFAULT_CTR = self::COMPLEX_CTR;
 
-    protected int $row = 0;
-    protected int $column = 0;
+    protected int $row       = 0;
+    protected int $column    = 0;
     protected bool $firstRun = false;
 
     /**
@@ -57,7 +57,7 @@ class SelectHandler
                 $this->select();
             } elseif ("\033" === $char) {
                 $this->navigate($char, $ctrlMode);
-            } elseif (10 === ord((string) $char)) {
+            } elseif (10 === ord((string)$char)) {
                 if ($ctrlMode === self::SIMPLE_CTR && !$this->question->hasSelections()) {
                     $this->select();
                 }

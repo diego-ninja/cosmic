@@ -57,7 +57,7 @@ class StyleCollection extends AbstractElementCollection
             return $collection;
         }
 
-        $data       = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
         foreach ($data["styles"] as $substyle => $styles) {
             foreach ($styles as $name => $style) {
                 $style = $substyle === AbstractStyle::TERMWIND_STYLE ?
