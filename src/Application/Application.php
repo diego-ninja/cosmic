@@ -4,28 +4,21 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Application;
 
-use Closure;
 use DI\Container;
 use Exception;
 use InvalidArgumentException;
-use Invoker\Exception\InvocationException;
-use Invoker\Exception\NotCallableException;
-use Invoker\Invoker;
-use Invoker\InvokerInterface;
-use Invoker\ParameterResolver\AssociativeArrayResolver;
-use Invoker\ParameterResolver\Container\ParameterNameContainerResolver;
-use Invoker\ParameterResolver\Container\TypeHintContainerResolver;
-use Invoker\ParameterResolver\ResolverChain;
-use Invoker\ParameterResolver\TypeHintResolver;
+use Ninja\Cosmic\Command\BuildCommand;
+use Ninja\Cosmic\Command\Builder\CommandBuilder;
 use Ninja\Cosmic\Command\Command;
 use Ninja\Cosmic\Command\CommandInterface;
 use Ninja\Cosmic\Command\EnvironmentAwareInterface;
 use Ninja\Cosmic\Command\Finder\CommandFinder;
-use Ninja\Cosmic\Command\Parser\ExpressionParser;
+use Ninja\Cosmic\Command\InitCommand;
+use Ninja\Cosmic\Command\InstallCommand;
+use Ninja\Cosmic\Command\PublishCommand;
+use Ninja\Cosmic\Command\SignCommand;
 use Ninja\Cosmic\Environment\Env;
 use Ninja\Cosmic\Event\Lifecycle;
-use Ninja\Cosmic\Reflector\CallableReflector;
-use Ninja\Cosmic\Resolver\HyphenatedInputResolver;
 use Ninja\Cosmic\Terminal\Terminal;
 use NunoMaduro\Collision\Handler;
 use NunoMaduro\Collision\Provider;
@@ -33,16 +26,12 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionException;
-use ReflectionMethod;
 use RuntimeException;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
-use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
 use function Cosmic\get_class_from_file;
@@ -60,9 +49,13 @@ final class Application extends \Symfony\Component\Console\Application
     public const LIFECYCLE_APP_INSTALL  = 'app.install';
     public const LIFECYCLE_APP_SIGNALED = 'app.signal';
 
-    private readonly ExpressionParser $parser;
-
-    private InvokerInterface $invoker;
+    private const COSMIC_COMMANDS = [
+        BuildCommand::class,
+        InstallCommand::class,
+        InitCommand::class,
+        PublishCommand::class,
+        SignCommand::class,
+    ];
 
     private ?ContainerInterface $container;
 
@@ -74,8 +67,6 @@ final class Application extends \Symfony\Component\Console\Application
      * @param Container|null $container
      *
      * @throws ContainerExceptionInterface
-     * @throws InvocationException
-     * @throws NotCallableException
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
@@ -83,19 +74,15 @@ final class Application extends \Symfony\Component\Console\Application
     {
         parent::__construct($name, $version);
 
-        $this->parser  = $this->createParser();
-        $this->invoker = $this->createInvoker();
-
         $error_handler = new Provider(
             handler: (new Handler())->setOutput(Terminal::output())
         );
         $error_handler->register();
 
-        $this->enableTheme($this->getThemeName());
-
-        $this->withContainer($container ?? new Container(), true, true);
-        $this->registerCommands([__DIR__ . "/../Command"]);
-
+        $this
+            ->withContainer($container ?? new Container())
+            ->enableTheme($this->getThemeName())
+            ->registerCommands([__DIR__ . "/../Command"]);
     }
 
     /**
@@ -206,11 +193,8 @@ final class Application extends \Symfony\Component\Console\Application
     /**
      * Register a command into the application.
      *
-     *
      * @throws InvalidArgumentException
-     * @throws InvocationException
      * @throws ReflectionException
-     * @throws NotCallableException
      */
     public function registerCommand(CommandInterface $command): Application
     {
@@ -220,34 +204,31 @@ final class Application extends \Symfony\Component\Console\Application
             return $this->registerCommandInEnvironment($command, Env::env());
         }
 
-        $this->command($command->getSignature(), $command::class)
-            ?->setName($command->getCommandName())
-            ->setHidden($command->isHidden())
-            ->setDecorated($command->isDecorated())
-            ->descriptions($command->getCommandDescription(), $command->getArgumentDescriptions())
-            ->defaults($command->getDefaults())
-            ->setAliases($command->getAliases())
-            ->setIcon($command->getCommandIcon())
-            ->setHelp($command->getCommandHelp() ?? "")
-            ->setApplication($this);
+        if (!$this->isCommandDisabled($command)) {
+            $this->command($command->getSignature(), $command::class)
+                ?->setName($command->getCommandName())
+                ->setHidden($command->isHidden())
+                ->setDecorated($command->isDecorated())
+                ->descriptions($command->getCommandDescription(), $command->getArgumentDescriptions())
+                ->defaults($command->getDefaults())
+                ->setAliases($command->getAliases())
+                ->setIcon($command->getCommandIcon())
+                ->setHelp($command->getCommandHelp() ?? "")
+                ->setApplication($this);
+        }
 
         return $this;
     }
 
     /**
      * Register a command into the application if the command is available in the specified environment.
-     *
-     *
-     *
-     * @throws NotCallableException
-     * @throws InvocationException
      * @throws ReflectionException
      */
     private function registerCommandInEnvironment(
         CommandInterface & EnvironmentAwareInterface $command,
         string $environment
     ): Application {
-        if ($command->isAvailableIn($environment)) {
+        if ($command->isAvailableIn($environment) && !$this->isCommandDisabled($command)) {
             $this->command($command->getSignature(), $command::class)
                 ?->setName($command->getCommandName())
                 ->setHidden($command->isHidden())
@@ -269,9 +250,7 @@ final class Application extends \Symfony\Component\Console\Application
      * @param string[] $command_paths
      * @return Application
      *
-     * @throws NotCallableException
      * @throws NotFoundExceptionInterface
-     * @throws InvocationException
      * @throws ReflectionException
      * @throws ContainerExceptionInterface
      */
@@ -290,27 +269,24 @@ final class Application extends \Symfony\Component\Console\Application
         return $this;
     }
 
+    private function isCommandDisabled(CommandInterface $command): bool
+    {
+        return
+            in_array($command::class, self::COSMIC_COMMANDS, true) && Env::get("DISABLE_COSMIC_COMMANDS", false);
+    }
+
     /**
      * Set the container to use for resolving command dependencies.
      *
      * @throws InvalidArgumentException
      */
     public function withContainer(
-        ContainerInterface $container,
-        bool $byTypeHint = false,
-        bool $byParameterName = false
-    ): void {
+        ContainerInterface $container
+    ): self {
         $this->container = $container;
+        CommandBuilder::getInstance($container);
 
-        $resolver = $this->createParameterResolver();
-        if ($byTypeHint) {
-            $resolver->appendResolver(new TypeHintContainerResolver($container));
-        }
-        if ($byParameterName) {
-            $resolver->appendResolver(new ParameterNameContainerResolver($container));
-        }
-
-        $this->invoker = new Invoker($resolver, $container);
+        return $this;
     }
 
     /**
@@ -321,196 +297,36 @@ final class Application extends \Symfony\Component\Console\Application
      * @param string[] $aliases
      *
      * @return Command|null
-     * @throws NotCallableException
      * @throws ReflectionException
      * @throws Exception
      */
     public function command(string $expression, callable|string|array $callable, array $aliases = []): ?Command
     {
-        $this->assertCallableIsValid($callable);
+        $command = CommandBuilder::build($expression, $callable, $aliases);
+        if ($command) {
+            $command->setApplication($this);
+            $this->add($command);
 
-        $command_function = function (InputInterface $input, OutputInterface $output) use ($callable): mixed {
-            $parameters = array_merge(
-                [
-                    'input'                => $input,
-                    'output'               => $output,
-                    InputInterface::class  => $input,
-                    OutputInterface::class => $output,
-                    Input::class           => $input,
-                    Output::class          => $output,
-                    SymfonyStyle::class    => new SymfonyStyle($input, $output),
-                ],
-                $input->getArguments(),
-                $input->getOptions()
-            );
-
-            if ($callable instanceof Closure) {
-                $callable = $callable->bindTo($this, $this);
-            }
-
-            if ($callable !== null) {
-                try {
-                    return $this->invoker->call($callable, $parameters);
-                } catch (InvocationException $e) {
-                    throw new RuntimeException(
-                        sprintf(
-                            "Impossible to call the '%s' command: %s",
-                            $input->getFirstArgument() ?? 'UNKNOWN',
-                            $e->getMessage()
-                        ),
-                        0,
-                        $e
-                    );
-                }
-            }
-
-            return null;
-        };
-
-        $command = $this->createCommand($expression, $command_function);
-        $command->setAliases($aliases);
-
-        $command->defaults($this->defaultsViaReflection($command, $callable));
-
-        $this->add($command);
-
-        return $command;
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function createCommand(string $expression, callable $callable): Command
-    {
-        $result = $this->parser->parse($expression);
-
-        $command = new Command($result['name']);
-        $command->getDefinition()->addArguments($result['arguments']);
-        $command->getDefinition()->addOptions($result['options']);
-
-        $command->setCode($callable);
-        $command->setApplication($this);
-
-        return $command;
-    }
-
-    private function createInvoker(): InvokerInterface
-    {
-        return new Invoker($this->createParameterResolver());
-    }
-
-    private function createParser(): ExpressionParser
-    {
-        return new ExpressionParser();
-    }
-
-    private function createParameterResolver(): ResolverChain
-    {
-        return new ResolverChain([
-            new AssociativeArrayResolver(),
-            new HyphenatedInputResolver(),
-            new TypeHintResolver(),
-        ]);
-    }
-
-    /**
-     * @return array<string, mixed>
-     *
-     * @throws NotCallableException
-     * @throws ReflectionException
-     */
-    private function defaultsViaReflection(Command $command, mixed $callable): array
-    {
-        if (!is_callable($callable)) {
-            return [];
+            return $command;
         }
 
-        $function = CallableReflector::create($callable);
-
-        $definition = $command->getDefinition();
-
-        $defaults = [];
-
-        foreach ($function->getParameters() as $parameter) {
-            if (!$parameter->isDefaultValueAvailable()) {
-                continue;
-            }
-
-            $parameter_name       = $parameter->name;
-            $hyphenated_case_name = $this->fromCamelCase($parameter_name);
-
-            if ($definition->hasArgument($hyphenated_case_name) || $definition->hasOption($hyphenated_case_name)) {
-                $parameter_name = $hyphenated_case_name;
-            }
-
-            if (!$definition->hasArgument($parameter_name) && !$definition->hasOption($parameter_name)) {
-                continue;
-            }
-
-            $defaults[$parameter_name] = $parameter->getDefaultValue();
-        }
-
-        return $defaults;
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    private function assertCallableIsValid(mixed $callable): void
-    {
-        if ($this->container instanceof ContainerInterface) {
-            return;
-        }
-
-        if ($this->isStaticCallToNonStaticMethod($callable)) {
-            [$class, $method] = $callable;
-
-            $message = "['{$class}', '{$method}'] is not a callable because '{$method}' is a static method.";
-            $message .= " Either use [new {$class}(), '{$method}'] or configure a dependency injection container that supports auto wiring like PHP-DI."; //phpcs:ignore
-
-            throw new InvalidArgumentException($message);
-        }
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    private function isStaticCallToNonStaticMethod(mixed $callable): bool
-    {
-        if (is_array($callable) && is_string($callable[0])) {
-            [$class, $method] = $callable;
-            $reflection       = new ReflectionMethod($class, $method);
-
-            return !$reflection->isStatic();
-        }
-
-        return false;
-    }
-
-    private function fromCamelCase(string $input): string
-    {
-        preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
-        $ret = $matches[0];
-
-        foreach ($ret as &$match) {
-            $match = $match === strtoupper((string)$match) ? strtolower($match) : lcfirst((string)$match);
-        }
-
-        return implode('-', $ret);
+        return null;
     }
 
     private function getThemeName(): string
     {
         if (Terminal::input()?->hasParameterOption(['--theme', '-t'])) {
-            return Terminal::input()->getParameterOption(['--theme', '-t']) ?? Env::get('APP_THEME', "default");
+            return Terminal::input()->getParameterOption(['--theme', '-t']) ?? Env::get('APP_THEME', "cosmic");
         }
 
-        return Env::get('APP_THEME', "default");
+        return Env::get('APP_THEME', "cosmic");
     }
 
-    private function enableTheme(string $theme): void
+    private function enableTheme(string $theme): self
     {
         Terminal::enableTheme($theme);
         $this->setName(sprintf("%s %s", Terminal::getTheme()->getAppIcon(), Env::get("APP_NAME")));
+
+        return $this;
     }
 }
