@@ -22,7 +22,7 @@ readonly class Table extends AbstractElement
         $table = new \Ninja\Cosmic\Terminal\UI\Table\Table(
             data: $data,
             columns: [],
-            config: new TableConfig(Terminal::getTheme()->getConfig("table"))
+            config: new TableConfig(Terminal::getTheme()?->getConfig("table"))
         );
 
         foreach ($headers as $key => $value) {

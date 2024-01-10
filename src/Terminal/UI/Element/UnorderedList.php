@@ -15,7 +15,7 @@ readonly class UnorderedList extends AbstractList
         return array_map(
             static fn(string $item): string => sprintf(
                 "<div class='ml-1'>%s</div><span class='ml-1 text-%s'>%s</span>",
-                Terminal::getTheme()->getIcon('bullet'),
+                Terminal::getTheme()?->getIcon('bullet'),
                 $itemColor,
                 $item
             ),

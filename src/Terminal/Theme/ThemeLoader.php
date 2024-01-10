@@ -18,6 +18,7 @@ final class ThemeLoader implements ThemeLoaderInterface
      * @param array<string, ThemeInterface> $themes
      */
     public function __construct(private array $themes, private readonly OutputInterface $output) {}
+
     /**
      * @throws JsonException
      * @throws BinaryNotFoundException
@@ -56,6 +57,11 @@ final class ThemeLoader implements ThemeLoaderInterface
     public function getEnabledTheme(): ThemeInterface
     {
         return $this->theme;
+    }
+
+    public function getTheme(string $themeName): ?ThemeInterface
+    {
+        return $this->themes[$themeName] ?? null;
     }
 
     public function enableTheme(string $themeName): self

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Terminal;
 
 use JsonException;
+use Ninja\Cosmic\Exception\BinaryNotFoundException;
 use Ninja\Cosmic\Terminal\Theme\ThemeInterface;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoader;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoaderInterface;
@@ -63,9 +64,10 @@ final class Terminal
      *
      * @param string $directory The directory containing theme configurations.
      *
-     * @throws JsonException
-     *
      * @return self The Terminal instance.
+     * @throws JsonException
+     * @throws BinaryNotFoundException
+     *
      */
     public static function loadThemes(string $directory): self
     {
@@ -104,10 +106,14 @@ final class Terminal
     /**
      * Get the currently enabled theme.
      *
-     * @return ThemeInterface The currently enabled theme.
+     * @return ThemeInterface|null The currently enabled theme.
      */
-    public static function getTheme(): ThemeInterface
+    public static function getTheme(?string $themeName = null): ?ThemeInterface
     {
+        if ($themeName !== null) {
+            return self::$themeLoader->getTheme($themeName);
+        }
+
         return self::$themeLoader->getEnabledTheme();
     }
 
@@ -173,7 +179,7 @@ final class Terminal
      */
     public static function width(): int
     {
-        return self::getTheme()->getConfig("width") ?? terminal()->width();
+        return self::getTheme()?->getConfig("width") ?? terminal()->width();
     }
 
     /**

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ninja\Cosmic\Reflector;
+namespace Ninja\Cosmic\Command\Builder\Reflector;
 
 use Closure;
 use Invoker\Exception\NotCallableException;

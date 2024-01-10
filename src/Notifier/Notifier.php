@@ -108,7 +108,7 @@ class Notifier
         return (new Notification())
             ->setTitle(ucfirst((string)Env::get("APP_NAME")))
             ->setBody($message)
-            ->setIcon(Terminal::getTheme()->getNotificationIcon() ?? "");
+            ->setIcon(Terminal::getTheme()?->getNotificationIcon() ?? "");
     }
 
     /**
@@ -123,6 +123,6 @@ class Notifier
         return (new Notification())
             ->setTitle(ucfirst((string)Env::get("APP_NAME")))
             ->setBody($message)
-            ->setIcon(Terminal::getTheme()->getNotificationIcon() ?? "");
+            ->setIcon(Terminal::getTheme()?->getNotificationIcon() ?? "");
     }
 }

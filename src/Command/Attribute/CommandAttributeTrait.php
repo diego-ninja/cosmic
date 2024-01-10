@@ -93,7 +93,7 @@ trait CommandAttributeTrait
     public function getCommandIcon(): string
     {
         $attributes = $this->reflector->getAttributes(Icon::class, ReflectionAttribute::IS_INSTANCEOF);
-        if (isset($attributes[0]) && Terminal::getTheme()->getConfig("icons_enabled")) {
+        if (isset($attributes[0]) && Terminal::getTheme()?->getConfig("icons_enabled")) {
             return $attributes[0]->newInstance()->icon;
         }
 

@@ -325,7 +325,7 @@ final class Application extends \Symfony\Component\Console\Application
     private function enableTheme(string $theme): self
     {
         Terminal::enableTheme($theme);
-        $this->setName(sprintf("%s %s", Terminal::getTheme()->getAppIcon(), Env::get("APP_NAME")));
+        $this->setName(sprintf("%s %s", Terminal::getTheme()?->getAppIcon(), Env::get("APP_NAME")));
 
         return $this;
     }
