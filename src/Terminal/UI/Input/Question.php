@@ -35,7 +35,7 @@ class Question
         $defaultOption = $default ?? '';
 
         $message = $decorated ?
-            sprintf(' %s <question>%s</question> [<default>%s</default>] ', Terminal::getTheme()->getAppIcon(), $message, $defaultOption) :
+            sprintf(' %s <question>%s</question> [<default>%s</default>] ', Terminal::getTheme()?->getAppIcon(), $message, $defaultOption) :
             sprintf("%s [%s] ", $message, $defaultOption);
 
         $helper   = new QuestionHelper();
@@ -61,7 +61,7 @@ class Question
         $autoComplete = ['yes', 'no'];
 
         $message = $decorated ?
-            sprintf(' %s <question>%s</question> %s ', Terminal::getTheme()->getAppIcon(), $message, self::getAutocompleteOptions($autoComplete, $default ? 'yes' : 'no')) :
+            sprintf(' %s <question>%s</question> %s ', Terminal::getTheme()?->getAppIcon(), $message, self::getAutocompleteOptions($autoComplete, $default ? 'yes' : 'no')) :
             sprintf("%s %s ", $message, self::getAutocompleteOptions($autoComplete, $default ? 'yes' : 'no'));
 
         $helper   = new QuestionHelper();
@@ -85,7 +85,7 @@ class Question
     public static function hidden(string $message, bool $decorated = true): ?string
     {
         $message = $decorated ?
-            sprintf(' %s <question>%s</question> ', Terminal::getTheme()->getAppIcon(), $message) :
+            sprintf(' %s <question>%s</question> ', Terminal::getTheme()?->getAppIcon(), $message) :
             sprintf("%s ", $message);
 
         $helper   = new QuestionHelper();

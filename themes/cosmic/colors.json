@@ -20,7 +20,7 @@
         "notice": "@teal300",
         "warning": "@orange300",
         "error": "@red300",
-        "success": "@green300",
+        "success": "@cyan300",
         "question": "@cyan300",
         "default": "@cyan300"
     }

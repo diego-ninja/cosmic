@@ -6,6 +6,7 @@ namespace Ninja\Cosmic\Terminal\Theme;
 
 use JsonException;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
+use Ninja\Cosmic\Terminal\Terminal;
 use Ninja\Cosmic\Terminal\Theme\Element\Charset\Charset;
 use Ninja\Cosmic\Terminal\Theme\Element\Charset\CharsetCollection;
 use Ninja\Cosmic\Terminal\Theme\Element\CollectionFactory;
@@ -98,7 +99,7 @@ class Theme implements ThemeInterface
 
             $parent_theme = json_decode($content, true, JSON_THROW_ON_ERROR, JSON_THROW_ON_ERROR)["extends"] ?? null;
             if ($parent_theme) {
-                $theme->parent = self::fromThemeFolder(sprintf("%s/../%s", $folder, $parent_theme));
+                $theme->parent = Terminal::getTheme($parent_theme);
             }
 
             return $theme;

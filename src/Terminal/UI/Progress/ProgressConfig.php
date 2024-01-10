@@ -133,7 +133,7 @@ class ProgressConfig extends Config
             "char_full"      => self::DEFAULT_CHAR_FULL,
             "width"          => self::DEFAULT_WIDTH,
             "format"         => self::DEFAULT_FORMAT,
-            "spacing"        => Terminal::getTheme()->getConfig("spacing"),
+            "spacing"        => Terminal::getTheme()?->getConfig("spacing"),
         ];
     }
 

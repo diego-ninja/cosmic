@@ -37,7 +37,7 @@ class TableConfig extends Config
      */
     public function getCharset(): array
     {
-        return Terminal::getTheme()->getCharset($this->get("charset", self::DEFAULT_CHARSET))?->chars ?? [];
+        return Terminal::getTheme()?->getCharset($this->get("charset", self::DEFAULT_CHARSET))?->chars ?? [];
     }
 
     public function getChar(string $char): ?string
@@ -153,7 +153,7 @@ class TableConfig extends Config
     private function getDefaultConfig(): array
     {
         return [
-            "charset"        => Terminal::getTheme()->getCharset("double")->name ?? self::DEFAULT_CHARSET,
+            "charset"        => Terminal::getTheme()?->getCharset("double")->name ?? self::DEFAULT_CHARSET,
             "item_name"      => self::DEFAULT_ITEM_NAME,
             "table_color"    => self::DEFAULT_TABLE_COLOR,
             "header_color"   => self::DEFAULT_HEADER_COLOR,
