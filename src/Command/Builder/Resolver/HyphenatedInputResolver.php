@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ninja\Cosmic\Resolver;
+namespace Ninja\Cosmic\Command\Builder\Resolver;
 
 use Invoker\ParameterResolver\ParameterResolver;
 use ReflectionFunctionAbstract;

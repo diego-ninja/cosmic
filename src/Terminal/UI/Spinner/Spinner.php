@@ -32,10 +32,10 @@ class Spinner
     public function __construct(
         private readonly ?string $style = null
     ) {
-        $config = Terminal::getTheme()->getConfig("spinner");
+        $config = Terminal::getTheme()?->getConfig("spinner");
         $style  = $this->style ?? $config["style"] ?? self::DEFAULT_SPINNER_STYLE;
 
-        $this->spinner = Terminal::getTheme()->getSpinners()->spinner($style)?->toArray();
+        $this->spinner = Terminal::getTheme()?->getSpinners()->spinner($style)?->toArray();
     }
 
     public function setMessage(string $message): self
@@ -161,7 +161,7 @@ class Spinner
             sprintf(
                 "%s<success>%s</success> %s",
                 $this->addPadding(),
-                Terminal::getTheme()->getIcon("success"),
+                Terminal::getTheme()?->getIcon("success"),
                 $this->message
             )
         );
@@ -174,7 +174,7 @@ class Spinner
             sprintf(
                 "%s<warn>%s</warn> %s",
                 $this->addPadding(),
-                Terminal::getTheme()->getIcon("failure"),
+                Terminal::getTheme()?->getIcon("failure"),
                 $this->message
             )
         );

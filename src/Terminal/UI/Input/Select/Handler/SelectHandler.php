@@ -215,7 +215,7 @@ class SelectHandler
     {
         return sprintf(
             $hasCursor ? ' <hl> %1$s %2$s </hl>' : ' <%3$s> %1$s %2$s </%3$s>',
-            ($selected ? Terminal::getTheme()->getIcon("checkbox_selected") : Terminal::getTheme()->getIcon("checkbox")),
+            ($selected ? Terminal::getTheme()?->getIcon("checkbox_selected") : Terminal::getTheme()?->getIcon("checkbox")),
             $name . str_repeat(' ', $maxWidth - mb_strlen($name)),
             ($selected ? 'info' : 'question')
         );
@@ -225,7 +225,7 @@ class SelectHandler
     {
         return sprintf(
             $hasCursor ? ' <hl> %1$s %2$s </hl>' : ' <%3$s> %1$s %2$s </%3$s>',
-            ($selected ? Terminal::getTheme()->getIcon("radio_selected") : Terminal::getTheme()->getIcon("radio")),
+            ($selected ? Terminal::getTheme()?->getIcon("radio_selected") : Terminal::getTheme()?->getIcon("radio")),
             $name . str_repeat(' ', $maxWidth - mb_strlen($name)),
             ($selected ? 'info' : 'question')
         );

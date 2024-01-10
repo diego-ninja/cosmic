@@ -42,11 +42,11 @@ trait TableableTrait
         foreach ($raw as $key => $value) {
             $isCollection = false;
             $icon         = is_nullable($key, $this::class) ?
-                Terminal::getTheme()->getIcon("nullable") :
-                Terminal::getTheme()->getIcon("mandatory");
+                Terminal::getTheme()?->getIcon("nullable") :
+                Terminal::getTheme()?->getIcon("mandatory");
 
             if (is_array($value) || $value instanceof AbstractCollection) {
-                $icon         = Terminal::getTheme()->getIcon("collection");
+                $icon         = Terminal::getTheme()?->getIcon("collection");
                 $isCollection = true;
             }
 

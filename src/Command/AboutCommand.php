@@ -42,14 +42,14 @@ final class AboutCommand extends CosmicCommand
                         <span class='mr-1'>%s</span><span class='mr-1'>%s</span><span class='text-info font-bold'>%s</span>
                     </div>
                     ",
-                Terminal::getTheme()->getAppIcon(),
+                Terminal::getTheme()?->getAppIcon(),
                 Env::get("APP_NAME"),
                 Env::appVersion()
             )
         );
         render(
             sprintf(
-                "<div class='w-60 justify-center'><span> - %s - </span></div>",
+                "<div class='w-52 justify-center'><span> - %s - </span></div>",
                 Env::get("APP_DESCRIPTION")
             )
         );
@@ -68,14 +68,14 @@ final class AboutCommand extends CosmicCommand
             )
         );
 
-        render(
-            sprintf(
-                "<div class='w-50 justify-center'><span>Theme: <span class='text-notice mr-1'>%s</span></span></div>",
-                Terminal::getTheme()->getName()
-            )
-        );
-
         if (Env::isDebug()) {
+            render(
+                sprintf(
+                    "<div class='w-50 justify-center'><span>Theme: <span class='text-notice mr-1'>%s</span></span></div>",
+                    Terminal::getTheme()?->getName()
+                )
+            );
+
             $this->renderEnvironmentVariables();
         }
 
@@ -84,7 +84,7 @@ final class AboutCommand extends CosmicCommand
 
     private function renderEnvironmentVariables(): void
     {
-        $tableConfig = new TableConfig(Terminal::getTheme()->getConfig("table"));
+        $tableConfig = new TableConfig(Terminal::getTheme()?->getConfig("table"));
 
         $table = (new Table(data: Env::dump(), columns: [], config: $tableConfig))
             ->addColumn(new TableColumn(name: 'ENV VAR', key: 'key', color: 'cyan'))
@@ -97,14 +97,14 @@ final class AboutCommand extends CosmicCommand
 
     private function displayLogo(): void
     {
-        $logo = Terminal::getTheme()->getLogo();
+        $logo = Terminal::getTheme()?->getLogo();
 
         if ($logo === null || $logo === '' || $logo === '0') {
             return;
         }
 
         Terminal::output()->writeln("");
-        Terminal::output()->write(Terminal::getTheme()->getLogo() ?? "");
+        Terminal::output()->write(Terminal::getTheme()?->getLogo() ?? "");
         Terminal::output()->writeln("\n");
     }
 }
