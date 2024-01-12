@@ -9,6 +9,7 @@ use Ninja\Cosmic\Environment\Exception\EnvironmentNotFoundException;
 use Ninja\Cosmic\Event\Lifecycle;
 use Ninja\Cosmic\Signal\SignalHandler;
 use Ninja\Cosmic\Terminal\Terminal;
+use Ninja\Cosmic\Terminal\Theme\ThemeInterface;
 
 use function Cosmic\find_env;
 use function Cosmic\is_phar;
@@ -51,7 +52,7 @@ $dotenv->safeLoad();
 
 try {
     Terminal::loadThemes(__DIR__ . "/themes");
-    Terminal::enableTheme(Env::get("APP_THEME", "cosmic"));
+    Terminal::enableTheme(Env::get("APP_THEME", ThemeInterface::DEFAULT_THEME));
 
     $app = new Application(
         name: sprintf("%s %s", Terminal::getTheme()->getAppIcon(), Env::get("APP_NAME")),

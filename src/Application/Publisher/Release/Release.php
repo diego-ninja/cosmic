@@ -29,6 +29,8 @@ final class Release implements TableableInterface, SerializableInterface, String
     use SerializableTrait;
     use TableableTrait;
 
+    private ?int $id = null;
+
     /**
      * @var AssetCollection<Asset>
      */
@@ -63,6 +65,10 @@ final class Release implements TableableInterface, SerializableInterface, String
             isPrerelease: $data['isPrerelease'],
         );
 
+        if (isset($data['id'])) {
+            $release->setId((int)$data['id']);
+        }
+
         if (isset($data['createdAt'])) {
             $release->setCreatedAt(CarbonImmutable::parse($data['createdAt']));
         }
@@ -77,6 +83,34 @@ final class Release implements TableableInterface, SerializableInterface, String
 
         return $release;
     }
+
+    /**
+     * @param array<string,mixed> $data
+     * @return self
+     */
+    public static function fromApiResponse(array $data): self
+    {
+        $release = new self(
+            name: $data['name'],
+            tagName: $data['tag_name'],
+            description: $data['body'] ?? null,
+            url: $data['tarball_url'],
+            isDraft: $data['draft']           ?? false,
+            isPrerelease: $data['prerelease'] ?? false,
+        );
+
+        foreach ($data['assets'] as $assetData) {
+            $release->addAsset(Asset::fromApiResponse($assetData));
+        }
+
+        $release->setId($data['id']);
+        $release->setCreatedAt(CarbonImmutable::parse($data['created_at']));
+        $release->setPublishedAt(CarbonImmutable::parse($data['published_at']));
+
+        return $release;
+
+    }
+
     /**
      * Create a Release instance from a JSON string.
      *
@@ -87,6 +121,7 @@ final class Release implements TableableInterface, SerializableInterface, String
     {
         return self::fromArray(json_decode($json, true, 512, JSON_THROW_ON_ERROR));
     }
+
     /**
      * Get a string representation of the release.
      */
@@ -94,6 +129,7 @@ final class Release implements TableableInterface, SerializableInterface, String
     {
         return sprintf("%s [%s]", $this->name, $this->tagName);
     }
+
     /**
      * Get the title for the table representation.
      */
@@ -101,6 +137,23 @@ final class Release implements TableableInterface, SerializableInterface, String
     {
         return sprintf("📦 Release: %s", $this);
     }
+
+    /**
+     * Get the ID of the release.
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get the ID of the release.
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
     /**
      * Get the creation date of the release.
      */

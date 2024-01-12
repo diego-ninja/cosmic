@@ -19,6 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 interface ThemeInterface extends JsonSerializable
 {
+    public const DEFAULT_THEME = "cosmic";
     public function load(OutputInterface $output): void;
     public function getName(): string;
     public function getVersion(): string;

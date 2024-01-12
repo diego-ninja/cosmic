@@ -6,7 +6,7 @@ namespace Ninja\Cosmic\Command;
 
 use Exception;
 use Ninja\Cosmic\Application\Publisher\Asset\Asset;
-use Ninja\Cosmic\Application\Publisher\GithubClientPublisher;
+use Ninja\Cosmic\Application\Publisher\GithubPublisherFactory;
 use Ninja\Cosmic\Application\Publisher\Release\Release;
 use Ninja\Cosmic\Command\Attribute\Alias;
 use Ninja\Cosmic\Command\Attribute\Argument;
@@ -86,7 +86,7 @@ final class PublishCommand extends CosmicCommand
 
         if (Question::confirm(message: "Do you want to publish the release?")) {
             $this->executionResult = SpinnerFactory::for(
-                callable:  static fn(): bool => (new GithubClientPublisher())->publish($release) instanceof Release,
+                callable:  static fn(): bool => (GithubPublisherFactory::create())?->publish($release) instanceof Release,
                 message: sprintf("Publishing <info>GitHub</info> release <comment>%s</comment>", $releaseName)
             );
 

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Ninja\Cosmic\Terminal\Theme;
 
 use DirectoryIterator;
-use InvalidArgumentException;
 use JsonException;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
+use Ninja\Cosmic\Terminal\Theme\Exception\ThemeNotFoundException;
 use Symfony\Component\Console\Output\OutputInterface;
 
 final class ThemeLoader implements ThemeLoaderInterface
@@ -64,10 +64,13 @@ final class ThemeLoader implements ThemeLoaderInterface
         return $this->themes[$themeName] ?? null;
     }
 
+    /**
+     * @throws ThemeNotFoundException
+     */
     public function enableTheme(string $themeName): self
     {
         if (!isset($this->themes[$themeName])) {
-            throw new InvalidArgumentException(sprintf("Theme %s not found", $themeName));
+            throw ThemeNotFoundException::fromThemeName($themeName);
         }
 
         $this->theme = $this->themes[$themeName];
