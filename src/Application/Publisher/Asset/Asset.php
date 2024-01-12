@@ -66,33 +66,78 @@ class Asset implements Stringable
      */
     public static function fromArray(array $data): self
     {
-        $release = new self(
+        $asset = new self(
             name: $data['name'],
             path: $data['path'] ?? null,
             url: $data['url']   ?? null,
         );
 
         if (isset($data['createdAt'])) {
-            $release->setCreatedAt(CarbonImmutable::parse($data['createdAt']));
+            $asset->setCreatedAt(CarbonImmutable::parse($data['createdAt']));
         }
 
         if (isset($data['updatedAt'])) {
-            $release->setUpdatedAt(CarbonImmutable::parse($data['updatedAt']));
+            $asset->setUpdatedAt(CarbonImmutable::parse($data['updatedAt']));
         }
 
         if (isset($data['size'])) {
-            $release->setSize($data['size']);
+            $asset->setSize($data['size']);
         }
 
         if (isset($data['contentType'])) {
-            $release->setContentType($data['contentType']);
+            $asset->setContentType($data['contentType']);
         }
 
         if (isset($data['state'])) {
-            $release->setState($data['state']);
+            $asset->setState($data['state']);
         }
 
-        return $release;
+        return $asset;
+    }
+
+    /**
+     * @param array<string,mixed> $data
+     * @return self
+     */
+    public static function fromApiResponse(array $data): self
+    {
+        $asset = new self(
+            name: $data['name'],
+            url: $data['url']
+        );
+
+        $asset->setCreatedAt(CarbonImmutable::parse($data['created_at']));
+        $asset->setUpdatedAt(CarbonImmutable::parse($data['updated_at']));
+        $asset->setSize($data['size']);
+        $asset->setContentType($data['content_type']);
+        $asset->setState($data['state']);
+
+        return $asset;
+
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getContent(): ?string
+    {
+        if ($this->path !== null && $content = file_get_contents($this->path)) {
+            return $content;
+        }
+
+        return null;
     }
 
     public function setContentType(string $contentType): void
@@ -132,7 +177,20 @@ class Asset implements Stringable
 
     public function getContentType(): ?string
     {
-        return $this->contentType;
+        if ($this->contentType !== null) {
+            return $this->contentType;
+        }
+
+        if ($this->path === null) {
+            return null;
+        }
+
+        $mime = mime_content_type($this->path);
+        if ($mime !== false) {
+            return $mime;
+        }
+
+        return null;
     }
 
     /**

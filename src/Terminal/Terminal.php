@@ -6,6 +6,7 @@ namespace Ninja\Cosmic\Terminal;
 
 use JsonException;
 use Ninja\Cosmic\Exception\BinaryNotFoundException;
+use Ninja\Cosmic\Terminal\Theme\Exception\ThemeNotFoundException;
 use Ninja\Cosmic\Terminal\Theme\ThemeInterface;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoader;
 use Ninja\Cosmic\Terminal\Theme\ThemeLoaderInterface;
@@ -96,11 +97,17 @@ final class Terminal
      * @param string $themeName The name of the theme to enable.
      *
      * @return self The Terminal instance.
+     * @throws ThemeNotFoundException
      */
     public static function enableTheme(string $themeName): self
     {
-        self::$themeLoader->enableTheme($themeName);
-        return self::getInstance();
+        try {
+            self::$themeLoader->enableTheme($themeName);
+        } catch (ThemeNotFoundException) {
+            self::$themeLoader->enableTheme(ThemeInterface::DEFAULT_THEME);
+        } finally {
+            return self::getInstance();
+        }
     }
 
     /**

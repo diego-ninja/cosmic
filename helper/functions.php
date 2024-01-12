@@ -289,6 +289,7 @@ if (!function_exists('Cosmic\sudo')) {
      * @param string $command
      * @param string|null $sudo_passwd
      * @return string
+     * @throws UnexpectedValueException
      */
     function sudo(string $command, ?string $sudo_passwd = null): string
     {
@@ -348,17 +349,86 @@ if (!function_exists('Cosmic\git_config')) {
      * Get a Git config value.
      *
      * @param string $key
+     * @param string $type
+     * @param string|null $path
      * @return string|null
      * @throws BinaryNotFoundException
      */
-    function git_config(string $key): ?string
+    function git_config(string $key, string $type = "global", ?string $path = null): ?string
     {
-        $command = sprintf("%s config --global --get %s", find_binary("git"), $key);
+        $command = sprintf("%s config --%s --get %s", find_binary("git"), $type, $key);
         $process = Process::fromShellCommandline($command);
+
+        if (!is_null($path)) {
+            $process->setWorkingDirectory($path);
+        }
+
         $process->run();
 
         if (!$process->isSuccessful()) {
             return null;
+        }
+
+        return trim($process->getOutput());
+    }
+}
+
+if (!function_exists('Cosmic\git_repo')) {
+    /**
+     * Get the current git repository name.
+     *
+     * @param string|null $path
+     * @return string|null
+     * @throws BinaryNotFoundException
+     * @throws CosmicException
+     */
+    function git_repo(?string $path = null): ?string
+    {
+        $repoPath = $path ? realpath($path) : __DIR__;
+
+        if ($repoPath) {
+            $repoUrl = git_config("remote.origin.url", "local", $repoPath);
+
+            if (is_null($repoUrl)) {
+                throw new CosmicException("Unable to find the repository URL");
+            }
+
+            if (str_starts_with($repoUrl, "git@")) {
+                $repoUrl = str_replace(":", "/", $repoUrl);
+                $repoUrl = str_replace("git@", "https://", $repoUrl);
+            }
+
+            [,,,$org,] = explode("/", $repoUrl);
+
+            return sprintf("%s/%s", $org, basename($repoUrl, ".git"));
+        }
+
+        return null;
+    }
+}
+
+if (!function_exists('Cosmic\git_branch')) {
+    /**
+     * Get the current git repository branch name.
+     *
+     * @param string|null $path
+     * @return string
+     * @throws BinaryNotFoundException
+     * @throws CosmicException
+     */
+    function git_branch(?string $path = null): string
+    {
+        $repoPath = $path ? realpath($path) : __DIR__;
+        $command  = sprintf("%s rev-parse --abbrev-ref HEAD", find_binary("git"));
+
+        $process = Process::fromShellCommandline($command);
+        if ($repoPath) {
+            $process->setWorkingDirectory($repoPath);
+        }
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new CosmicException("Unable to find the repository branch");
         }
 
         return trim($process->getOutput());

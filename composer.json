@@ -24,6 +24,7 @@
     ],
     "require": {
         "php": "^8.2",
+        "ext-fileinfo": "*",
         "ext-hash": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
@@ -47,7 +48,10 @@
         "ramsey/uuid": "^4.7",
         "symfony/console": "^6 || ^7",
         "symfony/process": "^6 || ^7",
-        "vlucas/phpdotenv": "^5"
+        "vlucas/phpdotenv": "^5",
+        "knplabs/github-api": "^3.0",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "http-interop/http-factory-guzzle": "^1.0"
     },
     "require-dev": {
         "captainhook/captainhook": "^5.10",
@@ -89,7 +93,8 @@
             "captainhook/plugin-composer": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "ergebnis/composer-normalize": true,
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
         }
     },
     "scripts": {
