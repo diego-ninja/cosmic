@@ -13,6 +13,9 @@ use Ninja\Cosmic\Application\Publisher\Release\Release;
  */
 interface PublisherInterface
 {
+    public const PUBLISH_METHOD_API    = 'api';
+    public const PUBLISH_METHOD_CLIENT = 'client';
+
     /**
      * Publish a release.
      *

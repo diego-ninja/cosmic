@@ -4,7 +4,7 @@
     "static", "self", "parent",
     "array", "string", "int", "float", "bool", "iterable", "callable", "void", "object", "mixed", "never", "app", "env","go",
     "find_binary", "is_root", "get_namespace_from_file", "is_phar", "is_cosmic", "cypher", "decipher", "find_env",
-    "value",
+    "value", "git_config",
     "PhpOption\\Option",
     "Psr\\Container\\ContainerInterface"
 
@@ -20,3 +20,4 @@
   ],
   "scan-files" : ["helper/*.php"]
 }
+
