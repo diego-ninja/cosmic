@@ -33,6 +33,7 @@
         "ext-posix": "*",
         "ext-random": "*",
         "ext-zip": "*",
+        "alecrabbit/php-wcwidth": "^1.0",
         "innmind/signals": "^3.1",
         "jolicode/jolinotif": "^2",
         "khill/php-duration": "^1.1",
@@ -54,7 +55,7 @@
         "vlucas/phpdotenv": "^5"
     },
     "require-dev": {
-        "captainhook/captainhook": "^5.10",
+        "captainhook/captainhook": "^5",
         "captainhook/plugin-composer": "^5.3",
         "ergebnis/composer-normalize": "^2.30",
         "friendsofphp/php-cs-fixer": "^3.40",

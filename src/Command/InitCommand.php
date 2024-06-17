@@ -34,7 +34,7 @@ use function Cosmic\mask;
 use function Cosmic\randomize;
 use function Cosmic\unzip;
 
-#[Icon("🛠️ ")]
+#[Icon("🛠️")]
 #[Name("init")]
 #[Description("Initialize and configure a new <info>cosmic</info> application")]
 #[Signature("init [--path=] [name]")]

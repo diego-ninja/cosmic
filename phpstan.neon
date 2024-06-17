@@ -3,7 +3,6 @@ parameters:
     paths:
       - src
       - helper
-      - tests
     excludePaths:
       - src/Parser/MarkdownParser.php
       - src/Serializer/SerializableTrait.php

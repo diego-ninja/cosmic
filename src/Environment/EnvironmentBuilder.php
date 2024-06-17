@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ninja\Cosmic\Environment;
 
+use Exception;
 use Ninja\Cosmic\Environment\Exception\EnvironmentNotFoundException;
 
 use function Cosmic\randomize;
@@ -23,6 +24,7 @@ class EnvironmentBuilder
      * @return bool True on success, false otherwise.
      *
      * @throws EnvironmentNotFoundException If the example environment file is not found.
+     * @throws Exception
      */
     public static function build(string $directory): bool
     {
@@ -40,6 +42,7 @@ class EnvironmentBuilder
      * @param string $example_file The path to the example environment file.
      *
      * @return bool True on success, false otherwise.
+     * @throws Exception
      */
     public function buildFrom(string $example_file): bool
     {
@@ -81,9 +84,10 @@ class EnvironmentBuilder
      * Build an environment file based on the provided example file.
      *
      * @param string $example_file The path to the example environment file.
-     * @param string $env_file     The path to the target environment file.
+     * @param string $env_file The path to the target environment file.
      *
      * @return bool True on success, false otherwise.
+     * @throws Exception
      */
     private function buildEnvFile(string $example_file, string $env_file): bool
     {
