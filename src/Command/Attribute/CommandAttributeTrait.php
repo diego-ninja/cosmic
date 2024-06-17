@@ -7,6 +7,8 @@ namespace Ninja\Cosmic\Command\Attribute;
 use Ninja\Cosmic\Terminal\Terminal;
 use ReflectionAttribute;
 
+use function AlecRabbit\WCWidth\wcwidth;
+
 /**
  * Trait CommandAttributeTrait
  *
@@ -94,7 +96,8 @@ trait CommandAttributeTrait
     {
         $attributes = $this->reflector->getAttributes(Icon::class, ReflectionAttribute::IS_INSTANCEOF);
         if (isset($attributes[0]) && Terminal::getTheme()?->getConfig("icons_enabled")) {
-            return $attributes[0]->newInstance()->icon;
+            $padding = wcwidth($attributes[0]->newInstance()->icon) === 1 ? " " : "";
+            return sprintf("%s%s", $attributes[0]->newInstance()->icon, $padding);
         }
 
         return "";

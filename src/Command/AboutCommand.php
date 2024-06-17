@@ -20,7 +20,7 @@ use Ninja\Cosmic\Terminal\UI\Table\TableConfig;
 
 use function Termwind\render;
 
-#[Icon("❤️ ")]
+#[Icon("❤️")]
 #[Name('about')]
 #[Signature('about')]
 #[Description('Show information about <info>{env.app_name}</info> application')]
